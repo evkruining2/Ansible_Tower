@@ -2,6 +2,11 @@
 #!!
 #! @description: This flow will create a new host, add it to an existing inventory in Ansible Tower. It will then run the given job template against the set inventory, containing the new host.
 #!
+#! @input AnsibleTowerURL: Ansible Tower API URL to connect to (example: https://192.168.10.10/api/v2)
+#! @input AnsibleUsername: Username to connect to Ansible Tower
+#! @input AnsiblePassword: Password used to connect to Ansible Tower
+#! @input TrustAllRoots: Specifies whether to enable weak security over SSL/TSL. A certificate is trusted even if no trusted certification authority issued it. Default: 'false'
+#! @input HostnameVerify: Specifies the way the server hostname must match a domain name in the subject's Common Name (CN) or subjectAltName field of the X.509 certificate. Set this to "allow_all" to skip any checking. For the value "browser_compatible" the hostname verifier works the same way as Curl and Firefox. The hostname must match either the first CN, or any of the subject-alts. A wildcard can occur in the CN, and in any of the subject-alts. The only difference between "browser_compatible" and "strict" is that a wildcard (such as "*.foo.com") with "browser_compatible" matches all subdomains, including "a.b.foo.com". Default: 'strict'
 #! @input HostName: FQDN or ip address if the host to add (string)
 #! @input InventoryID: ID of the inventory to add the host to (integer)
 #! @input HostDescription: Description of the host (optional)
@@ -12,6 +17,12 @@ namespace: io.cloudslang.redhat.ansible_tower.samples
 flow:
   name: add_new_Host_and_run_existing_job_template
   inputs:
+    - AnsibleTowerURL
+    - AnsibleUsername
+    - AnsiblePassword:
+        sensitive: true
+    - TrustAllRoots: 'false'
+    - HostnameVerify: 'strict'
     - HostName: localhost
     - InventoryID: '36'
     - HostDescription:
