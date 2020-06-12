@@ -45,6 +45,9 @@ flow:
     - Create_Inventory:
         do:
           io.cloudslang.redhat.ansible_tower.inventories.create_inventory:
+            - AnsibleTowerURL: '${AnsibleTowerURL}'
+            - AnsibleUsername: '${AnsibleUsername}'
+            - AnsiblePassword: '${AnsiblePassword}'
             - InventoryName: '${InventoryName}'
             - OrgID: '${OrgID}'
         publish:
@@ -55,6 +58,9 @@ flow:
     - Create_Job_Template:
         do:
           io.cloudslang.redhat.ansible_tower.job_templates.create_job_template:
+            - AnsibleTowerURL: '${AnsibleTowerURL}'
+            - AnsibleUsername: '${AnsibleUsername}'
+            - AnsiblePassword: '${AnsiblePassword}'
             - TemplateName: '${TemplateName}'
             - ProjectID: '${ProjectID}'
             - Playbook: '${Playbook}'
@@ -68,6 +74,9 @@ flow:
     - Create_Host:
         do:
           io.cloudslang.redhat.ansible_tower.hosts.create_host:
+            - AnsibleTowerURL: '${AnsibleTowerURL}'
+            - AnsibleUsername: '${AnsibleUsername}'
+            - AnsiblePassword: '${AnsiblePassword}'
             - HostName: '${HostName}'
             - Inventory: '${InventoryID}'
             - HostDescription: '${HostDescription}'
@@ -79,6 +88,9 @@ flow:
     - Run_Job_with_Template:
         do:
           io.cloudslang.redhat.ansible_tower.jobs.run_job_with_template:
+            - AnsibleTowerURL: '${AnsibleTowerURL}'
+            - AnsibleUsername: '${AnsibleUsername}'
+            - AnsiblePassword: '${AnsiblePassword}'
             - TemplateID: '${TemplateID}'
         publish:
           - JobID
@@ -88,6 +100,9 @@ flow:
     - Wait_for_final_job_result:
         do:
           io.cloudslang.redhat.ansible_tower.jobs.wait_for_final_job_result:
+            - AnsibleTowerURL: '${AnsibleTowerURL}'
+            - AnsibleUsername: '${AnsibleUsername}'
+            - AnsiblePassword: '${AnsiblePassword}'
             - JobID: '${JobID}'
         publish:
           - JobStatus
@@ -97,6 +112,9 @@ flow:
     - Attach_Credentials_to_Job_Template:
         do:
           io.cloudslang.redhat.ansible_tower.job_templates.attach_credentials_to_job_template:
+            - AnsibleTowerURL: '${AnsibleTowerURL}'
+            - AnsibleUsername: '${AnsibleUsername}'
+            - AnsiblePassword: '${AnsiblePassword}'
             - TemplateID: '${TemplateID}'
             - CredentialID: '${CredentialID}'
         navigate:
