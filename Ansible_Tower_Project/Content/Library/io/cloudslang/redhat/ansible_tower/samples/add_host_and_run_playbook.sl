@@ -33,7 +33,7 @@ flow:
   workflow:
     - Create_Inventory:
         do:
-          io.cloudslang.redhat.ansible_tower.inventories.create_Inventory:
+          io.cloudslang.redhat.ansible_tower.inventories.create_inventory:
             - InventoryName: '${InventoryName}'
             - OrgID: '${OrgID}'
         publish:
