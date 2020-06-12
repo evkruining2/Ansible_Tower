@@ -36,6 +36,8 @@ flow:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
             - AnsibleUsername: '${AnsibleUsername}'
             - AnsiblePassword: '${AnsiblePassword}'
+            - TrustAllRoots: '${TrustAllRoots}'
+            - HostnameVerify: '${HostnameVerify}'
             - HostName: '${HostName}'
             - Inventory: '${InventoryID}'
             - HostDescription: '${HostDescription}'
@@ -50,6 +52,8 @@ flow:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
             - AnsibleUsername: '${AnsibleUsername}'
             - AnsiblePassword: '${AnsiblePassword}'
+            - TrustAllRoots: '${TrustAllRoots}'
+            - HostnameVerify: '${HostnameVerify}'
             - TemplateID: '${TemplateID}'
         publish:
           - JobID
@@ -61,7 +65,9 @@ flow:
           io.cloudslang.redhat.ansible_tower.jobs.wait_for_final_job_result:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
             - AnsibleUsername: '${AnsibleUsername}'
-            - AnsiblePassword: '${AnsiblePassword}'
+            - AnsiblePassword:
+            - TrustAllRoots: '${TrustAllRoots}'
+            - HostnameVerify: '${HostnameVerify}'
             - JobID: '${JobID}'
         publish:
           - JobStatus

@@ -32,6 +32,8 @@ flow:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
             - AnsibleUsername: '${AnsibleUsername}'
             - AnsiblePassword: '${AnsiblePassword}'
+            - TrustAllRoots: '${TrustAllRoots}'
+            - HostnameVerify: '${HostnameVerify}'
             - HostID: '${HostID}'
         navigate:
           - FAILURE: on_failure
@@ -42,6 +44,8 @@ flow:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
             - AnsibleUsername: '${AnsibleUsername}'
             - AnsiblePassword: '${AnsiblePassword}'
+            - TrustAllRoots: '${TrustAllRoots}'
+            - HostnameVerify: '${HostnameVerify}'
             - TemplateID: '${TemplateID}'
         navigate:
           - FAILURE: on_failure
@@ -52,6 +56,8 @@ flow:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
             - AnsibleUsername: '${AnsibleUsername}'
             - AnsiblePassword: '${AnsiblePassword}'
+            - TrustAllRoots: '${TrustAllRoots}'
+            - HostnameVerify: '${HostnameVerify}'
             - InventoryID: '${InventoryID}'
         navigate:
           - FAILURE: on_failure
@@ -62,6 +68,8 @@ flow:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
             - AnsibleUsername: '${AnsibleUsername}'
             - AnsiblePassword: '${AnsiblePassword}'
+            - TrustAllRoots: '${TrustAllRoots}'
+            - HostnameVerify: '${HostnameVerify}'
             - JobID: '${JobID}'
         navigate:
           - FAILURE: on_failure

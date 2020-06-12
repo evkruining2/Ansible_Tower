@@ -48,6 +48,8 @@ flow:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
             - AnsibleUsername: '${AnsibleUsername}'
             - AnsiblePassword: '${AnsiblePassword}'
+            - TrustAllRoots: '${TrustAllRoots}'
+            - HostnameVerify: '${HostnameVerify}'
             - InventoryName: '${InventoryName}'
             - OrgID: '${OrgID}'
         publish:
@@ -61,6 +63,8 @@ flow:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
             - AnsibleUsername: '${AnsibleUsername}'
             - AnsiblePassword: '${AnsiblePassword}'
+            - TrustAllRoots: '${TrustAllRoots}'
+            - HostnameVerify: '${HostnameVerify}'
             - TemplateName: '${TemplateName}'
             - ProjectID: '${ProjectID}'
             - Playbook: '${Playbook}'
@@ -77,6 +81,8 @@ flow:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
             - AnsibleUsername: '${AnsibleUsername}'
             - AnsiblePassword: '${AnsiblePassword}'
+            - TrustAllRoots: '${TrustAllRoots}'
+            - HostnameVerify: '${HostnameVerify}'
             - HostName: '${HostName}'
             - Inventory: '${InventoryID}'
             - HostDescription: '${HostDescription}'
@@ -91,6 +97,8 @@ flow:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
             - AnsibleUsername: '${AnsibleUsername}'
             - AnsiblePassword: '${AnsiblePassword}'
+            - TrustAllRoots: '${TrustAllRoots}'
+            - HostnameVerify: '${HostnameVerify}'
             - TemplateID: '${TemplateID}'
         publish:
           - JobID
@@ -103,6 +111,8 @@ flow:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
             - AnsibleUsername: '${AnsibleUsername}'
             - AnsiblePassword: '${AnsiblePassword}'
+            - TrustAllRoots: '${TrustAllRoots}'
+            - HostnameVerify: '${HostnameVerify}'
             - JobID: '${JobID}'
         publish:
           - JobStatus
@@ -115,6 +125,8 @@ flow:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
             - AnsibleUsername: '${AnsibleUsername}'
             - AnsiblePassword: '${AnsiblePassword}'
+            - TrustAllRoots: '${TrustAllRoots}'
+            - HostnameVerify: '${HostnameVerify}'
             - TemplateID: '${TemplateID}'
             - CredentialID: '${CredentialID}'
         navigate:
