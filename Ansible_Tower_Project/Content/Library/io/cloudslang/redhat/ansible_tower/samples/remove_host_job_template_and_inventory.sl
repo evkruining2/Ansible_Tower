@@ -58,7 +58,7 @@ flow:
           - SUCCESS: Remove_Job
     - Remove_Job:
         do:
-          io.cloudslang.redhat.ansible_tower.ansible_tower.jobs.remove_job:
+          io.cloudslang.redhat.ansible_tower.jobs.remove_job:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
             - AnsibleUsername: '${AnsibleUsername}'
             - AnsiblePassword: '${AnsiblePassword}'
