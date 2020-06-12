@@ -29,6 +29,9 @@ flow:
     - Delete_Host:
         do:
           io.cloudslang.redhat.ansible_tower.hosts.delete_host:
+            - AnsibleTowerURL: '${AnsibleTowerURL}'
+            - AnsibleUsername: '${AnsibleUsername}'
+            - AnsiblePassword: '${AnsiblePassword}'
             - HostID: '${HostID}'
         navigate:
           - FAILURE: on_failure
@@ -36,6 +39,9 @@ flow:
     - Delete_Job_Template:
         do:
           io.cloudslang.redhat.ansible_tower.job_templates.delete_job_template:
+            - AnsibleTowerURL: '${AnsibleTowerURL}'
+            - AnsibleUsername: '${AnsibleUsername}'
+            - AnsiblePassword: '${AnsiblePassword}'
             - TemplateID: '${TemplateID}'
         navigate:
           - FAILURE: on_failure
@@ -43,6 +49,9 @@ flow:
     - Delete_Inventory:
         do:
           io.cloudslang.redhat.ansible_tower.inventories.delete_inventory:
+            - AnsibleTowerURL: '${AnsibleTowerURL}'
+            - AnsibleUsername: '${AnsibleUsername}'
+            - AnsiblePassword: '${AnsiblePassword}'
             - InventoryID: '${InventoryID}'
         navigate:
           - FAILURE: on_failure
@@ -50,6 +59,9 @@ flow:
     - Remove_Job:
         do:
           io.cloudslang.redhat.ansible_tower.ansible_tower.jobs.remove_job:
+            - AnsibleTowerURL: '${AnsibleTowerURL}'
+            - AnsibleUsername: '${AnsibleUsername}'
+            - AnsiblePassword: '${AnsiblePassword}'
             - JobID: '${JobID}'
         navigate:
           - FAILURE: on_failure

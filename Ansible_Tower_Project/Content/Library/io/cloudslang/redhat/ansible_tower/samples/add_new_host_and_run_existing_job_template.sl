@@ -15,7 +15,7 @@
 ########################################################################################################################
 namespace: io.cloudslang.redhat.ansible_tower.samples
 flow:
-  name: add_new_Host_and_run_existing_job_template
+  name: add_new_host_and_run_existing_job_template
   inputs:
     - AnsibleTowerURL
     - AnsibleUsername
@@ -33,6 +33,9 @@ flow:
     - Create_Host:
         do:
           io.cloudslang.redhat.ansible_tower.hosts.create_host:
+            - AnsibleTowerURL: '${AnsibleTowerURL}'
+            - AnsibleUsername: '${AnsibleUsername}'
+            - AnsiblePassword: '${AnsiblePassword}'
             - HostName: '${HostName}'
             - Inventory: '${InventoryID}'
             - HostDescription: '${HostDescription}'
@@ -43,7 +46,10 @@ flow:
           - SUCCESS: Run_Job_with_Template
     - Run_Job_with_Template:
         do:
-          io.cloudslang.redhat.ansible_tower.jobs.run_Job_with_template:
+          io.cloudslang.redhat.ansible_tower.jobs.run_job_with_template:
+            - AnsibleTowerURL: '${AnsibleTowerURL}'
+            - AnsibleUsername: '${AnsibleUsername}'
+            - AnsiblePassword: '${AnsiblePassword}'
             - TemplateID: '${TemplateID}'
         publish:
           - JobID
@@ -53,6 +59,9 @@ flow:
     - Wait_for_final_job_result:
         do:
           io.cloudslang.redhat.ansible_tower.jobs.wait_for_final_job_result:
+            - AnsibleTowerURL: '${AnsibleTowerURL}'
+            - AnsibleUsername: '${AnsibleUsername}'
+            - AnsiblePassword: '${AnsiblePassword}'
             - JobID: '${JobID}'
         publish:
           - JobStatus
