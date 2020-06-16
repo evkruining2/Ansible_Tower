@@ -74,7 +74,7 @@ flow:
                 value: "${get('AnsiblePassword')}"
                 sensitive: true
             - trust_all_roots: "${get('TrustAllRoots')}"
-            - x_509_hostname_verifier: "${get('HostNameVerify')}"
+            - x_509_hostname_verifier: "${get('HostnameVerify')}"
             - headers: 'Content-Type:application/json'
             - body: "${'{'+\\\n'   \"name\": \"'+ProjectName+'\",'+\\\n'   \"description\": \"'+description+'\",'+\\\n'   \"local_path\": \"'+local_path+'\",'+scm_type+','+\\\n'   \"scm_url\": \"'+scm_url+'\",'+\\\n'   \"scm_branch\": \"\",'+\\\n'   \"scm_refspec\": \"\",'+\\\n'   \"scm_clean\": false,'+\\\n'   \"scm_delete_on_update\": false,'+\\\n'   \"credential\": '+CredentialID+','+\\\n'   \"timeout\": 0,'+\\\n'   \"organization\": '+OrgID+','+\\\n'   \"scm_update_on_launch\": false,'+\\\n'   \"scm_update_cache_timeout\": 0,'+\\\n'   \"allow_override\": false,'+\\\n'   \"custom_virtualenv\": null'+\\\n'}'}"
         publish:

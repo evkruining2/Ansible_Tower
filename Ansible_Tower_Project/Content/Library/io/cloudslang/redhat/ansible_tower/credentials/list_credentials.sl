@@ -32,7 +32,7 @@ flow:
                 value: "${get('AnsiblePassword')}"
                 sensitive: true
             - trust_all_roots: "${get('TrustAllRoots')}"
-            - x_509_hostname_verifier: "${get('HostNameVerify')}"
+            - x_509_hostname_verifier: "${get('HostnameVerify')}"
         publish:
           - json_output: '${return_result}'
         navigate:
@@ -62,14 +62,14 @@ flow:
     - Get_CredentialName_from_ID:
         do:
           io.cloudslang.base.http.http_client_get:
-            - url: "${get_sp('AnsibleTowerURL')+'/credentials/'+list_item}"
+            - url: "${get('AnsibleTowerURL')+'/credentials/'+list_item}"
             - auth_type: basic
-            - username: "${get_sp('AnsibleUsername')}"
+            - username: "${get('AnsibleUsername')}"
             - password:
-                value: "${get_sp('AnsiblePassword')}"
+                value: "${get('AnsiblePassword')}"
                 sensitive: true
-            - trust_all_roots: "${get_sp('TrustAllRoots')}"
-            - x_509_hostname_verifier: "${get_sp('HostNameVerify')}"
+            - trust_all_roots: "${get('TrustAllRoots')}"
+            - x_509_hostname_verifier: "${get('HostnameVerify')}"
         publish:
           - Cred: '${return_result}'
         navigate:
