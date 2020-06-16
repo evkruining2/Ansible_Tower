@@ -1,5 +1,7 @@
 ########################################################################################################################
 #!!
+#! @description: This flow will remove a host, inventory, job template and job in Ansible Tower.
+#!
 #! @input AnsibleTowerURL: Ansible Tower API URL to connect to (example: https://192.168.10.10/api/v2)
 #! @input AnsibleUsername: Username to connect to Ansible Tower
 #! @input AnsiblePassword: Password used to connect to Ansible Tower
@@ -20,7 +22,7 @@ flow:
     - AnsiblePassword:
         sensitive: true
     - TrustAllRoots: 'false'
-    - HostnameVerify: 'strict'
+    - HostnameVerify: strict
     - JobID
     - InventoryID
     - TemplateID

@@ -1,5 +1,7 @@
 ########################################################################################################################
 #!!
+#! @description: This flow will delete a Project object in your Ansible Tower system
+#!
 #! @input AnsibleTowerURL: Ansible Tower API URL to connect to (example: https://192.168.10.10/api/v2)
 #! @input AnsibleUsername: Username to connect to Ansible Tower
 #! @input AnsiblePassword: Password used to connect to Ansible Tower
@@ -17,7 +19,7 @@ flow:
     - AnsiblePassword:
         sensitive: true
     - TrustAllRoots: 'false'
-    - HostnameVerify: 'strict'
+    - HostnameVerify: strict
     - ProjectID
   workflow:
     - Delete_Project:

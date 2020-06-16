@@ -1,5 +1,7 @@
 ########################################################################################################################
 #!!
+#! @description: This flow will display a list of all Projects in your Ansible Tower instance.
+#!
 #! @input AnsibleTowerURL: Ansible Tower API URL to connect to (example: https://192.168.10.10/api/v2)
 #! @input AnsibleUsername: Username to connect to Ansible Tower
 #! @input AnsiblePassword: Password used to connect to Ansible Tower
@@ -18,7 +20,7 @@ flow:
     - AnsiblePassword:
         sensitive: true
     - TrustAllRoots: 'false'
-    - HostnameVerify: 'strict'
+    - HostnameVerify: strict
   workflow:
     - Get_all_Projects:
         do:

@@ -1,3 +1,8 @@
+########################################################################################################################
+#!!
+#! @description: This flow will iterate through all finished jobs logs in Ansible Tower and removes them (to cleanup all your test runs)
+#!!#
+########################################################################################################################
 namespace: io.cloudslang.redhat.ansible_tower.utils
 flow:
   name: delete_all_jobs
@@ -7,7 +12,7 @@ flow:
     - AnsiblePassword:
         sensitive: true
     - TrustAllRoots: 'false'
-    - HostnameVerify: 'strict'
+    - HostnameVerify: strict
   workflow:
     - Get_all_Jobs:
         do:
@@ -117,12 +122,12 @@ flow:
 extensions:
   graph:
     steps:
-      http_client_delete:
-        x: 406
-        'y': 253
       Get_all_Jobs:
         x: 57
         'y': 74
+      http_client_delete:
+        x: 406
+        'y': 253
       Get_array_of_IDs:
         x: 58
         'y': 243

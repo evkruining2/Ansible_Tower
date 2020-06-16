@@ -1,5 +1,7 @@
 ########################################################################################################################
 #!!
+#! @description: This flow will lookup the given Username name and return its id.
+#!
 #! @input AnsibleTowerURL: Ansible Tower API URL to connect to (example: https://192.168.10.10/api/v2)
 #! @input AnsibleUsername: Username to connect to Ansible Tower
 #! @input AnsiblePassword: Password used to connect to Ansible Tower
@@ -19,7 +21,7 @@ flow:
     - AnsiblePassword:
         sensitive: true
     - TrustAllRoots: 'false'
-    - HostnameVerify: 'strict'
+    - HostnameVerify: strict
     - UserName: DemoUser
   workflow:
     - Connect_to_Ansible_Tower:
