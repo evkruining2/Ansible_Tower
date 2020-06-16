@@ -30,7 +30,7 @@ flow:
                 value: "${get('AnsiblePassword')}"
                 sensitive: true
             - trust_all_roots: "${get('TrustAllRoots')}"
-            - x_509_hostname_verifier: "${get('HostNameVerify')}"
+            - x_509_hostname_verifier: "${get('HostnameVerify')}"
         publish:
           - json_output: '${return_result}'
         navigate:
@@ -67,7 +67,7 @@ flow:
                 value: "${get('AnsiblePassword')}"
                 sensitive: true
             - trust_all_roots: "${get('TrustAllRoots')}"
-            - x_509_hostname_verifier: "${get('HostNameVerify')}"
+            - x_509_hostname_verifier: "${get('HostnameVerify')}"
         publish:
           - user: '${return_result}'
         navigate:

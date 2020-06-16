@@ -44,7 +44,7 @@ flow:
                 value: "${get('AnsiblePassword')}"
                 sensitive: true
             - trust_all_roots: "${get('TrustAllRoots')}"
-            - x_509_hostname_verifier: "${get('HostNameVerify')}"
+            - x_509_hostname_verifier: "${get('HostnameVerify')}"
             - headers: 'Content-Type:application/json'
             - body: "${'{'+\\\n'   \"name\": \"'+CredentialName+'\",'+\\\n'   \"description\": \"'+CredentialDescription+'\",'+\\\n'   \"organization\": '+OrgID+','+\\\n'   \"credential_type\": '+CredentialType+','+\\\n'   \"inputs\": {},'+\\\n'   \"user\": null,'+\\\n'   \"team\": null'+\\\n'}'}"
         publish:

@@ -23,14 +23,14 @@ flow:
     - Delete_Project:
         do:
           io.cloudslang.base.http.http_client_delete:
-            - url: "${get_sp('AnsibleTowerURL')+'/projects/'+ProjectID+'/'}"
+            - url: "${get('AnsibleTowerURL')+'/projects/'+ProjectID+'/'}"
             - auth_type: basic
-            - username: "${get_sp('AnsibleUsername')}"
+            - username: "${get('AnsibleUsername')}"
             - password:
-                value: "${get_sp('AnsiblePassword')}"
+                value: "${get('AnsiblePassword')}"
                 sensitive: true
-            - trust_all_roots: "${get_sp('TrustAllRoots')}"
-            - x_509_hostname_verifier: "${get_sp('HostNameVerify')}"
+            - trust_all_roots: "${get('TrustAllRoots')}"
+            - x_509_hostname_verifier: "${get('HostnameVerify')}"
             - headers: 'Content-Type:application/json'
         navigate:
           - SUCCESS: SUCCESS

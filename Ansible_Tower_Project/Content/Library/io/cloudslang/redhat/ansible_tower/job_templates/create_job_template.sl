@@ -46,7 +46,7 @@ flow:
                 value: "${get('AnsiblePassword')}"
                 sensitive: true
             - trust_all_roots: "${get('TrustAllRoots')}"
-            - x_509_hostname_verifier: "${get('HostNameVerify')}"
+            - x_509_hostname_verifier: "${get('HostnameVerify')}"
             - headers: 'Content-Type:application/json'
             - body: "${'{'+\\\n'   \"name\": \"'+TemplateName+'\",'+\\\n'   \"description\": \"'+TemplateName+'\",'+\\\n'   \"job_type\": \"run\",'+\\\n'   \"inventory\": '+InventoryID+','+\\\n'   \"project\": '+ProjectID+','+\\\n'   \"playbook\": \"'+Playbook+'\",'+\\\n'   \"scm_branch\": \"\",'+\\\n'   \"forks\": 0,'+\\\n'   \"limit\": \"\",'+\\\n'   \"verbosity\": 0,'+\\\n'   \"extra_vars\": \"'+ExtraVars+'\",'+\\\n'   \"job_tags\": \"\",'+\\\n'   \"force_handlers\": false,'+\\\n'   \"skip_tags\": \"\",'+\\\n'   \"start_at_task\": \"\",'+\\\n'   \"timeout\": 0,'+\\\n'   \"use_fact_cache\": false,'+\\\n'   \"host_config_key\": \"\",'+\\\n'   \"ask_scm_branch_on_launch\": false,'+\\\n'   \"ask_diff_mode_on_launch\": false,'+\\\n'   \"ask_variables_on_launch\": false,'+\\\n'   \"ask_limit_on_launch\": false,'+\\\n'   \"ask_tags_on_launch\": false,'+\\\n'   \"ask_skip_tags_on_launch\": false,'+\\\n'   \"ask_job_type_on_launch\": false,'+\\\n'   \"ask_verbosity_on_launch\": false,'+\\\n'   \"ask_inventory_on_launch\": false,'+\\\n'   \"ask_credential_on_launch\": false,'+\\\n'   \"survey_enabled\": false,'+\\\n'   \"become_enabled\": false,'+\\\n'   \"diff_mode\": false,'+\\\n'   \"allow_simultaneous\": false,'+\\\n'   \"custom_virtualenv\": null,'+\\\n'   \"job_slice_count\": 1,'+\\\n'   \"webhook_service\": null,'+\\\n'   \"webhook_credential\": null'+\\\n'}'}"
         publish:

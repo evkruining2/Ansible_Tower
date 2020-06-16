@@ -40,7 +40,7 @@ flow:
                 value: "${get('AnsiblePassword')}"
                 sensitive: true
             - trust_all_roots: "${get('TrustAllRoots')}"
-            - x_509_hostname_verifier: "${get('HostNameVerify')}"
+            - x_509_hostname_verifier: "${get('HostnameVerify')}"
             - headers: 'Content-Type:application/json'
             - body: "${'{'+\\\n'   \"name\": \"'+HostName+'\",'+\\\n'   \"description\": \"'+HostDescription+'\",'+\\\n'   \"inventory\": '+Inventory+','+\\\n'   \"enabled\": true,'+\\\n'   \"instance_id\": \"\",'+\\\n'   \"variables\": \"\"'+\\\n'}'}"
         publish:
