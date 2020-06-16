@@ -31,7 +31,12 @@ flow:
         loop:
           for: i in Loops
           do:
-            Ansible_Tower.Jobs.Job_Status:
+            io.cloudslang.redhat.ansible_tower.jobs.job_status:
+              - AnsibleTowerURL: '${AnsibleTowerURL}'
+              - AnsibleUsername: '${AnsibleUsername}'
+              - AnsiblePassword: '${AnsiblePassword}'
+              - TrustAllRoots: '${TrustAllRoots}'
+              - HostnameVerify: '${HostnameVerify}'
               - JobID: '${JobID}'
           break:
             - FAILURE
