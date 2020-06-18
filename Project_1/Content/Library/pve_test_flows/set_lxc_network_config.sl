@@ -11,7 +11,7 @@ flow:
     - HostnameVerify: allow_all
     - node: pve2
     - vmid: '994'
-    - net0: name=arie0
+    - net: 'net1=name%3Deth1%2Cbridge%3Dvmbr0%2Cip%3Ddhcp'
   workflow:
     - set_lxc_network_config:
         do:
@@ -23,7 +23,7 @@ flow:
             - HostnameVerify: '${HostnameVerify}'
             - vmid: '${vmid}'
             - node: '${node}'
-            - net0: '${net0}'
+            - net: '${net}'
         publish:
           - JobStatus
         navigate:

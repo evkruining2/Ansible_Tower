@@ -9,7 +9,7 @@ flow:
     - HostnameVerify
     - vmid
     - node
-    - net0
+    - net
   workflow:
     - get_ticket:
         do:
@@ -26,17 +26,23 @@ flow:
           - pveToken
         navigate:
           - FAILURE: on_failure
-          - SUCCESS: http_client_put
-    - http_client_put:
+          - SUCCESS: http_client_action
+    - http_client_action:
         do:
-          io.cloudslang.base.http.http_client_put:
+          io.cloudslang.base.http.http_client_action:
             - url: "${pveURL+'/api2/json/nodes/'+node+'/lxc/'+vmid+'/config'}"
             - auth_type: basic
             - trust_all_roots: '${TrustAllRoots}'
             - x_509_hostname_verifier: '${HostnameVerify}'
+            - keep_alive: 'true'
             - headers: "${'CSRFPreventionToken :'+pveToken+'\\r\\nCookie:PVEAuthCookie='+pveTicket}"
-            - body: "${'net0='+net0}"
+            - response_character_set: utf-8
+            - follow_redirects: 'false'
+            - form_params_are_URL_encoded: 'true'
+            - body: "${get('net')}"
             - content_type: application/x-www-form-urlencoded
+            - request_character_set: utf-8
+            - method: PUT
         publish:
           - json_result: '${return_result}'
         navigate:
@@ -53,11 +59,11 @@ extensions:
       get_ticket:
         x: 102
         'y': 107
-      http_client_put:
-        x: 289
-        'y': 95
+      http_client_action:
+        x: 281
+        'y': 304
         navigate:
-          8b3bcd30-9394-261b-b2d2-b09c8363b182:
+          92daa58b-b84a-434d-c4fe-4c9169710ab2:
             targetId: 75372d5b-a0a1-1f66-3a27-fe8bed6dd173
             port: SUCCESS
     results:

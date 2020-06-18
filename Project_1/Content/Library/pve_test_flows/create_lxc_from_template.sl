@@ -9,15 +9,30 @@ flow:
         sensitive: true
     - TrustAllRoots: 'true'
     - HostnameVerify: allow_all
+    - node: pve2
+    - vmid: '997'
     - ostemplate: 'pve_backup:vztmpl/centos-7-default_20190926_amd64.tar.xz'
-    - vmid: '995'
     - containerpassword:
         default: opsware
-        sensitive: false
+        sensitive: true
+    - memory:
+        default: '1024'
+        required: false
     - storage: local-fast
-    - node: pve2
-    - hostname: centos995
-    - net0: 'name=eth0,bridge=vmbr0,ip=dhcp'
+    - hostname: ct997
+    - nameserver:
+        default: 192.168.2.20
+        required: false
+    - net0:
+        default: 'name=eth0,bridge=vmbr0,ip=192.168.2.88/24,gw=192.168.2.1,firewall=0'
+        required: false
+    - net1:
+        default: 'name=eth1,bridge=vmbr0,ip=dhcp,tag=1,firewall=0'
+        required: false
+    - net2:
+        required: false
+    - net3:
+        required: false
   workflow:
     - create_lxc_from_template:
         do:
@@ -35,7 +50,12 @@ flow:
             - storage: '${storage}'
             - node: '${node}'
             - hostname: '${hostname}'
+            - memory: '${memory}'
+            - nameserver: '${nameserver}'
             - net0: '${net0}'
+            - net1: '${net1}'
+            - net2: '${net2}'
+            - net3: '${net3}'
         publish:
           - JobStatus
         navigate:
@@ -50,8 +70,8 @@ extensions:
   graph:
     steps:
       create_lxc_from_template:
-        x: 176
-        'y': 176
+        x: 141
+        'y': 116
         navigate:
           3e39a81b-3742-a310-18e0-b299a3c52cde:
             targetId: a5963fbc-5743-c48e-2971-f4864960f24d
@@ -59,5 +79,5 @@ extensions:
     results:
       SUCCESS:
         a5963fbc-5743-c48e-2971-f4864960f24d:
-          x: 434
-          'y': 139
+          x: 418
+          'y': 116
