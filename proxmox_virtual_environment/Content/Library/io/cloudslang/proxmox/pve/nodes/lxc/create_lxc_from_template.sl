@@ -70,8 +70,9 @@ flow:
             - json_path: $.data
         publish:
           - JobStatus: "${return_result.strip('[').strip(']').strip('\"')}"
+          - loops: '10'
         navigate:
-          - SUCCESS: SUCCESS
+          - SUCCESS: get_task_status
           - FAILURE: on_failure
     - build_http_body:
         do:
@@ -91,8 +92,55 @@ flow:
         navigate:
           - SUCCESS: create_lxc_from_template
           - FAILURE: on_failure
+    - get_task_status:
+        loop:
+          for: i in loops
+          do:
+            io.cloudslang.proxmox.pve.nodes.tasks.get_task_status:
+              - node: '${node}'
+              - upid: '${JobStatus}'
+              - pveURL: '${pveURL}'
+              - pveUsername: '${pveUsername}'
+              - pvePassword: '${pvePassword}'
+              - TrustAllRoots: '${TrustAllRoots}'
+              - HostnameVerify: '${HostnameVerify}'
+          break:
+            - FAILURE
+          publish:
+            - TaskStatus
+            - ExitStatus
+        navigate:
+          - FAILURE: on_failure
+          - SUCCESS: is_task_finished
+    - is_task_finished:
+        do:
+          io.cloudslang.base.strings.string_equals:
+            - first_string: '${TaskStatus}'
+            - second_string: stopped
+            - ignore_case: 'true'
+        navigate:
+          - SUCCESS: is_exitstatus_ok
+          - FAILURE: sleep
+    - sleep:
+        do:
+          io.cloudslang.base.utils.sleep:
+            - seconds: '10'
+        navigate:
+          - SUCCESS: get_task_status
+          - FAILURE: on_failure
+    - is_exitstatus_ok:
+        do:
+          io.cloudslang.base.strings.string_equals:
+            - first_string: '${ExitStatus}'
+            - second_string: ok
+            - ignore_case: 'true'
+        navigate:
+          - SUCCESS: SUCCESS
+          - FAILURE: on_failure
   outputs:
     - JobStatus: '${JobStatus}'
+    - TaskStatus: '${TaskStatus}'
+    - ExitStatus: '${ExitStatus}'
   results:
     - SUCCESS
     - FAILURE
@@ -103,20 +151,32 @@ extensions:
         x: 59
         'y': 65
       create_lxc_from_template:
-        x: 375
-        'y': 67
+        x: 51
+        'y': 437
       get_status_id:
-        x: 566
-        'y': 65
+        x: 219
+        'y': 436
+      build_http_body:
+        x: 58
+        'y': 251
+      get_task_status:
+        x: 214
+        'y': 237
+      sleep:
+        x: 424
+        'y': 247
+      is_task_finished:
+        x: 217
+        'y': 60
+      is_exitstatus_ok:
+        x: 418
+        'y': 63
         navigate:
-          8f3e3409-fbf1-75fc-0525-8873c306ce8a:
+          6dad6403-8964-563b-cc2a-9b71c3f6163f:
             targetId: a5963fbc-5743-c48e-2971-f4864960f24d
             port: SUCCESS
-      build_http_body:
-        x: 214
-        'y': 67
     results:
       SUCCESS:
         a5963fbc-5743-c48e-2971-f4864960f24d:
-          x: 566
-          'y': 255
+          x: 618
+          'y': 60

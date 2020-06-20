@@ -11,7 +11,7 @@ flow:
     - HostnameVerify: allow_all
     - node: pve2
     - vmid: '997'
-    - ostemplate: 'pve_backup:vztmpl/centos-7-default_20190926_amd64.tar.xz'
+    - ostemplate: 'pve_backup:vztmpl/debian-10.0-standard_10.0-1_amd64.tar.gz'
     - containerpassword:
         default: opsware
         sensitive: true
@@ -58,11 +58,15 @@ flow:
             - net3: '${net3}'
         publish:
           - JobStatus
+          - TaskStatus
+          - ExitStatus
         navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
   outputs:
     - JobStatus: '${JobStatus}'
+    - TaskStatus: '${TaskStatus}'
+    - ExitStatus: '${ExitStatus}'
   results:
     - SUCCESS
     - FAILURE

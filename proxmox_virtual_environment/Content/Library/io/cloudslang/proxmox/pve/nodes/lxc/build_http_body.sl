@@ -3,7 +3,8 @@ flow:
   name: build_http_body
   inputs:
     - ostemplate
-    - containerpassword
+    - containerpassword:
+        sensitive: true
     - storage
     - hostname
     - memory:
@@ -62,15 +63,6 @@ flow:
           - body: '${new_string}'
         navigate:
           - SUCCESS: net1
-    - url_encoder:
-        do:
-          io.cloudslang.base.http.url_encoder:
-            - data: '${net0}'
-        publish:
-          - net0: '${result}'
-        navigate:
-          - SUCCESS: add_nic0
-          - FAILURE: on_failure
     - net1:
         do:
           io.cloudslang.base.utils.is_null:
@@ -79,15 +71,6 @@ flow:
         navigate:
           - IS_NULL: net2
           - IS_NOT_NULL: url_encoder_1
-    - url_encoder_1:
-        do:
-          io.cloudslang.base.http.url_encoder:
-            - data: '${net1}'
-        publish:
-          - net1: '${result}'
-        navigate:
-          - SUCCESS: add_nic1
-          - FAILURE: on_failure
     - add_nic1:
         do:
           io.cloudslang.base.strings.append:
@@ -104,7 +87,7 @@ flow:
         publish: []
         navigate:
           - IS_NULL: net3
-          - IS_NOT_NULL: url_encoder_1_1
+          - IS_NOT_NULL: url_encoder_2
     - net3:
         do:
           io.cloudslang.base.utils.is_null:
@@ -112,16 +95,7 @@ flow:
         publish: []
         navigate:
           - IS_NULL: SUCCESS
-          - IS_NOT_NULL: url_encoder_1_1_1
-    - url_encoder_1_1:
-        do:
-          io.cloudslang.base.http.url_encoder:
-            - data: '${net2}'
-        publish:
-          - net1: '${result}'
-        navigate:
-          - SUCCESS: add_nic2
-          - FAILURE: on_failure
+          - IS_NOT_NULL: url_encoder_3
     - add_nic2:
         do:
           io.cloudslang.base.strings.append:
@@ -131,15 +105,6 @@ flow:
           - body: '${new_string}'
         navigate:
           - SUCCESS: net3
-    - url_encoder_1_1_1:
-        do:
-          io.cloudslang.base.http.url_encoder:
-            - data: '${net3}'
-        publish:
-          - net1: '${result}'
-        navigate:
-          - SUCCESS: add_nic3
-          - FAILURE: on_failure
     - add_nic3:
         do:
           io.cloudslang.base.strings.append:
@@ -166,6 +131,46 @@ flow:
           - body: '${new_string}'
         navigate:
           - SUCCESS: net0
+    - url_encoder:
+        do:
+          io.cloudslang.base.http.url_encoder:
+            - data: '${net0}'
+            - safe: null
+        publish:
+          - net0: '${result}'
+        navigate:
+          - SUCCESS: add_nic0
+          - FAILURE: on_failure
+    - url_encoder_1:
+        do:
+          io.cloudslang.base.http.url_encoder:
+            - data: '${net1}'
+            - safe: null
+        publish:
+          - net1: '${result}'
+        navigate:
+          - SUCCESS: add_nic1
+          - FAILURE: on_failure
+    - url_encoder_2:
+        do:
+          io.cloudslang.base.http.url_encoder:
+            - data: '${net2}'
+            - safe: null
+        publish:
+          - net2: '${result}'
+        navigate:
+          - SUCCESS: add_nic2
+          - FAILURE: on_failure
+    - url_encoder_3:
+        do:
+          io.cloudslang.base.http.url_encoder:
+            - data: '${net3}'
+            - safe: null
+        publish:
+          - net3: '${result}'
+        navigate:
+          - SUCCESS: add_nic3
+          - FAILURE: on_failure
   outputs:
     - body: '${body}'
   results:
@@ -174,67 +179,67 @@ flow:
 extensions:
   graph:
     steps:
+      url_encoder_3:
+        x: 1075
+        'y': 316
       memory:
-        x: 260
-        'y': 83
-      url_encoder_1_1_1:
-        x: 1160
-        'y': 303
+        x: 269
+        'y': 142
       add_nic0:
-        x: 479
-        'y': 323
+        x: 470
+        'y': 531
       add_nic1:
-        x: 729
-        'y': 320
+        x: 662
+        'y': 530
       add_nic2:
-        x: 1002
-        'y': 314
+        x: 872
+        'y': 527
       add_nic3:
-        x: 1352
-        'y': 301
+        x: 1074
+        'y': 526
         navigate:
-          f544e2de-f563-d6bd-ac4a-49527db481e3:
+          9f789459-0f6a-f8b1-d7f1-c208626dc973:
             targetId: 48e22588-9c64-3ed7-9a2d-7c0ad53c6e08
             port: SUCCESS
       url_encoder:
-        x: 357
-        'y': 329
-      add_nameserver:
-        x: 63
-        'y': 339
-      nameserver:
-        x: 117
-        'y': 78
-      url_encoder_1_1:
-        x: 863
+        x: 468
         'y': 318
+      add_nameserver:
+        x: 60
+        'y': 565
+      nameserver:
+        x: 62
+        'y': 341
       net0:
-        x: 483
-        'y': 86
+        x: 470
+        'y': 137
       net1:
-        x: 679
-        'y': 91
+        x: 666
+        'y': 136
       net2:
-        x: 907
-        'y': 97
+        x: 876
+        'y': 135
       net3:
-        x: 1127
-        'y': 98
+        x: 1073
+        'y': 135
         navigate:
-          a2f24d04-1b72-e6b4-ee81-2be42838a661:
+          be303ffd-ad36-6a75-5673-21644dbe063e:
             targetId: 48e22588-9c64-3ed7-9a2d-7c0ad53c6e08
             port: IS_NULL
       set_initial_body:
-        x: 16
-        'y': 155
+        x: 65
+        'y': 142
       url_encoder_1:
-        x: 602
-        'y': 322
+        x: 666
+        'y': 318
       add_memory:
-        x: 225
-        'y': 324
+        x: 263
+        'y': 330
+      url_encoder_2:
+        x: 873
+        'y': 315
     results:
       SUCCESS:
         48e22588-9c64-3ed7-9a2d-7c0ad53c6e08:
-          x: 1353
-          'y': 90
+          x: 1215
+          'y': 321
