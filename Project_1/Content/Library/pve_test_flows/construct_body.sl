@@ -28,16 +28,16 @@ flow:
     - create_urlencoded_body:
         do:
           pve_test_flows.create_urlencoded_body:
-            - ostemplate: "${get('ostemplate')}"
-            - containerpassword: "${get('containerpassword')}"
-            - storage: "${get('storage')}"
-            - memory: "${get('memory')}"
-            - hostname: "${get('hostname')}"
-            - nameserver: "${get('nameserver')}"
-            - net1: "${get('net1')}"
-            - net2: "${get('net2')}"
-            - net3: "${get('net3')}"
-            - net0: "${get('net0')}"
+            - ostemplate: '${ostemplate}'
+            - containerpassword: '${containerpassword}'
+            - storage: '${storage}'
+            - memory: '${memory}'
+            - hostname: '${hostname}'
+            - nameserver: '${nameserver}'
+            - net1: '${net1}'
+            - net2: '${net2}'
+            - net3: '${net2}'
+            - net0: '${net0}'
         publish:
           - request: "${request.replace('$','&')}"
         navigate:
