@@ -25,9 +25,9 @@ flow:
     - net3:
         required: false
   workflow:
-    - create_urlencoded_body3:
+    - create_urlencoded_body:
         do:
-          pve_test_flows.create_urlencoded_body3:
+          pve_test_flows.create_urlencoded_body:
             - param_ostemplate: '${ostemplate}'
             - param_containerpassword: '${containerpassword}'
             - param_memory: '${memory}'
@@ -39,25 +39,25 @@ flow:
             - param_net2: '${net2}'
             - param_net3: '${net3}'
         publish:
-          - body: '${request}'
+          - request
         navigate:
           - SUCCESS: SUCCESS
   outputs:
-    - body_text: '${body}'
+    - body_text: '${request}'
   results:
     - SUCCESS
 extensions:
   graph:
     steps:
-      create_urlencoded_body3:
-        x: 143
-        'y': 143
+      create_urlencoded_body:
+        x: 97
+        'y': 100
         navigate:
-          79725fd6-6de7-1e8c-3afb-59c968747dea:
+          7805abe1-9bf5-2e6c-e81f-35a73ae68463:
             targetId: a5963fbc-5743-c48e-2971-f4864960f24d
             port: SUCCESS
     results:
       SUCCESS:
         a5963fbc-5743-c48e-2971-f4864960f24d:
-          x: 418
-          'y': 116
+          x: 312
+          'y': 93

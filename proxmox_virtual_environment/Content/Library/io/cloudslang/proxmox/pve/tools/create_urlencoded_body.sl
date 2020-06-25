@@ -17,12 +17,12 @@
 #!!#
 ########################################################################################################################
 
-namespace: pve_test_flows
+namespace: io.cloudslang.proxmox.pve.tools
 operation:
-  name: create_urlencoded_body3
+  name: create_urlencoded_body
   inputs:
     - param_ostemplate
-    - param_containerpassword
+    - param_password
     - param_memory:
         required: false
     - param_storage

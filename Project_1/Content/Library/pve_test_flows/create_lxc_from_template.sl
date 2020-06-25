@@ -2,13 +2,13 @@ namespace: pve_test_flows
 flow:
   name: create_lxc_from_template
   inputs:
-    - pveURL: 'https://pve2:8006'
-    - pveUsername: root@pam
+    - pveURL: "${get_sp('pveURL')}"
+    - pveUsername: "${get_sp('pveUsername')}"
     - pvePassword:
-        default: opsware
+        default: "${get_sp('pvePassword')}"
         sensitive: true
-    - TrustAllRoots: 'true'
-    - HostnameVerify: allow_all
+    - TrustAllRoots: "${get_sp('TrustAllRoots')}"
+    - HostnameVerify: "${get_sp('HostnameVerify')}"
     - node: pve2
     - vmid: '997'
     - ostemplate: 'pve_backup:vztmpl/debian-10.0-standard_10.0-1_amd64.tar.gz'

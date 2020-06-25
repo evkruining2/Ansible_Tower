@@ -1,10 +1,13 @@
 namespace: pve_test_flows
 flow:
-  name: get_nodes
+  name: get_lxc_status
+  inputs:
+    - node: pve2
+    - vmid: '997'
   workflow:
-    - get_nodes:
+    - get_lxc_status:
         do:
-          io.cloudslang.proxmox.pve.nodes.get_nodes:
+          io.cloudslang.proxmox.pve.nodes.lxc.get_lxc_status:
             - pveURL: "${get_sp('pveURL')}"
             - pveUsername: "${get_sp('pveUsername')}"
             - pvePassword:
@@ -12,28 +15,30 @@ flow:
                 sensitive: true
             - TrustAllRoots: "${get_sp('TrustAllRoots')}"
             - HostnameVerify: "${get_sp('HostnameVerify')}"
+            - node: '${node}'
+            - vmid: '${vmid}'
         publish:
-          - pveNodes
+          - lxc_status
         navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
   outputs:
-    - pveNodes: '${pveNodes}'
+    - lxc_status: '${lxc_status}'
   results:
     - SUCCESS
     - FAILURE
 extensions:
   graph:
     steps:
-      get_nodes:
-        x: 147
-        'y': 143
+      get_lxc_status:
+        x: 154
+        'y': 163
         navigate:
-          6e3ff4e6-922f-f8f2-3bd7-cb5bde6210de:
-            targetId: a5963fbc-5743-c48e-2971-f4864960f24d
+          049e7059-2da8-ea5b-9ff2-171519fe0420:
+            targetId: 472e3847-855c-459e-81e7-8b7f660021c9
             port: SUCCESS
     results:
       SUCCESS:
-        a5963fbc-5743-c48e-2971-f4864960f24d:
-          x: 392
-          'y': 137
+        472e3847-855c-459e-81e7-8b7f660021c9:
+          x: 432
+          'y': 158.5

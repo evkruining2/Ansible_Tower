@@ -1,10 +1,12 @@
 namespace: pve_test_flows
 flow:
-  name: get_nodes
+  name: list_storage
+  inputs:
+    - node: pve2
   workflow:
-    - get_nodes:
+    - list_available_storage:
         do:
-          io.cloudslang.proxmox.pve.nodes.get_nodes:
+          io.cloudslang.proxmox.pve.nodes.storage.list_available_storage:
             - pveURL: "${get_sp('pveURL')}"
             - pveUsername: "${get_sp('pveUsername')}"
             - pvePassword:
@@ -12,28 +14,29 @@ flow:
                 sensitive: true
             - TrustAllRoots: "${get_sp('TrustAllRoots')}"
             - HostnameVerify: "${get_sp('HostnameVerify')}"
+            - node: '${node}'
         publish:
-          - pveNodes
+          - storage
         navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
   outputs:
-    - pveNodes: '${pveNodes}'
+    - storage: '${storage}'
   results:
-    - SUCCESS
     - FAILURE
+    - SUCCESS
 extensions:
   graph:
     steps:
-      get_nodes:
-        x: 147
-        'y': 143
+      list_available_storage:
+        x: 163
+        'y': 178.5
         navigate:
-          6e3ff4e6-922f-f8f2-3bd7-cb5bde6210de:
-            targetId: a5963fbc-5743-c48e-2971-f4864960f24d
+          537aa49a-87d4-e816-dc61-0f3f8219b3f2:
+            targetId: 96ccf7c4-9491-883f-1a5d-587fa8f07be9
             port: SUCCESS
     results:
       SUCCESS:
-        a5963fbc-5743-c48e-2971-f4864960f24d:
-          x: 392
-          'y': 137
+        96ccf7c4-9491-883f-1a5d-587fa8f07be9:
+          x: 373
+          'y': 162

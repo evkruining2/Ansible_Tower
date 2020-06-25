@@ -1,6 +1,6 @@
-namespace: io.cloudslang.proxmox.pve.nodes
+namespace: io.cloudslang.proxmox.pve.storage.content
 flow:
-  name: get_nodes
+  name: list_backups
   inputs:
     - pveURL
     - pveUsername
@@ -8,6 +8,8 @@ flow:
         sensitive: true
     - TrustAllRoots: 'false'
     - HostnameVerify: strict
+    - node
+    - storage
   workflow:
     - get_ticket:
         do:
@@ -21,13 +23,14 @@ flow:
             - HostnameVerify: '${HostnameVerify}'
         publish:
           - pveTicket
+          - pveToken
         navigate:
           - FAILURE: on_failure
-          - SUCCESS: get_nodes
-    - get_nodes:
+          - SUCCESS: get_volids
+    - get_volids:
         do:
           io.cloudslang.base.http.http_client_get:
-            - url: "${get('pveURL')+'/api2/json/nodes'}"
+            - url: "${get('pveURL')+'/api2/json/nodes/'+node+'/storage/'+storage+'/content'}"
             - auth_type: basic
             - username: "${get('pveUsername')}"
             - password:
@@ -39,20 +42,20 @@ flow:
         publish:
           - json_result: '${return_result}'
         navigate:
-          - SUCCESS: json_path_query_1
+          - SUCCESS: json_path_query
           - FAILURE: on_failure
-    - json_path_query_1:
+    - json_path_query:
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
-            - json_path: '$.data[*].node'
+            - json_path: "$.data..[?(@.content=='backup')].volid"
         publish:
-          - nodes: "${return_result.strip('[').strip(']')}"
+          - volids: "${return_result.strip('[').strip(']')}"
         navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
   outputs:
-    - pveNodes: '${nodes}'
+    - volids: '${volids}'
   results:
     - SUCCESS
     - FAILURE
@@ -60,20 +63,20 @@ extensions:
   graph:
     steps:
       get_ticket:
-        x: 133
-        'y': 196
-      get_nodes:
-        x: 331
-        'y': 204
-      json_path_query_1:
-        x: 511
-        'y': 201
+        x: 83
+        'y': 95
+      get_volids:
+        x: 288
+        'y': 96
+      json_path_query:
+        x: 320
+        'y': 287
         navigate:
-          561f1969-8083-9a27-c5d6-4fcbe2367e70:
+          f0d7b2c2-3fd3-1410-616c-6db6453e044b:
             targetId: a5963fbc-5743-c48e-2971-f4864960f24d
             port: SUCCESS
     results:
       SUCCESS:
         a5963fbc-5743-c48e-2971-f4864960f24d:
-          x: 673
-          'y': 189
+          x: 472
+          'y': 106

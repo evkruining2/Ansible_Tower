@@ -1,6 +1,6 @@
-namespace: io.cloudslang.proxmox.pve.nodes
+namespace: io.cloudslang.proxmox.pve.nodes.lxc
 flow:
-  name: get_nodes
+  name: get_lxc_status
   inputs:
     - pveURL
     - pveUsername
@@ -8,6 +8,8 @@ flow:
         sensitive: true
     - TrustAllRoots: 'false'
     - HostnameVerify: strict
+    - node
+    - vmid
   workflow:
     - get_ticket:
         do:
@@ -23,11 +25,11 @@ flow:
           - pveTicket
         navigate:
           - FAILURE: on_failure
-          - SUCCESS: get_nodes
-    - get_nodes:
+          - SUCCESS: get_container_status
+    - get_container_status:
         do:
           io.cloudslang.base.http.http_client_get:
-            - url: "${get('pveURL')+'/api2/json/nodes'}"
+            - url: "${get('pveURL')+'/api2/json/nodes/'+node+'/lxc/'+vmid+'/status/current'}"
             - auth_type: basic
             - username: "${get('pveUsername')}"
             - password:
@@ -39,20 +41,20 @@ flow:
         publish:
           - json_result: '${return_result}'
         navigate:
-          - SUCCESS: json_path_query_1
+          - SUCCESS: json_path_query
           - FAILURE: on_failure
-    - json_path_query_1:
+    - json_path_query:
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
-            - json_path: '$.data[*].node'
+            - json_path: $.data.status
         publish:
-          - nodes: "${return_result.strip('[').strip(']')}"
+          - lxc_status: "${return_result.strip('[').strip(']').strip('\"')}"
         navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
   outputs:
-    - pveNodes: '${nodes}'
+    - lxc_status: '${lxc_status}'
   results:
     - SUCCESS
     - FAILURE
@@ -60,20 +62,20 @@ extensions:
   graph:
     steps:
       get_ticket:
-        x: 133
-        'y': 196
-      get_nodes:
-        x: 331
-        'y': 204
-      json_path_query_1:
-        x: 511
-        'y': 201
+        x: 72
+        'y': 96
+      get_container_status:
+        x: 276
+        'y': 98
+      json_path_query:
+        x: 465
+        'y': 105
         navigate:
-          561f1969-8083-9a27-c5d6-4fcbe2367e70:
+          af8f28e4-4809-6bc7-a2ad-d30abbb9e396:
             targetId: a5963fbc-5743-c48e-2971-f4864960f24d
             port: SUCCESS
     results:
       SUCCESS:
         a5963fbc-5743-c48e-2971-f4864960f24d:
-          x: 673
-          'y': 189
+          x: 670
+          'y': 110

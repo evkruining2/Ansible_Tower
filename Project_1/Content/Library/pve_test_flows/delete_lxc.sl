@@ -1,10 +1,13 @@
 namespace: pve_test_flows
 flow:
-  name: get_nodes
+  name: delete_lxc
+  inputs:
+    - node: pve2
+    - vmid: '997'
   workflow:
-    - get_nodes:
+    - delete_lxc:
         do:
-          io.cloudslang.proxmox.pve.nodes.get_nodes:
+          io.cloudslang.proxmox.pve.nodes.lxc.delete_lxc:
             - pveURL: "${get_sp('pveURL')}"
             - pveUsername: "${get_sp('pveUsername')}"
             - pvePassword:
@@ -12,28 +15,30 @@ flow:
                 sensitive: true
             - TrustAllRoots: "${get_sp('TrustAllRoots')}"
             - HostnameVerify: "${get_sp('HostnameVerify')}"
+            - node: '${node}'
+            - vmid: '${vmid}'
         publish:
-          - pveNodes
+          - result
         navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
   outputs:
-    - pveNodes: '${pveNodes}'
+    - result: '${result}'
   results:
-    - SUCCESS
     - FAILURE
+    - SUCCESS
 extensions:
   graph:
     steps:
-      get_nodes:
-        x: 147
-        'y': 143
+      delete_lxc:
+        x: 197
+        'y': 113
         navigate:
-          6e3ff4e6-922f-f8f2-3bd7-cb5bde6210de:
-            targetId: a5963fbc-5743-c48e-2971-f4864960f24d
+          cc4fada5-601e-000e-ac4a-4729e3fa236b:
+            targetId: fbe620e9-a74e-3d60-a9df-7e30fde0db0a
             port: SUCCESS
     results:
       SUCCESS:
-        a5963fbc-5743-c48e-2971-f4864960f24d:
-          x: 392
-          'y': 137
+        fbe620e9-a74e-3d60-a9df-7e30fde0db0a:
+          x: 365
+          'y': 101

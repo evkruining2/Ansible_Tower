@@ -1,6 +1,6 @@
 namespace: io.cloudslang.proxmox.pve.nodes.lxc
 flow:
-  name: create_lxc_from_template
+  name: delete_lxc
   inputs:
     - pveURL
     - pveUsername
@@ -10,24 +10,6 @@ flow:
     - HostnameVerify: strict
     - node
     - vmid
-    - ostemplate
-    - containerpassword:
-        sensitive: true
-    - storage
-    - hostname:
-        required: false
-    - memory:
-        required: false
-    - nameserver:
-        required: false
-    - net0:
-        required: false
-    - net1:
-        required: false
-    - net2:
-        required: false
-    - net3:
-        required: false
   workflow:
     - get_ticket:
         do:
@@ -44,11 +26,25 @@ flow:
           - pveToken
         navigate:
           - FAILURE: on_failure
-          - SUCCESS: create_urlencoded_body
-    - create_lxc_from_template:
+          - SUCCESS: stop_container
+    - delete_lxc:
+        do:
+          io.cloudslang.base.http.http_client_delete:
+            - url: "${pveURL+'/api2/json/nodes/'+node+'/lxc/'+vmid}"
+            - auth_type: basic
+            - trust_all_roots: '${TrustAllRoots}'
+            - x_509_hostname_verifier: '${HostnameVerify}'
+            - headers: "${'CSRFPreventionToken :'+pveToken+'\\r\\nCookie:PVEAuthCookie='+pveTicket}"
+            - content_type: application/x-www-form-urlencoded
+        publish:
+          - result: '${return_result}'
+        navigate:
+          - SUCCESS: SUCCESS
+          - FAILURE: on_failure
+    - stop_container:
         do:
           io.cloudslang.base.http.http_client_post:
-            - url: "${pveURL+'/api2/json/nodes/'+node+'/lxc'}"
+            - url: "${pveURL+'/api2/json/nodes/'+node+'/lxc/'+vmid+'/status/stop'}"
             - auth_type: basic
             - username: '${pveUsername}'
             - password:
@@ -57,7 +53,6 @@ flow:
             - trust_all_roots: '${TrustAllRoots}'
             - x_509_hostname_verifier: '${HostnameVerify}'
             - headers: "${'CSRFPreventionToken :'+pveToken+'\\r\\nCookie:PVEAuthCookie='+pveTicket}"
-            - body: "${body+'&vmid='+vmid}"
             - content_type: application/x-www-form-urlencoded
         publish:
           - json_result: '${return_result}'
@@ -118,30 +113,10 @@ flow:
             - second_string: ok
             - ignore_case: 'true'
         navigate:
-          - SUCCESS: SUCCESS
+          - SUCCESS: delete_lxc
           - FAILURE: on_failure
-    - create_urlencoded_body:
-        do:
-          io.cloudslang.proxmox.pve.tools.create_urlencoded_body:
-            - param_ostemplate: '${ostemplate}'
-            - param_password: '${containerpassword}'
-            - param_containerpassword: '${containerpassword}'
-            - param_memory: '${memory}'
-            - param_storage: '${storage}'
-            - param_hostname: '${hostname}'
-            - param_nameserver: '${nameserver}'
-            - param_net0: '${net0}'
-            - param_net1: '${net1}'
-            - param_net2: '${net2}'
-            - param_net3: '${net3}'
-        publish:
-          - body: '${request}'
-        navigate:
-          - SUCCESS: create_lxc_from_template
   outputs:
-    - JobStatus: '${JobStatus}'
-    - TaskStatus: '${TaskStatus}'
-    - ExitStatus: '${ExitStatus}'
+    - result: '${result}'
   results:
     - SUCCESS
     - FAILURE
@@ -149,35 +124,35 @@ extensions:
   graph:
     steps:
       get_ticket:
-        x: 59
-        'y': 65
-      create_lxc_from_template:
-        x: 51
-        'y': 437
-      get_status_id:
-        x: 219
-        'y': 436
-      is_exitstatus_ok:
-        x: 418
-        'y': 63
+        x: 55
+        'y': 81
+      delete_lxc:
+        x: 440
+        'y': 78
         navigate:
-          6dad6403-8964-563b-cc2a-9b71c3f6163f:
+          30bf57e3-e544-0b2d-e58b-9b9211b6b081:
             targetId: a5963fbc-5743-c48e-2971-f4864960f24d
             port: SUCCESS
+      stop_container:
+        x: 59
+        'y': 255
+      get_status_id:
+        x: 62
+        'y': 416
       get_task_status:
-        x: 214
-        'y': 237
+        x: 239
+        'y': 410
       is_task_finished:
-        x: 217
-        'y': 60
+        x: 233
+        'y': 241
       sleep:
-        x: 424
-        'y': 247
-      create_urlencoded_body:
-        x: 57
-        'y': 244
+        x: 445
+        'y': 236
+      is_exitstatus_ok:
+        x: 231
+        'y': 84
     results:
       SUCCESS:
         a5963fbc-5743-c48e-2971-f4864960f24d:
-          x: 618
-          'y': 60
+          x: 607
+          'y': 76
