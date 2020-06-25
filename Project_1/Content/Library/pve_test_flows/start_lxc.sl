@@ -3,11 +3,11 @@ flow:
   name: start_lxc
   inputs:
     - node: pve2
-    - vmid: '997'
+    - vmid: '9402'
   workflow:
-    - suspend_lxc:
+    - start_lxc:
         do:
-          io.cloudslang.proxmox.pve.nodes.lxc.suspend_lxc:
+          io.cloudslang.proxmox.pve.nodes.lxc.start_lxc:
             - pveURL: "${get_sp('pveURL')}"
             - pveUsername: "${get_sp('pveUsername')}"
             - pvePassword:
@@ -30,11 +30,11 @@ flow:
 extensions:
   graph:
     steps:
-      suspend_lxc:
-        x: 147
-        'y': 140
+      start_lxc:
+        x: 122
+        'y': 113
         navigate:
-          dcab5abc-1644-cdbb-5437-229072fb0b85:
+          f7254c87-f399-81ac-00ef-093faa49d5d0:
             targetId: ef225cf1-af58-805b-5dff-70dde62e306a
             port: SUCCESS
     results:

@@ -3,7 +3,7 @@ flow:
   name: delete_lxc
   inputs:
     - node: pve2
-    - vmid: '997'
+    - vmid: '9402'
   workflow:
     - delete_lxc:
         do:
