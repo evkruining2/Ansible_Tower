@@ -1,3 +1,14 @@
+########################################################################################################################
+#!!
+#! @input pveURL: URL of the PVE environment. Example: http://pve.example.com:8006
+#! @input pveUsername: PVE username with appropriate access. Example: root@pam
+#! @input pvePassword: Password for the PVE user
+#! @input node: Name of the PVE node that will host this new container
+#! @input vmid: The vmid of the new container
+#! @input storage: Target storage where the new lxc will deployed. Example: local-lvm.
+#! @input hostname: The name of the new lxc
+#!!#
+########################################################################################################################
 namespace: io.cloudslang.proxmox.pve.nodes.lxc
 flow:
   name: create_lxc_from_template
