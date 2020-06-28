@@ -14,7 +14,7 @@
 ########################################################################################################################
 namespace: io.cloudslang.proxmox.pve.nodes.qemu
 flow:
-  name: create_vm_from_template
+  name: create_and_start_vm_from_template
   inputs:
     - pveURL
     - pveUsername
@@ -206,6 +206,24 @@ flow:
             - second_string: ok
             - ignore_case: 'true'
         navigate:
+          - SUCCESS: start_vm
+          - FAILURE: on_failure
+    - start_vm:
+        do:
+          io.cloudslang.base.http.http_client_post:
+            - url: "${pveURL+'/api2/json/nodes/'+node+'/qemu/'+vmid+'/status/start'}"
+            - auth_type: basic
+            - username: '${pveUsername}'
+            - password:
+                value: '${pvePassword}'
+                sensitive: true
+            - trust_all_roots: '${TrustAllRoots}'
+            - x_509_hostname_verifier: '${HostnameVerify}'
+            - headers: "${'CSRFPreventionToken :'+pveToken+'\\r\\nCookie:PVEAuthCookie='+pveTicket}"
+            - content_type: application/x-www-form-urlencoded
+        publish:
+          - json_result: '${return_result}'
+        navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
   outputs:
@@ -234,16 +252,19 @@ extensions:
       get_exit_status:
         x: 628
         'y': 545
+      start_vm:
+        x: 802
+        'y': 374
+        navigate:
+          58e42e22-42e8-d4d0-15b3-0b22fd14cb78:
+            targetId: f1d69487-d72c-7b03-00dc-8170e90d7482
+            port: SUCCESS
       get_ticket:
         x: 79
         'y': 71
       is_exitstatus_ok:
         x: 803
         'y': 539
-        navigate:
-          c9f1073f-a7e6-7875-fe30-c23fd9572cd2:
-            targetId: f1d69487-d72c-7b03-00dc-8170e90d7482
-            port: SUCCESS
       sleep:
         x: 625
         'y': 380
@@ -268,5 +289,5 @@ extensions:
     results:
       SUCCESS:
         f1d69487-d72c-7b03-00dc-8170e90d7482:
-          x: 798
-          'y': 373
+          x: 795
+          'y': 191

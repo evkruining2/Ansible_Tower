@@ -1,24 +1,27 @@
-namespace: pve_test_flows
+namespace: pve_test_flows.qemu
 flow:
-  name: create_vm_from_template
+  name: create_and_start_vm_from_template
   inputs:
     - node: pve2
     - cloneid: '100'
     - full:
+        default: '1'
         required: false
     - name:
+        default: ce2
         required: false
     - pool:
         default: Pool1
         required: false
     - storage:
+        default: local-fast
         required: false
     - target:
         required: false
   workflow:
-    - create_vm_from_template:
+    - create_and_start_vm_from_template:
         do:
-          io.cloudslang.proxmox.pve.nodes.qemu.create_vm_from_template:
+          io.cloudslang.proxmox.pve.nodes.qemu.create_and_start_vm_from_template:
             - pveURL: "${get_sp('pveURL')}"
             - pveUsername: "${get_sp('pveUsername')}"
             - pvePassword:
@@ -47,16 +50,16 @@ flow:
     - ExitStatus: '${ExitStatus}'
     - vmid: '${vmid}'
   results:
-    - FAILURE
     - SUCCESS
+    - FAILURE
 extensions:
   graph:
     steps:
-      create_vm_from_template:
-        x: 148
-        'y': 159.5
+      create_and_start_vm_from_template:
+        x: 139
+        'y': 139
         navigate:
-          2f6e9c20-fca0-41be-e0be-2cf3277b3737:
+          dacfafed-e184-b206-c76c-a30c2f854ab7:
             targetId: a749e56c-bbcf-2c4c-e959-145474e0a22c
             port: SUCCESS
     results:
