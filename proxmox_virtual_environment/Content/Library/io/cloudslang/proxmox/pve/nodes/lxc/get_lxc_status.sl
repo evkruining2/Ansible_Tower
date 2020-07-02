@@ -1,3 +1,17 @@
+#!!
+#! @description: Get the running status of a LXC container
+#!
+#! @input pveURL: URL of the PVE environment. Example: http://pve.example.com:8006
+#! @input pveUsername: PVE username with appropriate access. Example: root@pam
+#! @input pvePassword: Password for the PVE user
+#! @input TrustAllRoots: Specifies whether to enable weak security over SSL/TSL. A certificate is trusted even if no trusted certification authority issued it. Default: 'false'
+#! @input HostnameVerify: Specifies the way the server hostname must match a domain name in the subject's Common Name (CN) or subjectAltName field of the X.509 certificate. Set this to "allow_all" to skip any checking. For the value "browser_compatible" the hostname verifier works the same way as Curl and Firefox. The hostname must match either the first CN, or any of the subject-alts. A wildcard can occur in the CN, and in any of the subject-alts. The only difference between "browser_compatible" and "strict" is that a wildcard (such as "*.foo.com") with "browser_compatible" matches all subdomains, including "a.b.foo.com". Default: 'strict'
+#! @input node: Name of the PVE node that hosts this container
+#! @input vmid: The vmid of the container
+#!
+#! @output lxc_status: The current running status of the LXC
+#!!#
+########################################################################################################################
 namespace: io.cloudslang.proxmox.pve.nodes.lxc
 flow:
   name: get_lxc_status
