@@ -113,13 +113,6 @@ extensions:
       json_path_query:
         x: 97
         'y': 443
-      start_container:
-        x: 303
-        'y': 259
-        navigate:
-          17c6a390-d979-c118-de67-70669870a970:
-            targetId: a5963fbc-5743-c48e-2971-f4864960f24d
-            port: SUCCESS
       is_lxc_running:
         x: 313
         'y': 445
@@ -127,11 +120,18 @@ extensions:
           e5271e5d-167a-c44b-56c5-99c7283183a2:
             targetId: 4ea4c2a6-b83f-fc96-e7ae-c14b6ca83334
             port: FAILURE
+      start_container:
+        x: 303
+        'y': 259
+        navigate:
+          17c6a390-d979-c118-de67-70669870a970:
+            targetId: a5963fbc-5743-c48e-2971-f4864960f24d
+            port: SUCCESS
     results:
       SUCCESS:
         a5963fbc-5743-c48e-2971-f4864960f24d:
-          x: 553
-          'y': 255
+          x: 550
+          'y': 260
       FAILURE:
         4ea4c2a6-b83f-fc96-e7ae-c14b6ca83334:
           x: 558

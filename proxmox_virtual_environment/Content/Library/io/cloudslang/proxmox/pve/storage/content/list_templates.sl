@@ -1,3 +1,10 @@
+########################################################################################################################
+#!!
+#! @description: Get a list of volid's of all LXC templates on the selected node/storage combination
+#!
+#! @output volids: Get a list of volid's of all LXC templates on the selected node/storage combination
+#!!#
+########################################################################################################################
 namespace: io.cloudslang.proxmox.pve.storage.content
 flow:
   name: list_templates

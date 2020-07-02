@@ -1,7 +1,6 @@
 ########################################################################################################################
 #!!
 #! @description: Generate a ticket (cookie) for all additional PVE API calls
-########################################################################################################################
 #!
 #! @input pveURL: URL of the PVE environment. Example: http://pve.example.com:8006
 #! @input pveUsername: PVE username with appropriate access. Example: root@pam
@@ -84,5 +83,5 @@ extensions:
     results:
       SUCCESS:
         c2769967-dad0-7dfa-46e9-d32658447dd5:
-          x: 487
-          'y': 128
+          x: 490
+          'y': 132

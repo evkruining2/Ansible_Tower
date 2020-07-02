@@ -1,3 +1,8 @@
+########################################################################################################################
+#!!
+#! @output volids: Get a list of volid's of all images on the selected node/storage combination
+#!!#
+########################################################################################################################
 namespace: io.cloudslang.proxmox.pve.storage.content
 flow:
   name: list_images

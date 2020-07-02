@@ -1,8 +1,12 @@
 ########################################################################################################################
 #!!
+#! @description: Create a new VM by cloning an existing VM or Template. 
+#!
 #! @input pveURL: URL of the PVE environment. Example: http://pve.example.com:8006
 #! @input pveUsername: PVE username with appropriate access. Example: root@pam
 #! @input pvePassword: Password for the PVE user
+#! @input TrustAllRoots: Specifies whether to enable weak security over SSL/TSL. A certificate is trusted even if no trusted certification authority issued it. Default: 'false'
+#! @input HostnameVerify: Specifies the way the server hostname must match a domain name in the subject's Common Name (CN) or subjectAltName field of the X.509 certificate. Set this to "allow_all" to skip any checking. For the value "browser_compatible" the hostname verifier works the same way as Curl and Firefox. The hostname must match either the first CN, or any of the subject-alts. A wildcard can occur in the CN, and in any of the subject-alts. The only difference between "browser_compatible" and "strict" is that a wildcard (such as "*.foo.com") with "browser_compatible" matches all subdomains, including "a.b.foo.com". Default: 'strict'
 #! @input node: Name of the PVE node that will host this new vm
 #! @input cloneid: The vmid of the source vm/template to clone
 #! @input storage: Target storage where the new vm will deployed. Example: local-lvm. If left empty, the new vm will be deployed on the same storage as the source template/vm
@@ -10,6 +14,11 @@
 #! @input pool: Add the new vm to the specified pool
 #! @input target: Target node. Only allowed if the original vm/template is on shared storage
 #! @input full: [boolean: 0=false, 1=true] Create a full copy of all disks. This is always done when you clone a normal vm. For templates, we try to create a linked clone by default.
+#!
+#! @output JobStatus: Status of the PBE cloning job
+#! @output TaskStatus: Task status of the VM creation ("stopped" means the task has finished)
+#! @output ExitStatus: Exit status of the task ("OK" means success)
+#! @output vmid: The VMID of the newly created vm
 #!!#
 ########################################################################################################################
 namespace: io.cloudslang.proxmox.pve.nodes.qemu
@@ -20,8 +29,8 @@ flow:
     - pveUsername
     - pvePassword:
         sensitive: true
-    - TrustAllRoots
-    - HostnameVerify
+    - TrustAllRoots: 'false'
+    - HostnameVerify: strict
     - node
     - cloneid
     - storage:

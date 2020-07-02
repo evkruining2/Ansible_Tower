@@ -1,3 +1,10 @@
+########################################################################################################################
+#!!
+#! @description: Check the current status of a VM (running, stopped, paused, suspended)
+#!
+#! @output vmStatus: The current status of a VM (running, stopped, paused, suspended)
+#!!#
+########################################################################################################################
 namespace: io.cloudslang.proxmox.pve.nodes.qemu
 flow:
   name: current_vm_status

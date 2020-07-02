@@ -1,3 +1,10 @@
+########################################################################################################################
+#!!
+#! @description: Generate random vmid in the range of 100-9999 and check if the vmis is available in the PVE environment
+#!
+#! @output vmid: Randomly generated vmid in the range of 100-9999
+#!!#
+########################################################################################################################
 namespace: io.cloudslang.proxmox.pve.tools
 flow:
   name: generate_vmid
@@ -6,8 +13,8 @@ flow:
     - pveUsername
     - pvePassword:
         sensitive: true
-    - TrustAllRoots
-    - HostnameVerify
+    - TrustAllRoots: 'false'
+    - HostnameVerify: strict
   workflow:
     - random_number_generator:
         do:

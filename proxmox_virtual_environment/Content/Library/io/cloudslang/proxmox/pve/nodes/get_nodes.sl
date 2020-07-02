@@ -1,3 +1,10 @@
+########################################################################################################################
+#!!
+#! @description: Get a list of PVE nodes in your environment
+#!
+#! @output pveNodes: List of PVE nodes
+#!!#
+########################################################################################################################
 namespace: io.cloudslang.proxmox.pve.nodes
 flow:
   name: get_nodes

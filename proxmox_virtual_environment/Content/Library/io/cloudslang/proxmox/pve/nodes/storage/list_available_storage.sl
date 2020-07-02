@@ -1,3 +1,10 @@
+########################################################################################################################
+#!!
+#! @description: List all available storage IDs for the selected PVE node
+#!
+#! @output storage: List of storage ID's for the selected node
+#!!#
+########################################################################################################################
 namespace: io.cloudslang.proxmox.pve.nodes.storage
 flow:
   name: list_available_storage

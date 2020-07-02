@@ -130,8 +130,8 @@ extensions:
     results:
       SUCCESS:
         a5963fbc-5743-c48e-2971-f4864960f24d:
-          x: 553
-          'y': 255
+          x: 555
+          'y': 261
       FAILURE:
         4ea4c2a6-b83f-fc96-e7ae-c14b6ca83334:
           x: 558

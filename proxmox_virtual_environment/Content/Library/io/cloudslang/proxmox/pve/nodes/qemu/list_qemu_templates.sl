@@ -1,3 +1,10 @@
+########################################################################################################################
+#!!
+#! @description: Get a Comma separated list of template VMIDs and names from the selected PVE node
+#!
+#! @output vmids: Comma separated list of template VMIDs and names
+#!!#
+########################################################################################################################
 namespace: io.cloudslang.proxmox.pve.nodes.qemu
 flow:
   name: list_qemu_templates

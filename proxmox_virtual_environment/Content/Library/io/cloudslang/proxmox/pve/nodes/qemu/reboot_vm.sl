@@ -1,3 +1,10 @@
+########################################################################################################################
+#!!
+#! @description: Reboot a VM on the selected node
+#!
+#! @output result: The task result of the operation
+#!!#
+########################################################################################################################
 namespace: io.cloudslang.proxmox.pve.nodes.qemu
 flow:
   name: reboot_vm

@@ -1,3 +1,10 @@
+########################################################################################################################
+#!!
+#! @description: Get the version information of your Proxmox Virtual Environment
+#!
+#! @output pveVersion: PVE version
+#!!#
+########################################################################################################################
 namespace: io.cloudslang.proxmox.pve
 flow:
   name: get_pve_version

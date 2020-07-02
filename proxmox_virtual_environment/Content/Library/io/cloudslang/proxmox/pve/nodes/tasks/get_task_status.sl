@@ -1,14 +1,24 @@
+########################################################################################################################
+#!!
+#! @description: Get the status of a current or previous task
+#!
+#! @input upid: Task ID. Example: UPID:pve2:00003E60:081A0663:5EFD2E04:aptupdate::root@pam:
+#!
+#! @output TaskStatus: Status of a task
+#! @output ExitStatus: Exitstatus of a taks
+#!!#
+########################################################################################################################
 namespace: io.cloudslang.proxmox.pve.nodes.tasks
 flow:
   name: get_task_status
   inputs:
-    - node
-    - upid
     - pveURL
     - pveUsername
     - pvePassword
-    - TrustAllRoots
-    - HostnameVerify
+    - TrustAllRoots: 'false'
+    - HostnameVerify: strict
+    - node
+    - upid
   workflow:
     - get_ticket:
         do:
