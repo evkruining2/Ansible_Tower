@@ -93,5 +93,5 @@ extensions:
     results:
       SUCCESS:
         a5963fbc-5743-c48e-2971-f4864960f24d:
-          x: 472
-          'y': 106
+          x: 481
+          'y': 99

@@ -88,5 +88,5 @@ extensions:
     results:
       SUCCESS:
         a5963fbc-5743-c48e-2971-f4864960f24d:
-          x: 673
-          'y': 189
+          x: 671
+          'y': 207

@@ -86,5 +86,5 @@ extensions:
     results:
       SUCCESS:
         62d58777-7508-fc70-1b42-21d01def9eff:
-          x: 593
-          'y': 96
+          x: 596
+          'y': 98

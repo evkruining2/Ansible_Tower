@@ -110,5 +110,5 @@ extensions:
     results:
       SUCCESS:
         06d8a696-d00b-cd7e-0f3f-c5fd72fb3707:
-          x: 696
-          'y': 230
+          x: 753
+          'y': 239

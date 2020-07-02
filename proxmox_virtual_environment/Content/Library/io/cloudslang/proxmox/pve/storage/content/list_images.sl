@@ -1,5 +1,7 @@
 ########################################################################################################################
 #!!
+#! @description: Get a list of volid's of all images on the selected node/storage combination
+#!
 #! @input pveURL: URL of the PVE environment. Example: http://pve.example.com:8006
 #! @input pveUsername: PVE username with appropriate access. Example: root@pam
 #! @input pvePassword: Password for the PVE user
@@ -91,5 +93,5 @@ extensions:
     results:
       SUCCESS:
         a5963fbc-5743-c48e-2971-f4864960f24d:
-          x: 472
-          'y': 106
+          x: 486
+          'y': 102
