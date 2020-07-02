@@ -39,9 +39,9 @@ flow:
         publish:
           - json_result: '${return_result}'
         navigate:
-          - SUCCESS: json_path_query_1
+          - SUCCESS: json_path_query
           - FAILURE: on_failure
-    - json_path_query_1:
+    - json_path_query:
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
@@ -65,7 +65,7 @@ extensions:
       get_nodes:
         x: 331
         'y': 204
-      json_path_query_1:
+      json_path_query:
         x: 511
         'y': 201
         navigate:

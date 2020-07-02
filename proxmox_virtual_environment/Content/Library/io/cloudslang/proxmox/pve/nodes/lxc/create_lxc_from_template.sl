@@ -1,5 +1,7 @@
 ########################################################################################################################
 #!!
+#! @description: This flow will create a new LXC container on the specified PVE node, using a selected template. To get a list of PVE nodes and a list of available templates run the "get_nodes" and "list_templates" flows respectfully.
+#!
 #! @input pveURL: URL of the PVE environment. Example: http://pve.example.com:8006
 #! @input pveUsername: PVE username with appropriate access. Example: root@pam
 #! @input pvePassword: Password for the PVE user
@@ -7,8 +9,20 @@
 #! @input HostnameVerify: Specifies the way the server hostname must match a domain name in the subject's Common Name (CN) or subjectAltName field of the X.509 certificate. Set this to "allow_all" to skip any checking. For the value "browser_compatible" the hostname verifier works the same way as Curl and Firefox. The hostname must match either the first CN, or any of the subject-alts. A wildcard can occur in the CN, and in any of the subject-alts. The only difference between "browser_compatible" and "strict" is that a wildcard (such as "*.foo.com") with "browser_compatible" matches all subdomains, including "a.b.foo.com". Default: 'strict'
 #! @input node: Name of the PVE node that will host this new container
 #! @input vmid: The vmid of the new container
+#! @input ostemplate: Name of the template object to use as source. Example: pve_mystorage:vztmpl/debian-10.0-standard_10.0-1_amd64.tar.gz
+#! @input containerpassword: The root password for the new LXC container
 #! @input storage: Target storage where the new lxc will deployed. Example: local-lvm.
-#! @input hostname: The name of the new lxc
+#! @input hostname: The name of the new LXC container (optional)
+#! @input memory: The amount of memory (in MB) to allocate to this new LXC container (optional)
+#! @input nameserver: FQDN or IP address of the nameserver this LXC container will use (optional)
+#! @input net0: Network setting for the first NIC. Example: name=eth0,bridge=vmbr0,ip=192.168.2.88/24,gw=192.168.2.1,firewall=0 (optional)
+#! @input net1: Network setting for the second NIC. Example: name=eth1,bridge=vmbr0,ip=dhcp,tag=1,firewall=0 (optional)
+#! @input net2: Network setting for the third NIC (optional)
+#! @input net3: Network setting for the fourth NIC (optional)
+#!
+#! @output JobStatus: Status of the PBE cloning job
+#! @output TaskStatus: Task status of the LXC creation ("stopped" means the task has finished)
+#! @output ExitStatus: Exit status of the task ("OK" means success)
 #!!#
 ########################################################################################################################
 namespace: io.cloudslang.proxmox.pve.nodes.lxc
