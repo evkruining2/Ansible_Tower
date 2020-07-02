@@ -1,3 +1,7 @@
+########################################################################################################################
+#!!
+#! @description: Start a VM on the selected node
+#!
 #! @input pveURL: URL of the PVE environment. Example: http://pve.example.com:8006
 #! @input pveUsername: PVE username with appropriate access. Example: root@pam
 #! @input pvePassword: Password for the PVE user
@@ -6,6 +10,10 @@
 #! @input node: The name of the PVE node that is hosting the VM. Example: pve_node2
 #! @input vmid: The ID of the VM to run this operation against. Example: 102
 #!
+#! @output result: The task result of the operation
+#!!#
+########################################################################################################################
+
 namespace: io.cloudslang.proxmox.pve.nodes.qemu
 flow:
   name: start_vm
