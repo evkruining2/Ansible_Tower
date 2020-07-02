@@ -8,7 +8,7 @@
 #! @input TrustAllRoots: Specifies whether to enable weak security over SSL/TSL. A certificate is trusted even if no trusted certification authority issued it. Default: 'false'
 #! @input HostnameVerify: Specifies the way the server hostname must match a domain name in the subject's Common Name (CN) or subjectAltName field of the X.509 certificate. Set this to "allow_all" to skip any checking. For the value "browser_compatible" the hostname verifier works the same way as Curl and Firefox. The hostname must match either the first CN, or any of the subject-alts. A wildcard can occur in the CN, and in any of the subject-alts. The only difference between "browser_compatible" and "strict" is that a wildcard (such as "*.foo.com") with "browser_compatible" matches all subdomains, including "a.b.foo.com". Default: 'strict'
 #! @input node: The name of the PVE node that is hosting the VM. Example: pve_node2
-#! 
+#!
 #! @output vmids: Comma separated list of template VMIDs and names
 #!!#
 ########################################################################################################################
@@ -163,4 +163,4 @@ extensions:
       SUCCESS:
         a5963fbc-5743-c48e-2971-f4864960f24d:
           x: 503
-          'y': 439
+          'y': 441

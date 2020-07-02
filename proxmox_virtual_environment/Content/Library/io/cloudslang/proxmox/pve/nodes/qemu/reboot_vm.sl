@@ -134,5 +134,5 @@ extensions:
           'y': 255
       FAILURE:
         4ea4c2a6-b83f-fc96-e7ae-c14b6ca83334:
-          x: 558
-          'y': 441
+          x: 556
+          'y': 444

@@ -9,6 +9,7 @@
 #! @input HostnameVerify: Specifies the way the server hostname must match a domain name in the subject's Common Name (CN) or subjectAltName field of the X.509 certificate. Set this to "allow_all" to skip any checking. For the value "browser_compatible" the hostname verifier works the same way as Curl and Firefox. The hostname must match either the first CN, or any of the subject-alts. A wildcard can occur in the CN, and in any of the subject-alts. The only difference between "browser_compatible" and "strict" is that a wildcard (such as "*.foo.com") with "browser_compatible" matches all subdomains, including "a.b.foo.com". Default: 'strict'
 #! @input node: The name of the PVE node that is hosting the VM. Example: pve_node2
 #! @input vmid: The ID of the VM to run this operation against. Example: 102
+#!
 #! @output vmStatus: The current status of a VM (running, stopped, paused, suspended)
 #!!#
 ########################################################################################################################
@@ -89,5 +90,5 @@ extensions:
     results:
       SUCCESS:
         62d58777-7508-fc70-1b42-21d01def9eff:
-          x: 593
-          'y': 96
+          x: 591
+          'y': 95
