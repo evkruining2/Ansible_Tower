@@ -3,7 +3,7 @@ flow:
   name: get_task_status
   inputs:
     - node: pve2
-    - upid: 'UPID:pve2:00005EF5:01D4462E:5EED1F4B:vzcreate:997:root@pam:'
+    - upid: 'UPID:pve2:000073D0:09101CCC:5EFFA400:qmsnapshot:108:root@pam:'
     - pveURL: 'https://pve2:8006'
     - pveUsername: root@pam
     - pvePassword:
