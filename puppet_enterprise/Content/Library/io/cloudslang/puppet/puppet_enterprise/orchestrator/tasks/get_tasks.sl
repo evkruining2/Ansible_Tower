@@ -1,6 +1,6 @@
 ########################################################################################################################
 #!!
-#! @description: Get a list [array] of groups in Puppet Enterprise
+#! @description: view details about the tasks pre-installed by PE and those you've installed
 #!
 #! @input PuppetEnterpriseURL: Puppet Enterprise URL. Example: https://pemaster.example.com
 #! @input PuppetUsername: Puppet Enterprise User Name
@@ -8,12 +8,12 @@
 #! @input TrustAllRoots: Specifies whether to enable weak security over SSL/TSL. A certificate is trusted even if no trusted certification authority issued it. Default: 'false'
 #! @input HostnameVerify: Specifies the way the server hostname must match a domain name in the subject's Common Name (CN) or subjectAltName field of the X.509 certificate. Set this to "allow_all" to skip any checking. For the value "browser_compatible" the hostname verifier works the same way as Curl and Firefox. The hostname must match either the first CN, or any of the subject-alts. A wildcard can occur in the CN, and in any of the subject-alts. The only difference between "browser_compatible" and "strict" is that a wildcard (such as "*.foo.com") with "browser_compatible" matches all subdomains, including "a.b.foo.com". Default: 'strict'
 #!
-#! @output pe_groups: List of Puppet Enterprise groups
+#! @output pe_tasks: List of Puppet Enterprise groups
 #!!#
 ########################################################################################################################
-namespace: io.cloudslang.puppet.puppet_enterprise.nodes.groups
+namespace: io.cloudslang.puppet.puppet_enterprise.orchestrator.tasks
 flow:
-  name: get_groups
+  name: get_tasks
   inputs:
     - PuppetEnterpriseURL
     - PuppetUsername
@@ -37,7 +37,7 @@ flow:
     - http_client_action:
         do:
           io.cloudslang.base.http.http_client_action:
-            - url: "${PuppetEnterpriseURL+':4433/classifier-api/v1/groups'}"
+            - url: "${PuppetEnterpriseURL+':8143/orchestrator/v1/tasks'}"
             - trust_all_roots: '${TrustAllRoots}'
             - x_509_hostname_verifier: '${HostnameVerify}'
             - headers: "${'X-Authentication:'+pe_token}"
@@ -49,7 +49,7 @@ flow:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
   outputs:
-    - pe_groups: '${json_output}'
+    - pe_tasks: '${json_output}'
   results:
     - SUCCESS
     - FAILURE

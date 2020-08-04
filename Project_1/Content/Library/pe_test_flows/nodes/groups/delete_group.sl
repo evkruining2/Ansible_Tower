@@ -6,7 +6,7 @@ flow:
   workflow:
     - delete_group:
         do:
-          io.cloudslang.puppet.puppet_enterprise.nodes.groups.delete_group:
+          io.cloudslang.puppet.puppet_enterprise.groups.delete_group:
             - PuppetEnterpriseURL: "${get_sp('PuppetMasterURL')}"
             - PuppetUsername: "${get_sp('PuppetUsername')}"
             - PuppetPassword: "${get_sp('pvePassword')}"
@@ -21,20 +21,20 @@ flow:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
   results:
-    - FAILURE
     - SUCCESS
+    - FAILURE
 extensions:
   graph:
     steps:
       delete_group:
-        x: 162
-        'y': 149.5
+        x: 106
+        'y': 117
         navigate:
-          17082d1b-0964-0797-cf8d-b83045abb545:
+          209cbb6e-0f1b-2030-0908-77db1923c548:
             targetId: 9999eb5d-0d23-5e69-7ab8-79edf2344243
             port: SUCCESS
     results:
       SUCCESS:
         9999eb5d-0d23-5e69-7ab8-79edf2344243:
-          x: 411
-          'y': 134
+          x: 285
+          'y': 115

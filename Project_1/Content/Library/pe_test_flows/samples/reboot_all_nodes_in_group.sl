@@ -1,17 +1,20 @@
-namespace: pe_test_flows.nodes.environments
+namespace: pe_test_flows.samples
 flow:
-  name: get_environments
+  name: reboot_all_nodes_in_group
+  inputs:
+    - grouo_id: 17a15e19-a7bc-4a9c-90b7-f1f6ef5b2234
   workflow:
-    - get_environments_1:
+    - reboot_all_nodes_in_a_group:
         do:
-          io.cloudslang.puppet.puppet_enterprise.environments.get_environments:
+          io.cloudslang.puppet.puppet_enterprise.samples.reboot_all_nodes_in_a_group:
             - PuppetEnterpriseURL: "${get_sp('PuppetMasterURL')}"
             - PuppetUsername: "${get_sp('PuppetUsername')}"
             - PuppetPassword: "${get_sp('pvePassword')}"
             - TrustAllRoots: "${get_sp('TrustAllRoots')}"
             - HostnameVerify: "${get_sp('HostnameVerify')}"
+            - group_id: '${grouo_id}'
         publish:
-          - pe_environments
+          - job_number
         navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
@@ -21,15 +24,15 @@ flow:
 extensions:
   graph:
     steps:
-      get_environments_1:
-        x: 75
-        'y': 92
+      reboot_all_nodes_in_a_group:
+        x: 153
+        'y': 142.5
         navigate:
-          12289ffe-4743-ad18-3cfa-ae2c7077a0b3:
-            targetId: 9dd2a1f9-2611-6b6e-8d9a-83db607b353b
+          af60b37c-5df8-0146-7b7b-e027cd25f8f9:
+            targetId: a2afe490-848a-5719-d170-9e3f623a4703
             port: SUCCESS
     results:
       SUCCESS:
-        9dd2a1f9-2611-6b6e-8d9a-83db607b353b:
-          x: 271
-          'y': 87
+        a2afe490-848a-5719-d170-9e3f623a4703:
+          x: 355
+          'y': 120

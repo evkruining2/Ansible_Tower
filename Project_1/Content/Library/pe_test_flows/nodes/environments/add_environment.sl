@@ -6,7 +6,7 @@ flow:
   workflow:
     - add_environment:
         do:
-          io.cloudslang.puppet.puppet_enterprise.nodes.environments.add_environment:
+          io.cloudslang.puppet.puppet_enterprise.environments.add_environment:
             - PuppetEnterpriseURL: "${get_sp('PuppetMasterURL')}"
             - PuppetUsername: "${get_sp('PuppetUsername')}"
             - PuppetPassword: "${get_sp('pvePassword')}"
@@ -19,16 +19,16 @@ flow:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
   results:
-    - FAILURE
     - SUCCESS
+    - FAILURE
 extensions:
   graph:
     steps:
       add_environment:
-        x: 174
-        'y': 147.5
+        x: 114
+        'y': 117
         navigate:
-          e2efdc38-aa74-086c-faa8-9cbf46995955:
+          a4dfa80c-d7d3-56c4-f7ce-1f3a16cafa48:
             targetId: dc742988-dcc4-f8e0-32db-6171c4746f62
             port: SUCCESS
     results:

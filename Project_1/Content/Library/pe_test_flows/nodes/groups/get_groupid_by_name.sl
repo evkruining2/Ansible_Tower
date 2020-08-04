@@ -1,38 +1,40 @@
 namespace: pe_test_flows.nodes.groups
 flow:
-  name: get_group_by_id
+  name: get_groupid_by_name
   inputs:
-    - group_id: 17a15e19-a7bc-4a9c-90b7-f1f6ef5b2234
+    - group_name: Testing
   workflow:
-    - get_group_by_id:
+    - get_groupid_by_name:
         do:
-          io.cloudslang.puppet.puppet_enterprise.groups.get_group_by_id:
+          io.cloudslang.puppet.puppet_enterprise.groups.get_groupid_by_name:
             - PuppetEnterpriseURL: "${get_sp('PuppetMasterURL')}"
             - PuppetUsername: "${get_sp('PuppetUsername')}"
             - PuppetPassword: "${get_sp('pvePassword')}"
             - TrustAllRoots: "${get_sp('TrustAllRoots')}"
             - HostnameVerify: "${get_sp('HostnameVerify')}"
-            - group_id: '${group_id}'
+            - group_name: '${group_name}'
         publish:
-          - pe_group
+          - group_id
         navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
+  outputs:
+    - group_id: '${group_id}'
   results:
     - SUCCESS
     - FAILURE
 extensions:
   graph:
     steps:
-      get_group_by_id:
+      get_groupid_by_name:
         x: 116
-        'y': 136
+        'y': 123
         navigate:
-          38273302-9771-e3f5-6498-c55e26a66543:
-            targetId: 57f21b50-ad9c-147e-e503-58fb5d3c95ed
+          501e214b-9938-5801-3606-399247441d1b:
+            targetId: ddddf809-4823-e195-abda-029771ecf67c
             port: SUCCESS
     results:
       SUCCESS:
-        57f21b50-ad9c-147e-e503-58fb5d3c95ed:
-          x: 326
-          'y': 123
+        ddddf809-4823-e195-abda-029771ecf67c:
+          x: 397
+          'y': 129

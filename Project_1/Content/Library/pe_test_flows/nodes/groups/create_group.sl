@@ -7,30 +7,29 @@ flow:
   workflow:
     - create_group:
         do:
-          io.cloudslang.puppet.puppet_enterprise.nodes.groups.create_group:
+          io.cloudslang.puppet.puppet_enterprise.groups.create_group:
             - PuppetEnterpriseURL: "${get_sp('PuppetMasterURL')}"
             - PuppetUsername: "${get_sp('PuppetUsername')}"
             - PuppetPassword: "${get_sp('pvePassword')}"
             - TrustAllRoots: "${get_sp('TrustAllRoots')}"
             - HostnameVerify: "${get_sp('HostnameVerify')}"
             - name: '${name}'
-            - parent: '${parent}'
         publish:
           - pe_group
         navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
   results:
-    - FAILURE
     - SUCCESS
+    - FAILURE
 extensions:
   graph:
     steps:
       create_group:
-        x: 144
-        'y': 149.5
+        x: 118
+        'y': 134
         navigate:
-          7d51caa2-316f-e312-d898-99c7cc5a2c3b:
+          919ecd24-ba30-06c1-c94e-45a926810964:
             targetId: 94b1fe84-2d49-72ae-2473-abf5c034a39f
             port: SUCCESS
     results:

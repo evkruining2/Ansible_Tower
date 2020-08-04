@@ -1,38 +1,40 @@
-namespace: pe_test_flows.nodes.groups
+namespace: pe_test_flows.jobs
 flow:
-  name: get_group_by_id
+  name: get_job_status
   inputs:
-    - group_id: 17a15e19-a7bc-4a9c-90b7-f1f6ef5b2234
+    - job_number: '36'
   workflow:
-    - get_group_by_id:
+    - get_job_status:
         do:
-          io.cloudslang.puppet.puppet_enterprise.groups.get_group_by_id:
+          io.cloudslang.puppet.puppet_enterprise.orchestrator.jobs.get_job_status:
             - PuppetEnterpriseURL: "${get_sp('PuppetMasterURL')}"
             - PuppetUsername: "${get_sp('PuppetUsername')}"
             - PuppetPassword: "${get_sp('pvePassword')}"
             - TrustAllRoots: "${get_sp('TrustAllRoots')}"
             - HostnameVerify: "${get_sp('HostnameVerify')}"
-            - group_id: '${group_id}'
+            - job_number: '${job_number}'
         publish:
-          - pe_group
+          - job_status
         navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
+  outputs:
+    - job_status: '${job_status}'
   results:
-    - SUCCESS
     - FAILURE
+    - SUCCESS
 extensions:
   graph:
     steps:
-      get_group_by_id:
-        x: 116
-        'y': 136
+      get_job_status:
+        x: 122
+        'y': 122.5
         navigate:
-          38273302-9771-e3f5-6498-c55e26a66543:
-            targetId: 57f21b50-ad9c-147e-e503-58fb5d3c95ed
+          13d0a903-21b4-17ff-0cb1-505aae428115:
+            targetId: bfee2e0f-19c6-a797-3ea3-3e3ebbcdc3dd
             port: SUCCESS
     results:
       SUCCESS:
-        57f21b50-ad9c-147e-e503-58fb5d3c95ed:
-          x: 326
-          'y': 123
+        bfee2e0f-19c6-a797-3ea3-3e3ebbcdc3dd:
+          x: 354
+          'y': 99
