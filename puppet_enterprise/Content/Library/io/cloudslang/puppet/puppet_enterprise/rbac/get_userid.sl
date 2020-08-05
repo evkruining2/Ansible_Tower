@@ -18,7 +18,8 @@ flow:
   inputs:
     - PuppetEnterpriseURL
     - PuppetUsername
-    - PuppetPassword
+    - PuppetPassword:
+        sensitive: true
     - TrustAllRoots: 'false'
     - HostnameVerify: strict
     - login
@@ -79,12 +80,12 @@ extensions:
       get_auth_token:
         x: 61
         'y': 96
-      get_users:
-        x: 228
-        'y': 99
       filter_login:
         x: 396
         'y': 95
+      get_users:
+        x: 228
+        'y': 99
       get_userid:
         x: 493
         'y': 264

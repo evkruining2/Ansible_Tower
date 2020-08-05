@@ -26,7 +26,8 @@ flow:
   inputs:
     - PuppetEnterpriseURL
     - PuppetUsername
-    - PuppetPassword
+    - PuppetPassword:
+        sensitive: true
     - TrustAllRoots: flase
     - HostnameVerify: 'true'
     - certname

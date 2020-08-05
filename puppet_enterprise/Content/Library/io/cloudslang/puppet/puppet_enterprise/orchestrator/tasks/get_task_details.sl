@@ -18,7 +18,8 @@ flow:
   inputs:
     - PuppetEnterpriseTaskId
     - PuppetEnterpriseURL
-    - PuppetUsername
+    - PuppetUsername:
+        sensitive: true
     - PuppetPassword
     - TrustAllRoots: 'false'
     - HostnameVerify: strict

@@ -30,7 +30,8 @@ flow:
   inputs:
     - PuppetEnterpriseURL
     - PuppetUsername
-    - PuppetPassword
+    - PuppetPassword:
+        sensitive: true
     - TrustAllRoots: 'false'
     - HostnameVerify: strict
     - environment:

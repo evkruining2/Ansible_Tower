@@ -18,7 +18,8 @@ flow:
   inputs:
     - PuppetEnterpriseURL
     - PuppetUsername
-    - PuppetPassword
+    - PuppetPassword:
+        sensitive: true
     - TrustAllRoots: 'false'
     - HostnameVerify: strict
     - payload: "${'{'+\\\n'  \"environment\" : \"production\",'+\\\n'  \"task\" : \"package\",'+\\\n'  \"params\" : {'+\\\n'    \"action\" : \"install\",'+\\\n'    \"name\" : \"screen\"'+\\\n'  },'+\\\n'  \"scope\" : {'+\\\n'    \"nodes\" : [\"pupnode2.example.com\",\"pupnode3.example.com\"]'+\\\n'  }'+\\\n'}'}"
@@ -73,6 +74,9 @@ extensions:
       get_auth_token:
         x: 61
         'y': 75
+      run_a_task:
+        x: 247
+        'y': 79
       get_jobnumber:
         x: 414
         'y': 80
@@ -80,9 +84,6 @@ extensions:
           624e9278-57e3-d4d1-a5dd-a6808837a49e:
             targetId: a66e6333-ed0f-a969-912a-f65115102154
             port: SUCCESS
-      run_a_task:
-        x: 247
-        'y': 79
     results:
       SUCCESS:
         a66e6333-ed0f-a969-912a-f65115102154:
