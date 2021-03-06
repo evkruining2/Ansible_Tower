@@ -2,7 +2,7 @@ namespace: pve_test_flows
 flow:
   name: get_cluster_nodes
   inputs:
-    - pveURL: 'https://10.0.10.2:8006'
+    - pveURL: 'https://pve:8006'
   workflow:
     - get_cluster_nodes:
         do:

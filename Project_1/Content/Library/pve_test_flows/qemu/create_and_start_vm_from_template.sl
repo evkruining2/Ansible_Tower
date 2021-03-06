@@ -2,8 +2,8 @@ namespace: pve_test_flows.qemu
 flow:
   name: create_and_start_vm_from_template
   inputs:
-    - node: pve2
-    - cloneid: '100'
+    - node: pve
+    - cloneid: '401'
     - full:
         default: '1'
         required: false
@@ -11,10 +11,9 @@ flow:
         default: ce2
         required: false
     - pool:
-        default: Pool1
         required: false
     - storage:
-        default: local-fast
+        default: local-lvm
         required: false
     - target:
         required: false
