@@ -1,6 +1,6 @@
 namespace: ''
 properties:
-  - pveURL: 'https://pve2:8006'
+  - pveURL: 'https://pve:8006'
   - pveUsername: root@pam
   - pvePassword:
       value: opsware

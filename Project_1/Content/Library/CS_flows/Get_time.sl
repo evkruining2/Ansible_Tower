@@ -23,8 +23,8 @@ extensions:
   graph:
     steps:
       get_time:
-        x: 109
-        'y': 251
+        x: 110
+        'y': 250
         navigate:
           2018ad24-5966-22cc-99f7-908cae0c3f1c:
             targetId: 3e31891d-b482-7423-647d-24573c3f3a66
