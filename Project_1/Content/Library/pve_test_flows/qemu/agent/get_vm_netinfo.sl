@@ -2,7 +2,7 @@ namespace: pve_test_flows.qemu.agent
 flow:
   name: get_vm_netinfo
   inputs:
-    - node: pve2
+    - node: pve
     - vmid: '120'
   workflow:
     - get_vm_ip:

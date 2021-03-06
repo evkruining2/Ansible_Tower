@@ -5,7 +5,7 @@ flow:
     - powershell_script_sample:
         do:
           io.cloudslang.base.powershell.powershell_script_sample:
-            - host: pupnode4.museumhof.net
+            - host: jumphost
             - protocol: https
             - username: administrator
             - password:
