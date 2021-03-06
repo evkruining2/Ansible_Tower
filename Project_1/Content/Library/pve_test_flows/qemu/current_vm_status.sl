@@ -3,7 +3,7 @@ flow:
   name: current_vm_status
   inputs:
     - vmid: '120'
-    - node: pve
+    - node: pve2
   workflow:
     - current_vm_status:
         do:

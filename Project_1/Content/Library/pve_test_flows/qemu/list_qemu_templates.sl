@@ -2,7 +2,7 @@ namespace: pve_test_flows.qemu
 flow:
   name: list_qemu_templates
   inputs:
-    - node: pve
+    - node: pve2
   workflow:
     - list_qemu_templates:
         do:

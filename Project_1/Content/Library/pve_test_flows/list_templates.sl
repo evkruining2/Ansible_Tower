@@ -2,7 +2,7 @@ namespace: pve_test_flows
 flow:
   name: list_templates
   inputs:
-    - node: pve
+    - node: pve2
     - storage: pve_backup
   workflow:
     - list_backups:
