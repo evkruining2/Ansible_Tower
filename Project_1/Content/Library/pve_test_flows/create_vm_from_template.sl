@@ -2,14 +2,13 @@ namespace: pve_test_flows
 flow:
   name: create_vm_from_template
   inputs:
-    - node: pve2
+    - node: pve
     - cloneid: '100'
     - full:
         required: false
     - name:
         required: false
     - pool:
-        default: Pool1
         required: false
     - storage:
         required: false

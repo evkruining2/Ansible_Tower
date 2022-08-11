@@ -9,15 +9,15 @@ flow:
         sensitive: true
     - TrustAllRoots: "${get_sp('TrustAllRoots')}"
     - HostnameVerify: "${get_sp('HostnameVerify')}"
-    - node: pve2
-    - ostemplate: 'pve_backup:vztmpl/debian-10.0-standard_10.0-1_amd64.tar.gz'
+    - node: pve
+    - ostemplate: 'pve_backup:vztmpl/debian-10-standard_10.5-1_amd64.tar.gz'
     - containerpassword:
         default: opsware
         sensitive: true
     - memory:
         default: '1024'
         required: false
-    - storage: local-fast
+    - storage: local-lvm
     - hostname:
         default: ctdeb
         required: false
@@ -108,15 +108,15 @@ flow:
 extensions:
   graph:
     steps:
-      create_lxc_from_template:
-        x: 204
-        'y': 231
       generate_vmid:
-        x: 62
-        'y': 101
+        x: 57
+        'y': 79
+      create_lxc_from_template:
+        x: 241
+        'y': 83
       start_lxc:
-        x: 347
-        'y': 189
+        x: 438
+        'y': 81
         navigate:
           6c72d739-3c1c-0ddd-4260-abc20ad18807:
             targetId: a5963fbc-5743-c48e-2971-f4864960f24d
@@ -124,5 +124,5 @@ extensions:
     results:
       SUCCESS:
         a5963fbc-5743-c48e-2971-f4864960f24d:
-          x: 377
-          'y': 38
+          x: 596
+          'y': 83

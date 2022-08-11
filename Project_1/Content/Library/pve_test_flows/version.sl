@@ -2,7 +2,7 @@ namespace: pve_test_flows
 flow:
   name: version
   inputs:
-    - pveURL: 'https://pve2.museumhof.net:8006'
+    - pveURL: 'https://pve.museumhof.net:8006'
     - pveUsername: root@pam
     - pvePassword: opsware
     - TrustAllRoots: 'true'
