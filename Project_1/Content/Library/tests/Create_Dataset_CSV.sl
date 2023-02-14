@@ -3,7 +3,7 @@
 #! @description: Create an example CSV file in the root folder of the RPA server (c:\) to be used in the "Select Row from CSV" flow
 #!!#
 ########################################################################################################################
-namespace: RPA_Demo.Tools
+namespace: tests
 flow:
   name: Create_Dataset_CSV
   inputs:
