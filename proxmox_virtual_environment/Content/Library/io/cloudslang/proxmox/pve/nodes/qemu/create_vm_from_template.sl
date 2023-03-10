@@ -1,6 +1,6 @@
 ########################################################################################################################
 #!!
-#! @description: Create a new VM by cloning an existing VM or Template. 
+#! @description: Create a new VM by cloning an existing VM or Template.
 #!
 #! @input pveURL: URL of the PVE environment. Example: http://pve.example.com:8006
 #! @input pveUsername: PVE username with appropriate access. Example: root@pam
@@ -45,6 +45,9 @@ flow:
         required: false
   workflow:
     - get_ticket:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.proxmox.pve.access.get_ticket:
             - pveURL: '${pveURL}'
@@ -61,6 +64,7 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: random_number_generator
     - random_number_generator:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.math.random_number_generator:
             - min: '100'
@@ -71,6 +75,9 @@ flow:
           - SUCCESS: get_vmids
           - FAILURE: on_failure
     - get_vmids:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${get('pveURL')+'/api2/json/cluster/resources'}"
@@ -88,6 +95,7 @@ flow:
           - SUCCESS: json_path_query
           - FAILURE: on_failure
     - json_path_query:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
@@ -98,6 +106,7 @@ flow:
           - SUCCESS: contains
           - FAILURE: on_failure
     - contains:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.lists.contains:
             - container: '${vmids}'
@@ -110,6 +119,9 @@ flow:
           - SUCCESS: random_number_generator
           - FAILURE: create_body
     - create_vm_from_template:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_post:
             - url: "${pveURL+'/api2/json/nodes/'+node+'/qemu/'+cloneid+'/clone'}"
@@ -129,6 +141,7 @@ flow:
           - SUCCESS: get_status_id
           - FAILURE: on_failure
     - create_body:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.proxmox.pve.tools.create_body:
             - param_full: '${full}'
@@ -152,6 +165,9 @@ flow:
           - SUCCESS: get_task_status
           - FAILURE: on_failure
     - get_task_status:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         loop:
           for: i in loops
           do:

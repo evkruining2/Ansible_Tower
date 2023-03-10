@@ -25,6 +25,9 @@ flow:
     - node
   workflow:
     - get_ticket:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.proxmox.pve.access.get_ticket:
             - pveURL: '${pveURL}'
@@ -41,6 +44,9 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: get_storage
     - get_storage:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${get('pveURL')+'/api2/json/nodes/'+node+'/storage'}"

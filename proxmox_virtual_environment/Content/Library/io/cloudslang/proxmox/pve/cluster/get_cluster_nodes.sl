@@ -21,6 +21,9 @@ flow:
     - HostnameVerify: strict
   workflow:
     - get_ticket:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.proxmox.pve.access.get_ticket:
             - pveURL: '${pveURL}'
@@ -36,6 +39,9 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: get_nodes
     - get_nodes:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${get('pveURL')+'/api2/json/cluster/config/nodes'}"

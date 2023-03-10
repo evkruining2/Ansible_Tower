@@ -27,6 +27,9 @@ flow:
     - snapname
   workflow:
     - get_ticket:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.proxmox.pve.access.get_ticket:
             - pveURL: '${pveURL}'
@@ -43,6 +46,9 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: create_snapshot
     - create_snapshot:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_post:
             - url: "${pveURL+'/api2/json/nodes/'+node+'/qemu/'+vmid+'/snapshot'}"
@@ -73,6 +79,9 @@ flow:
           - SUCCESS: get_task_status
           - FAILURE: on_failure
     - get_task_status:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         loop:
           for: i in loops
           do:

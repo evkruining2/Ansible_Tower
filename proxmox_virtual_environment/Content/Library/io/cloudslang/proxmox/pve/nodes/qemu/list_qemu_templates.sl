@@ -25,6 +25,9 @@ flow:
     - node
   workflow:
     - get_ticket:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.proxmox.pve.access.get_ticket:
             - pveURL: '${pveURL}'
@@ -40,6 +43,9 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: get_vmids
     - get_vmids:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${get('pveURL')+'/api2/json/nodes/'+node+'/qemu'}"
@@ -79,6 +85,9 @@ flow:
           - NO_MORE: SUCCESS
           - FAILURE: on_failure
     - get_template_name:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${get('pveURL')+'/api2/json/nodes/'+node+'/qemu/'+vmid+'/config'}"

@@ -25,6 +25,9 @@ flow:
     - description
   workflow:
     - get_ticket:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.proxmox.pve.access.get_ticket:
             - pveURL: '${pveURL}'
@@ -41,6 +44,9 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: create_pool
     - create_pool:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_post:
             - url: "${pveURL+'/api2/json/pools/'}"

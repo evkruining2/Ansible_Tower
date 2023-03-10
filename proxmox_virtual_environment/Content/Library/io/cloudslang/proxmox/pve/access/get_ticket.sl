@@ -21,6 +21,9 @@ flow:
     - HostnameVerify: strict
   workflow:
     - get_pve_tokens:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_post:
             - url: "${get('pveURL')+'/api2/json/access/ticket'}"

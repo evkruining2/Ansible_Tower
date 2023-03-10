@@ -27,6 +27,9 @@ flow:
     - vmid
   workflow:
     - get_ticket:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.proxmox.pve.access.get_ticket:
             - pveURL: '${pveURL}'
@@ -43,6 +46,9 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: stop_vm
     - delete_vm:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_delete:
             - url: "${pveURL+'/api2/json/nodes/'+node+'/qemu/'+vmid}"
@@ -57,6 +63,9 @@ flow:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
     - stop_vm:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_post:
             - url: "${pveURL+'/api2/json/nodes/'+node+'/qemu/'+vmid+'/status/stop'}"
@@ -86,6 +95,9 @@ flow:
           - SUCCESS: get_task_status
           - FAILURE: on_failure
     - get_task_status:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         loop:
           for: i in loops
           do:
@@ -141,12 +153,16 @@ extensions:
       get_ticket:
         x: 55
         'y': 81
+      delete_vm:
+        x: 440
+        'y': 78
+        navigate:
+          30bf57e3-e544-0b2d-e58b-9b9211b6b081:
+            targetId: a5963fbc-5743-c48e-2971-f4864960f24d
+            port: SUCCESS
       stop_vm:
         x: 59
         'y': 255
-      is_exitstatus_ok:
-        x: 231
-        'y': 84
       get_status_id:
         x: 62
         'y': 416
@@ -159,13 +175,9 @@ extensions:
       sleep:
         x: 445
         'y': 236
-      delete_vm:
-        x: 440
-        'y': 78
-        navigate:
-          30bf57e3-e544-0b2d-e58b-9b9211b6b081:
-            targetId: a5963fbc-5743-c48e-2971-f4864960f24d
-            port: SUCCESS
+      is_exitstatus_ok:
+        x: 231
+        'y': 84
     results:
       SUCCESS:
         a5963fbc-5743-c48e-2971-f4864960f24d:

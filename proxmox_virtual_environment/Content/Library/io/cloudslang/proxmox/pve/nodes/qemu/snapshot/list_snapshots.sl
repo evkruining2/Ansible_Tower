@@ -25,6 +25,9 @@ flow:
     - vmid
   workflow:
     - get_ticket:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.proxmox.pve.access.get_ticket:
             - pveURL: '${pveURL}'
@@ -40,6 +43,9 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: get_snapshots
     - get_snapshots:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${get('pveURL')+'/api2/json/nodes/'+node+'/qemu/'+vmid+'/snapshot'}"
@@ -75,8 +81,11 @@ extensions:
   graph:
     steps:
       get_ticket:
-        x: 70
-        'y': 69
+        x: 80
+        'y': 80
+      get_snapshots:
+        x: 75
+        'y': 236
       json_path_query:
         x: 241
         'y': 343
@@ -84,9 +93,6 @@ extensions:
           b59a4cba-4c5a-e8d8-067b-10ebf3e1040f:
             targetId: a5963fbc-5743-c48e-2971-f4864960f24d
             port: SUCCESS
-      get_snapshots:
-        x: 75
-        'y': 236
     results:
       SUCCESS:
         a5963fbc-5743-c48e-2971-f4864960f24d:

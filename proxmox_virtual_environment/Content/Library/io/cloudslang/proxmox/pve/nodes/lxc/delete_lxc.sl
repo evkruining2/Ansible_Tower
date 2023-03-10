@@ -27,6 +27,9 @@ flow:
     - vmid
   workflow:
     - get_ticket:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.proxmox.pve.access.get_ticket:
             - pveURL: '${pveURL}'
@@ -43,6 +46,9 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: stop_container
     - delete_lxc:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_delete:
             - url: "${pveURL+'/api2/json/nodes/'+node+'/lxc/'+vmid}"
@@ -57,6 +63,9 @@ flow:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
     - stop_container:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_post:
             - url: "${pveURL+'/api2/json/nodes/'+node+'/lxc/'+vmid+'/status/stop'}"
@@ -86,6 +95,9 @@ flow:
           - SUCCESS: get_task_status
           - FAILURE: on_failure
     - get_task_status:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         loop:
           for: i in loops
           do:

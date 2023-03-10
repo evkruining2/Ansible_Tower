@@ -23,6 +23,9 @@ flow:
     - poolID
   workflow:
     - get_ticket:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.proxmox.pve.access.get_ticket:
             - pveURL: '${pveURL}'
@@ -39,6 +42,9 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: delete_pool
     - delete_pool:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_delete:
             - url: "${pveURL+'/api2/json/pools/'+poolID}"

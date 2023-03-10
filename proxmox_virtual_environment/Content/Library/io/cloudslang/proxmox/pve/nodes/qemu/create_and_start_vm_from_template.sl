@@ -45,6 +45,9 @@ flow:
         required: false
   workflow:
     - get_ticket:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.proxmox.pve.access.get_ticket:
             - pveURL: '${pveURL}'
@@ -71,6 +74,9 @@ flow:
           - SUCCESS: get_vmids
           - FAILURE: on_failure
     - get_vmids:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${get('pveURL')+'/api2/json/cluster/resources'}"
@@ -110,6 +116,9 @@ flow:
           - SUCCESS: random_number_generator
           - FAILURE: create_body
     - create_vm_from_template:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_post:
             - url: "${pveURL+'/api2/json/nodes/'+node+'/qemu/'+cloneid+'/clone'}"
@@ -152,6 +161,9 @@ flow:
           - SUCCESS: get_task_status
           - FAILURE: on_failure
     - get_task_status:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         loop:
           for: i in loops
           do:
@@ -218,6 +230,9 @@ flow:
           - SUCCESS: start_vm
           - FAILURE: on_failure
     - start_vm:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_post:
             - url: "${pveURL+'/api2/json/nodes/'+node+'/qemu/'+vmid+'/status/start'}"

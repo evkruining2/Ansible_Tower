@@ -5,7 +5,7 @@
 #! @input pvePassword: Password for the PVE user
 #! @input TrustAllRoots: Specifies whether to enable weak security over SSL/TSL. A certificate is trusted even if no trusted certification authority issued it. Default: 'false'
 #! @input HostnameVerify: Specifies the way the server hostname must match a domain name in the subject's Common Name (CN) or subjectAltName field of the X.509 certificate. Set this to "allow_all" to skip any checking. For the value "browser_compatible" the hostname verifier works the same way as Curl and Firefox. The hostname must match either the first CN, or any of the subject-alts. A wildcard can occur in the CN, and in any of the subject-alts. The only difference between "browser_compatible" and "strict" is that a wildcard (such as "*.foo.com") with "browser_compatible" matches all subdomains, including "a.b.foo.com". Default: 'strict'
-#! @input remove: [0,1] Remove old backup files if there are more than 'maxflies' backup files. 
+#! @input remove: [0,1] Remove old backup files if there are more than 'maxflies' backup files.
 #! @input compress: [0,1,gzip,lzo,zstd] Compress the backup. 0=do not compress, 1=compress, gzip=use gzip compression (slow but good), lzo=use lzo compression (fast but less), zstd=use zstd compression (fast & excellent)
 #!!#
 ########################################################################################################################
@@ -26,6 +26,9 @@ flow:
     - compress: zstd
   workflow:
     - get_ticket:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.proxmox.pve.access.get_ticket:
             - pveURL: '${pveURL}'
@@ -42,6 +45,9 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: create_backup
     - create_backup:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_post:
             - url: "${pveURL+'/api2/json/nodes/'+node+'/vzdump'}"
@@ -80,8 +86,8 @@ extensions:
   graph:
     steps:
       get_ticket:
-        x: 84
-        'y': 64
+        x: 80
+        'y': 80
       create_backup:
         x: 84
         'y': 237
