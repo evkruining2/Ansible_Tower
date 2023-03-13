@@ -17,8 +17,11 @@ flow:
     - pveUsername
     - pvePassword:
         sensitive: true
-    - TrustAllRoots: 'false'
-    - HostnameVerify: strict
+    - TrustAllRoots: "${get_sp('io.cloudslang.proxmox.trust_all_roots')}"
+    - HostnameVerify: "${get_sp('io.cloudslang.proxmox.x_509_hostname_verifier')}"
+    - worker_group:
+        default: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+        required: false
   workflow:
     - get_pve_tokens:
         worker_group:
@@ -42,6 +45,7 @@ flow:
           - SUCCESS: get_ticket
           - FAILURE: on_failure
     - get_ticket:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
@@ -52,6 +56,7 @@ flow:
           - SUCCESS: get_token
           - FAILURE: on_failure
     - get_token:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'

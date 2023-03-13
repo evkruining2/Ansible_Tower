@@ -15,8 +15,8 @@ flow:
     - pveUsername
     - pvePassword:
         sensitive: true
-    - TrustAllRoots: 'false'
-    - HostnameVerify: strict
+    - TrustAllRoots: "${get_sp('io.cloudslang.proxmox.trust_all_roots')}"
+    - HostnameVerify: "${get_sp('io.cloudslang.proxmox.x_509_hostname_verifier')}"
     - node
     - vmid
   workflow:
@@ -66,10 +66,21 @@ flow:
         publish:
           - netinfo: "${return_result.strip('[').strip(']')}"
         navigate:
+          - SUCCESS: json_path_query_1
+          - FAILURE: on_failure
+    - json_path_query_1:
+        do:
+          io.cloudslang.base.json.json_path_query:
+            - json_object: '${json_result}'
+            - json_path: '$.data.result[1].ip-addresses[0].ip-address'
+        publish:
+          - primary_ip_address: "${return_result.strip('[').strip(']').strip('\"')}"
+        navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
   outputs:
     - netinfo: '${netinfo}'
+    - primary_ip_address: '${primary_ip_address}'
   results:
     - SUCCESS
     - FAILURE
@@ -85,12 +96,15 @@ extensions:
       json_path_query:
         x: 266
         'y': 358
+      json_path_query_1:
+        x: 360
+        'y': 200
         navigate:
-          b4d9bca7-7839-8887-bd85-efaac70a66fd:
+          23e4d1a0-2be2-bb35-d265-ac8964332a09:
             targetId: a5963fbc-5743-c48e-2971-f4864960f24d
             port: SUCCESS
     results:
       SUCCESS:
         a5963fbc-5743-c48e-2971-f4864960f24d:
-          x: 402
-          'y': 235
+          x: 440
+          'y': 80

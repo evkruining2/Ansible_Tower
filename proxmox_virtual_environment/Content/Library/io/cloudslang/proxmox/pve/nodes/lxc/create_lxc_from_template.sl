@@ -157,6 +157,7 @@ flow:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
     - create_urlencoded_body:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.proxmox.pve.tools.create_urlencoded_body:
             - param_ostemplate: '${ostemplate}'
