@@ -63,6 +63,7 @@ flow:
           - SUCCESS: json_path_query
           - FAILURE: on_failure
     - json_path_query:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
@@ -87,8 +88,8 @@ extensions:
         x: 75
         'y': 236
       json_path_query:
-        x: 241
-        'y': 343
+        x: 240
+        'y': 360
         navigate:
           b59a4cba-4c5a-e8d8-067b-10ebf3e1040f:
             targetId: a5963fbc-5743-c48e-2971-f4864960f24d

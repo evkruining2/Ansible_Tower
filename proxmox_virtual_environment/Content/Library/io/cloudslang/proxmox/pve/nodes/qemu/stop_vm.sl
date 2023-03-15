@@ -104,10 +104,42 @@ flow:
         publish:
           - json_result: '${return_result}'
         navigate:
+          - SUCCESS: get_vm_status_1
+          - FAILURE: on_failure
+    - get_vm_status_1:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
+        do:
+          io.cloudslang.base.http.http_client_get:
+            - url: "${get('pveURL')+'/api2/json/nodes/'+node+'/qemu/'+vmid+'/status/current'}"
+            - auth_type: basic
+            - username: "${get('pveUsername')}"
+            - password:
+                value: "${get('pvePassword')}"
+                sensitive: true
+            - trust_all_roots: "${get('TrustAllRoots')}"
+            - x_509_hostname_verifier: "${get('HostnameVerify')}"
+            - headers: "${'Cookie:PVEAuthCookie='+pveTicket}"
+        publish:
+          - json_result: '${return_result}'
+        navigate:
+          - SUCCESS: update_status
+          - FAILURE: on_failure
+    - update_status:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+        do:
+          io.cloudslang.base.json.json_path_query:
+            - json_object: '${json_result}'
+            - json_path: $.data.status
+        publish:
+          - vmStatus: "${return_result.strip('[').strip(']').strip('\"')}"
+        navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
   outputs:
     - result: '${json_result}'
+    - vmStatus: '${vmStatus}'
   results:
     - SUCCESS
     - FAILURE
@@ -133,8 +165,14 @@ extensions:
       stop_vm:
         x: 303
         'y': 259
+      get_vm_status_1:
+        x: 320
+        'y': 80
+      update_status:
+        x: 560
+        'y': 80
         navigate:
-          17c6a390-d979-c118-de67-70669870a970:
+          28e1276e-2063-120c-c99a-be99027b6e6d:
             targetId: a5963fbc-5743-c48e-2971-f4864960f24d
             port: SUCCESS
     results:

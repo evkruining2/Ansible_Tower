@@ -68,6 +68,7 @@ flow:
           - SUCCESS: get_status_id
           - FAILURE: on_failure
     - get_status_id:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
@@ -103,6 +104,7 @@ flow:
           - SUCCESS: get_status
           - FAILURE: on_failure
     - get_status:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
@@ -113,6 +115,7 @@ flow:
           - SUCCESS: is_task_finished
           - FAILURE: on_failure
     - is_task_finished:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.strings.string_equals:
             - first_string: '${TaskStatus}'
@@ -122,6 +125,7 @@ flow:
           - SUCCESS: get_exit_status
           - FAILURE: sleep
     - sleep:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.utils.sleep:
             - seconds: '10'
@@ -129,6 +133,7 @@ flow:
           - SUCCESS: get_task_status
           - FAILURE: on_failure
     - get_exit_status:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
@@ -139,6 +144,7 @@ flow:
           - SUCCESS: is_exitstatus_ok
           - FAILURE: on_failure
     - is_exitstatus_ok:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.strings.string_equals:
             - first_string: '${ExitStatus}'
@@ -150,6 +156,7 @@ flow:
   outputs:
     - TaskStatus: '${TaskStatus}'
     - ExitStatus: '${ExitStatus}'
+    - snapshot: '${snapname}'
   results:
     - SUCCESS
     - FAILURE
