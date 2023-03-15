@@ -21,8 +21,8 @@ flow:
     - pveUsername
     - pvePassword:
         sensitive: true
-    - TrustAllRoots: 'false'
-    - HostnameVerify: strict
+    - TrustAllRoots: "${get_sp('io.cloudslang.proxmox.trust_all_roots')}"
+    - HostnameVerify: "${get_sp('io.cloudslang.proxmox.x_509_hostname_verifier')}"
     - node
     - vmid
   workflow:
@@ -60,9 +60,10 @@ flow:
         publish:
           - json_result: '${return_result}'
         navigate:
-          - SUCCESS: json_path_query_1
+          - SUCCESS: get_vm_status
           - FAILURE: on_failure
-    - json_path_query_1:
+    - get_vm_status:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
@@ -70,10 +71,68 @@ flow:
         publish:
           - vmStatus: "${return_result.strip('[').strip(']').strip('\"')}"
         navigate:
-          - SUCCESS: SUCCESS
+          - SUCCESS: get_cpus
           - FAILURE: on_failure
+    - get_cpus:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+        do:
+          io.cloudslang.base.json.json_path_query:
+            - json_object: '${json_result}'
+            - json_path: $.data.cpus
+        publish:
+          - cpus: "${return_result.strip('[').strip(']').strip('\"')}"
+        navigate:
+          - SUCCESS: get_memory
+          - FAILURE: on_failure
+    - get_memory:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+        do:
+          io.cloudslang.base.json.json_path_query:
+            - json_object: '${json_result}'
+            - json_path: $.data.maxmem
+        publish:
+          - memory_in_bytes: "${return_result.strip('[').strip(']').strip('\"')}"
+        navigate:
+          - SUCCESS: mem_in_mb
+          - FAILURE: on_failure
+    - get_disk_size:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+        do:
+          io.cloudslang.base.json.json_path_query:
+            - json_object: '${json_result}'
+            - json_path: '@.data.maxdisk'
+        publish:
+          - disk_size_in_bytes: "${return_result.strip('[').strip(']').strip('\"')}"
+        navigate:
+          - SUCCESS: disk_in_gb
+          - FAILURE: on_failure
+    - mem_in_mb:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+        do:
+          io.cloudslang.base.math.divide_numbers:
+            - value1: '${memory_in_bytes}'
+            - value2: '1048576'
+        publish:
+          - memory: '${result}'
+        navigate:
+          - ILLEGAL: get_disk_size
+          - SUCCESS: get_disk_size
+    - disk_in_gb:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+        do:
+          io.cloudslang.base.math.divide_numbers:
+            - value1: '${disk_size_in_bytes}'
+            - value2: '1073741824'
+        publish:
+          - disk_size: '${result}'
+        navigate:
+          - ILLEGAL: SUCCESS
+          - SUCCESS: SUCCESS
   outputs:
     - vmStatus: '${vmStatus}'
+    - cpus: '${cpus}'
+    - memory: '${memory}'
+    - disk_size: '${disk_size}'
   results:
     - FAILURE
     - SUCCESS
@@ -86,15 +145,33 @@ extensions:
       get_version:
         x: 231
         'y': 82
-      json_path_query_1:
+      get_disk_size:
+        x: 80
+        'y': 480
+      get_memory:
+        x: 240
+        'y': 280
+      get_cpus:
+        x: 440
+        'y': 280
+      get_vm_status:
         x: 426
         'y': 81
+      mem_in_mb:
+        x: 80
+        'y': 280
+      disk_in_gb:
+        x: 320
+        'y': 440
         navigate:
-          62053a2d-7bd6-80f4-b941-89b039fe5718:
+          43f777d2-811b-4573-a2a1-2bba7187ae3b:
             targetId: 62d58777-7508-fc70-1b42-21d01def9eff
             port: SUCCESS
+          f7bdde7b-c544-9a3a-6b0a-810fc0b77b9e:
+            targetId: 62d58777-7508-fc70-1b42-21d01def9eff
+            port: ILLEGAL
     results:
       SUCCESS:
         62d58777-7508-fc70-1b42-21d01def9eff:
-          x: 591
-          'y': 95
+          x: 520
+          'y': 520
