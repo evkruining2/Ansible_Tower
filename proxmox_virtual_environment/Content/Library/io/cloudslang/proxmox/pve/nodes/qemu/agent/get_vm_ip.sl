@@ -37,8 +37,8 @@ flow:
           - pveTicket
         navigate:
           - FAILURE: on_failure
-          - SUCCESS: net_network_from_agent
-    - net_network_from_agent:
+          - SUCCESS: get_network_from_agent
+    - get_network_from_agent:
         worker_group:
           value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
           override: true
@@ -56,9 +56,9 @@ flow:
         publish:
           - json_result: '${return_result}'
         navigate:
-          - SUCCESS: json_path_query
-          - FAILURE: on_failure
-    - json_path_query:
+          - SUCCESS: get_netinfo
+          - FAILURE: sleep_for_two_minutes
+    - get_netinfo:
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
@@ -66,21 +66,60 @@ flow:
         publish:
           - netinfo: "${return_result.strip('[').strip(']')}"
         navigate:
-          - SUCCESS: json_path_query_1
+          - SUCCESS: get_ip_address
           - FAILURE: on_failure
-    - json_path_query_1:
+    - get_ip_address:
+        do:
+          io.cloudslang.base.json.json_path_query:
+            - json_object: '${json_result}'
+            - json_path: '$.data.result[0].ip-addresses[0].ip-address'
+        publish:
+          - primary_ip_address: "${return_result.strip('[').strip(']').strip('\"')}"
+        navigate:
+          - SUCCESS: get_ip_address_1
+          - FAILURE: on_failure
+    - sleep_for_two_minutes:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+        do:
+          io.cloudslang.base.utils.sleep:
+            - seconds: '120'
+        navigate:
+          - SUCCESS: get_network_from_agent_second_try
+          - FAILURE: on_failure
+    - get_network_from_agent_second_try:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
+        do:
+          io.cloudslang.base.http.http_client_get:
+            - url: "${get('pveURL')+'/api2/json/nodes/'+node+'/qemu/'+vmid+'/agent/network-get-interfaces'}"
+            - auth_type: basic
+            - username: "${get('pveUsername')}"
+            - password:
+                value: "${get('pvePassword')}"
+                sensitive: true
+            - trust_all_roots: "${get('TrustAllRoots')}"
+            - x_509_hostname_verifier: "${get('HostnameVerify')}"
+            - headers: "${'Cookie:PVEAuthCookie='+pveTicket}"
+        publish:
+          - json_result: '${return_result}'
+        navigate:
+          - SUCCESS: get_netinfo
+          - FAILURE: on_failure
+    - get_ip_address_1:
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
             - json_path: '$.data.result[1].ip-addresses[0].ip-address'
         publish:
-          - primary_ip_address: "${return_result.strip('[').strip(']').strip('\"')}"
+          - secondary_ip_address: "${return_result.strip('[').strip(']').strip('\"')}"
         navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
   outputs:
     - netinfo: '${netinfo}'
     - primary_ip_address: '${primary_ip_address}'
+    - secondary_ip_address: '${secondary_ip_address}'
   results:
     - SUCCESS
     - FAILURE
@@ -88,23 +127,32 @@ extensions:
   graph:
     steps:
       get_ticket:
-        x: 83
+        x: 80
         'y': 80
-      net_network_from_agent:
-        x: 93
-        'y': 249
-      json_path_query:
-        x: 266
-        'y': 358
-      json_path_query_1:
-        x: 360
-        'y': 200
+      get_network_from_agent_second_try:
+        x: 400
+        'y': 440
+      get_network_from_agent:
+        x: 80
+        'y': 240
+      get_netinfo:
+        x: 400
+        'y': 240
+      get_ip_address:
+        x: 400
+        'y': 80
+      sleep_for_two_minutes:
+        x: 80
+        'y': 440
+      get_ip_address_1:
+        x: 640
+        'y': 80
         navigate:
-          23e4d1a0-2be2-bb35-d265-ac8964332a09:
+          d8825518-1ce7-4f89-59e1-3efa8b0b1514:
             targetId: a5963fbc-5743-c48e-2971-f4864960f24d
             port: SUCCESS
     results:
       SUCCESS:
         a5963fbc-5743-c48e-2971-f4864960f24d:
-          x: 440
-          'y': 80
+          x: 640
+          'y': 240
