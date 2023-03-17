@@ -20,8 +20,8 @@ flow:
     - pveUsername
     - pvePassword:
         sensitive: true
-    - TrustAllRoots: 'false'
-    - HostnameVerify: strict
+    - TrustAllRoots: "${get_sp('io.cloudslang.proxmox.trust_all_roots')}"
+    - HostnameVerify: "${get_sp('io.cloudslang.proxmox.x_509_hostname_verifier')}"
     - node
     - vmid
     - snapname
@@ -170,8 +170,8 @@ extensions:
         x: 79
         'y': 223
       get_exit_status:
-        x: 574
-        'y': 74
+        x: 560
+        'y': 80
       get_ticket:
         x: 77
         'y': 63

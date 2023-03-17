@@ -59,6 +59,7 @@ flow:
           - SUCCESS: get_netinfo
           - FAILURE: sleep_for_two_minutes
     - get_netinfo:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
@@ -69,6 +70,7 @@ flow:
           - SUCCESS: get_ip_address
           - FAILURE: on_failure
     - get_ip_address:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
@@ -107,6 +109,7 @@ flow:
           - SUCCESS: get_netinfo
           - FAILURE: on_failure
     - get_ip_address_1:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
@@ -129,9 +132,6 @@ extensions:
       get_ticket:
         x: 80
         'y': 80
-      get_network_from_agent_second_try:
-        x: 400
-        'y': 440
       get_network_from_agent:
         x: 80
         'y': 240
@@ -143,6 +143,9 @@ extensions:
         'y': 80
       sleep_for_two_minutes:
         x: 80
+        'y': 440
+      get_network_from_agent_second_try:
+        x: 400
         'y': 440
       get_ip_address_1:
         x: 640

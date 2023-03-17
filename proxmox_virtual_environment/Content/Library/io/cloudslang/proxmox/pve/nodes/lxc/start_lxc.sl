@@ -21,8 +21,8 @@ flow:
     - pveUsername
     - pvePassword:
         sensitive: true
-    - TrustAllRoots: 'false'
-    - HostnameVerify: strict
+    - TrustAllRoots: "${get_sp('io.cloudslang.proxmox.trust_all_roots')}"
+    - HostnameVerify: "${get_sp('io.cloudslang.proxmox.x_509_hostname_verifier')}"
     - node
     - vmid
   workflow:
@@ -66,6 +66,7 @@ flow:
           - SUCCESS: json_path_query
           - FAILURE: on_failure
     - json_path_query:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
@@ -76,6 +77,7 @@ flow:
           - SUCCESS: is_lxc_stopped
           - FAILURE: on_failure
     - is_lxc_stopped:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.strings.string_equals:
             - first_string: '${lxc_status}'
@@ -103,10 +105,42 @@ flow:
         publish:
           - json_result: '${return_result}'
         navigate:
+          - SUCCESS: get_container_status_1
+          - FAILURE: on_failure
+    - get_container_status_1:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
+        do:
+          io.cloudslang.base.http.http_client_get:
+            - url: "${get('pveURL')+'/api2/json/nodes/'+node+'/lxc/'+vmid+'/status/current'}"
+            - auth_type: basic
+            - username: "${get('pveUsername')}"
+            - password:
+                value: "${get('pvePassword')}"
+                sensitive: true
+            - trust_all_roots: "${get('TrustAllRoots')}"
+            - x_509_hostname_verifier: "${get('HostnameVerify')}"
+            - headers: "${'Cookie:PVEAuthCookie='+pveTicket}"
+        publish:
+          - json_result: '${return_result}'
+        navigate:
+          - SUCCESS: json_path_query_1
+          - FAILURE: on_failure
+    - json_path_query_1:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+        do:
+          io.cloudslang.base.json.json_path_query:
+            - json_object: '${json_result}'
+            - json_path: $.data.status
+        publish:
+          - lxc_status: "${return_result.strip('[').strip(']').strip('\"')}"
+        navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
   outputs:
     - result: '${json_result}'
+    - lxc_status: '${lxc_status}'
   results:
     - SUCCESS
     - FAILURE
@@ -132,8 +166,14 @@ extensions:
       start_container:
         x: 303
         'y': 259
+      get_container_status_1:
+        x: 320
+        'y': 80
+      json_path_query_1:
+        x: 560
+        'y': 80
         navigate:
-          17c6a390-d979-c118-de67-70669870a970:
+          98e5559e-1ce7-532d-8c4b-0af9868e9249:
             targetId: a5963fbc-5743-c48e-2971-f4864960f24d
             port: SUCCESS
     results:

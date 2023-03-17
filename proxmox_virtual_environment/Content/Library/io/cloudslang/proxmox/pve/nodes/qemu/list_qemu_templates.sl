@@ -20,8 +20,8 @@ flow:
     - pveUsername
     - pvePassword:
         sensitive: true
-    - TrustAllRoots: 'false'
-    - HostnameVerify: strict
+    - TrustAllRoots: "${get_sp('io.cloudslang.proxmox.trust_all_roots')}"
+    - HostnameVerify: "${get_sp('io.cloudslang.proxmox.x_509_hostname_verifier')}"
     - node
   workflow:
     - get_ticket:
@@ -63,6 +63,7 @@ flow:
           - SUCCESS: json_path_query
           - FAILURE: on_failure
     - json_path_query:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
@@ -74,6 +75,7 @@ flow:
           - SUCCESS: list_iterator
           - FAILURE: on_failure
     - list_iterator:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.lists.list_iterator:
             - list: '${vmids}'
@@ -105,6 +107,7 @@ flow:
           - SUCCESS: append
           - FAILURE: on_failure
     - json_path_query_1:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
@@ -115,6 +118,7 @@ flow:
           - SUCCESS: append_1
           - FAILURE: on_failure
     - append:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.strings.append:
             - origin_string: '${list}'
@@ -124,6 +128,7 @@ flow:
         navigate:
           - SUCCESS: json_path_query_1
     - append_1:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.strings.append:
             - origin_string: '${list}'

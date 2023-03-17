@@ -1,6 +1,6 @@
-namespace: tests
+namespace: io.cloudslang.proxmox.pve.nodes.lxc
 flow:
-  name: url_encode
+  name: url_encode_net_values
   inputs:
     - net0_0: 'name=eth0,bridge=vmbr0,ip=10.0.0.88/24,gw=10.0.0.1,firewall=0,tag=2'
     - net1_1:
@@ -90,7 +90,7 @@ extensions:
         x: 280
         'y': 560
         navigate:
-          b0d378b3-3d83-ea81-5f81-ef75385d8db2:
+          4a1c174e-5e6c-c486-fab9-2cfff3c73c90:
             targetId: 83ee13a1-d30b-46a6-9223-8112441d80cc
             port: SUCCESS
       url_encoder:
@@ -106,7 +106,7 @@ extensions:
         x: 120
         'y': 560
         navigate:
-          2fc1771a-9f3d-a4fa-e7cb-83937125f459:
+          62062d95-0f33-2c6a-fdb4-4aebc52d5250:
             targetId: 83ee13a1-d30b-46a6-9223-8112441d80cc
             port: IS_NULL
       is_null:

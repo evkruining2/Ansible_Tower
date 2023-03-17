@@ -1,30 +1,65 @@
 ########################################################################################################################
 #!!
-#! @description: This flow will stop and delete a LXC container
+#! @description: This flow will create a new LXC container on the specified PVE node, using a selected template. To get a list of PVE nodes and a list of available templates run the "get_nodes" and "list_templates" flows respectfully.
 #!
 #! @input pveURL: URL of the PVE environment. Example: http://pve.example.com:8006
 #! @input pveUsername: PVE username with appropriate access. Example: root@pam
 #! @input pvePassword: Password for the PVE user
 #! @input TrustAllRoots: Specifies whether to enable weak security over SSL/TSL. A certificate is trusted even if no trusted certification authority issued it. Default: 'false'
 #! @input HostnameVerify: Specifies the way the server hostname must match a domain name in the subject's Common Name (CN) or subjectAltName field of the X.509 certificate. Set this to "allow_all" to skip any checking. For the value "browser_compatible" the hostname verifier works the same way as Curl and Firefox. The hostname must match either the first CN, or any of the subject-alts. A wildcard can occur in the CN, and in any of the subject-alts. The only difference between "browser_compatible" and "strict" is that a wildcard (such as "*.foo.com") with "browser_compatible" matches all subdomains, including "a.b.foo.com". Default: 'strict'
-#! @input node: Name of the PVE node that hosts this container
-#! @input vmid: The vmid of the container
+#! @input node: Name of the PVE node that will host this new container
+#! @input vmid: The vmid of the new container
+#! @input ostemplate: Name of the template object to use as source. Example: pve_mystorage:vztmpl/debian-10.0-standard_10.0-1_amd64.tar.gz
+#! @input containerpassword: The root password for the new LXC container
+#! @input storage: Target storage where the new lxc will deployed. Example: local-lvm.
+#! @input hostname: The name of the new LXC container (optional)
+#! @input memory: The amount of memory (in MB) to allocate to this new LXC container (optional)
+#! @input nameserver: FQDN or IP address of the nameserver this LXC container will use (optional)
+#! @input net0: Network setting for the first NIC. Example: name=eth0,bridge=vmbr0,ip=192.168.2.88/24,gw=192.168.2.1,firewall=0 (optional)
+#! @input net1: Network setting for the second NIC. Example: name=eth1,bridge=vmbr0,ip=dhcp,tag=1,firewall=0 (optional)
+#! @input net2: Network setting for the third NIC (optional)
+#! @input net3: Network setting for the fourth NIC (optional)
 #!
-#! @output result: The rusult of the request
+#! @output JobStatus: Status of the PBE cloning job
+#! @output TaskStatus: Task status of the LXC creation ("stopped" means the task has finished)
+#! @output ExitStatus: Exit status of the task ("OK" means success)
 #!!#
 ########################################################################################################################
-namespace: io.cloudslang.proxmox.pve.nodes.lxc
+namespace: tests
 flow:
-  name: delete_lxc
+  name: create_lxc_from_template
   inputs:
-    - pveURL
-    - pveUsername
+    - pveURL: 'https://pve.museumhof.net:8006'
+    - pveUsername: root@pam
     - pvePassword:
+        default: opsware
         sensitive: true
     - TrustAllRoots: "${get_sp('io.cloudslang.proxmox.trust_all_roots')}"
     - HostnameVerify: "${get_sp('io.cloudslang.proxmox.x_509_hostname_verifier')}"
-    - node
-    - vmid
+    - node: pve
+    - vmid: '1234'
+    - ostemplate: 'pve_backup:vztmpl/centos-9-stream-default_20221109_amd64.tar.xz'
+    - containerpassword:
+        default: opsware
+        sensitive: true
+    - storage: local-lvm
+    - hostname:
+        default: centos9
+        required: false
+    - memory:
+        required: false
+    - nameserver:
+        default: 192.168.2.20
+        required: false
+    - net0:
+        default: 'name=eth0,bridge=vmbr0,ip=192.168.2.88/24,gw=192.168.2.1,firewall=0,tag=1'
+        required: false
+    - net1:
+        required: false
+    - net2:
+        required: false
+    - net3:
+        required: false
   workflow:
     - get_ticket:
         worker_group:
@@ -44,31 +79,14 @@ flow:
           - pveToken
         navigate:
           - FAILURE: on_failure
-          - SUCCESS: stop_container
-    - delete_lxc:
-        worker_group:
-          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
-          override: true
-        do:
-          io.cloudslang.base.http.http_client_delete:
-            - url: "${pveURL+'/api2/json/nodes/'+node+'/lxc/'+vmid}"
-            - auth_type: basic
-            - trust_all_roots: '${TrustAllRoots}'
-            - x_509_hostname_verifier: '${HostnameVerify}'
-            - headers: "${'CSRFPreventionToken :'+pveToken+'\\r\\nCookie:PVEAuthCookie='+pveTicket}"
-            - content_type: application/x-www-form-urlencoded
-        publish:
-          - result: '${return_result}'
-        navigate:
-          - SUCCESS: SUCCESS
-          - FAILURE: on_failure
-    - stop_container:
+          - SUCCESS: create_urlencoded_body
+    - create_lxc_from_template:
         worker_group:
           value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
           override: true
         do:
           io.cloudslang.base.http.http_client_post:
-            - url: "${pveURL+'/api2/json/nodes/'+node+'/lxc/'+vmid+'/status/stop'}"
+            - url: "${pveURL+'/api2/json/nodes/'+node+'/lxc'}"
             - auth_type: basic
             - username: '${pveUsername}'
             - password:
@@ -77,6 +95,7 @@ flow:
             - trust_all_roots: '${TrustAllRoots}'
             - x_509_hostname_verifier: '${HostnameVerify}'
             - headers: "${'CSRFPreventionToken :'+pveToken+'\\r\\nCookie:PVEAuthCookie='+pveTicket}"
+            - body: "${body+'&vmid='+vmid}"
             - content_type: application/x-www-form-urlencoded
         publish:
           - json_result: '${return_result}'
@@ -144,10 +163,31 @@ flow:
             - second_string: ok
             - ignore_case: 'true'
         navigate:
-          - SUCCESS: delete_lxc
+          - SUCCESS: SUCCESS
           - FAILURE: on_failure
+    - create_urlencoded_body:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+        do:
+          io.cloudslang.proxmox.pve.tools.create_urlencoded_body:
+            - param_ostemplate: '${ostemplate}'
+            - param_password: '${containerpassword}'
+            - param_containerpassword: '${containerpassword}'
+            - param_memory: '${memory}'
+            - param_storage: '${storage}'
+            - param_hostname: '${hostname}'
+            - param_nameserver: '${nameserver}'
+            - param_net0: '${net0}'
+            - param_net1: '${net1}'
+            - param_net2: '${net2}'
+            - param_net3: '${net3}'
+        publish:
+          - body: '${request}'
+        navigate:
+          - SUCCESS: create_lxc_from_template
   outputs:
-    - result: '${result}'
+    - JobStatus: '${JobStatus}'
+    - TaskStatus: '${TaskStatus}'
+    - ExitStatus: '${ExitStatus}'
   results:
     - SUCCESS
     - FAILURE
@@ -155,35 +195,35 @@ extensions:
   graph:
     steps:
       get_ticket:
-        x: 55
-        'y': 81
-      delete_lxc:
-        x: 440
-        'y': 78
+        x: 59
+        'y': 65
+      create_lxc_from_template:
+        x: 51
+        'y': 437
+      get_status_id:
+        x: 219
+        'y': 436
+      get_task_status:
+        x: 214
+        'y': 237
+      is_task_finished:
+        x: 217
+        'y': 60
+      sleep:
+        x: 424
+        'y': 247
+      is_exitstatus_ok:
+        x: 418
+        'y': 63
         navigate:
-          30bf57e3-e544-0b2d-e58b-9b9211b6b081:
+          6dad6403-8964-563b-cc2a-9b71c3f6163f:
             targetId: a5963fbc-5743-c48e-2971-f4864960f24d
             port: SUCCESS
-      stop_container:
-        x: 59
-        'y': 255
-      get_status_id:
-        x: 62
-        'y': 416
-      get_task_status:
-        x: 239
-        'y': 410
-      is_task_finished:
-        x: 233
-        'y': 241
-      sleep:
-        x: 445
-        'y': 236
-      is_exitstatus_ok:
-        x: 231
-        'y': 84
+      create_urlencoded_body:
+        x: 57
+        'y': 244
     results:
       SUCCESS:
         a5963fbc-5743-c48e-2971-f4864960f24d:
-          x: 608
-          'y': 81
+          x: 618
+          'y': 60

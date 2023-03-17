@@ -21,8 +21,8 @@ flow:
     - pveUsername
     - pvePassword:
         sensitive: true
-    - TrustAllRoots: 'false'
-    - HostnameVerify: strict
+    - TrustAllRoots: "${get_sp('io.cloudslang.proxmox.trust_all_roots')}"
+    - HostnameVerify: "${get_sp('io.cloudslang.proxmox.x_509_hostname_verifier')}"
     - node
     - vmid
   workflow:
@@ -65,6 +65,7 @@ flow:
           - SUCCESS: json_path_query
           - FAILURE: on_failure
     - json_path_query:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
@@ -89,8 +90,8 @@ extensions:
         x: 276
         'y': 98
       json_path_query:
-        x: 465
-        'y': 108
+        x: 480
+        'y': 120
         navigate:
           af8f28e4-4809-6bc7-a2ad-d30abbb9e396:
             targetId: a5963fbc-5743-c48e-2971-f4864960f24d

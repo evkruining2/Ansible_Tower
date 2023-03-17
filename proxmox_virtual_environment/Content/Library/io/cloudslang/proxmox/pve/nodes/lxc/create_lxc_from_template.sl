@@ -33,8 +33,8 @@ flow:
     - pveUsername
     - pvePassword:
         sensitive: true
-    - TrustAllRoots: 'false'
-    - HostnameVerify: strict
+    - TrustAllRoots: "${get_sp('io.cloudslang.proxmox.trust_all_roots')}"
+    - HostnameVerify: "${get_sp('io.cloudslang.proxmox.x_509_hostname_verifier')}"
     - node
     - vmid
     - ostemplate
@@ -74,7 +74,7 @@ flow:
           - pveToken
         navigate:
           - FAILURE: on_failure
-          - SUCCESS: create_urlencoded_body
+          - SUCCESS: url_encode_net_values
     - create_lxc_from_template:
         worker_group:
           value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
@@ -98,6 +98,7 @@ flow:
           - SUCCESS: get_status_id
           - FAILURE: on_failure
     - get_status_id:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
@@ -132,6 +133,7 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: is_task_finished
     - is_task_finished:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.strings.string_equals:
             - first_string: '${TaskStatus}'
@@ -141,6 +143,7 @@ flow:
           - SUCCESS: is_exitstatus_ok
           - FAILURE: sleep
     - sleep:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.utils.sleep:
             - seconds: '10'
@@ -148,6 +151,7 @@ flow:
           - SUCCESS: get_task_status
           - FAILURE: on_failure
     - is_exitstatus_ok:
+        worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
           io.cloudslang.base.strings.string_equals:
             - first_string: '${ExitStatus}'
@@ -156,13 +160,30 @@ flow:
         navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
-    - create_urlencoded_body:
+    - url_encode_net_values:
+        worker_group:
+          value: "${get_sp('io.cloudslang.proxmox.worker_group')}"
+          override: true
+        do:
+          io.cloudslang.proxmox.pve.nodes.lxc.url_encode_net_values:
+            - net0_0: '${net0}'
+            - net1_1: '${net1}'
+            - net2_2: '${net2}'
+            - net3_3: '${net3}'
+        publish:
+          - net0
+          - net1
+          - net2
+          - net3
+        navigate:
+          - SUCCESS: create_urlencoded_body_1
+          - FAILURE: on_failure
+    - create_urlencoded_body_1:
         worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
-          io.cloudslang.proxmox.pve.tools.create_urlencoded_body:
+          io.cloudslang.proxmox.pve.tools.create_urlencoded_body_1:
             - param_ostemplate: '${ostemplate}'
             - param_password: '${containerpassword}'
-            - param_containerpassword: '${containerpassword}'
             - param_memory: '${memory}'
             - param_storage: '${storage}'
             - param_hostname: '${hostname}'
@@ -185,24 +206,18 @@ flow:
 extensions:
   graph:
     steps:
-      get_ticket:
-        x: 59
-        'y': 65
-      create_lxc_from_template:
-        x: 51
-        'y': 437
-      get_status_id:
-        x: 219
-        'y': 436
       get_task_status:
         x: 214
         'y': 237
-      is_task_finished:
-        x: 217
-        'y': 60
-      sleep:
-        x: 424
-        'y': 247
+      create_lxc_from_template:
+        x: 40
+        'y': 560
+      create_urlencoded_body_1:
+        x: 40
+        'y': 400
+      get_ticket:
+        x: 40
+        'y': 40
       is_exitstatus_ok:
         x: 418
         'y': 63
@@ -210,9 +225,18 @@ extensions:
           6dad6403-8964-563b-cc2a-9b71c3f6163f:
             targetId: a5963fbc-5743-c48e-2971-f4864960f24d
             port: SUCCESS
-      create_urlencoded_body:
-        x: 57
-        'y': 244
+      sleep:
+        x: 424
+        'y': 247
+      is_task_finished:
+        x: 217
+        'y': 60
+      url_encode_net_values:
+        x: 40
+        'y': 200
+      get_status_id:
+        x: 219
+        'y': 436
     results:
       SUCCESS:
         a5963fbc-5743-c48e-2971-f4864960f24d:

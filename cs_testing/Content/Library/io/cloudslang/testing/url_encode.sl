@@ -1,4 +1,4 @@
-namespace: tests
+namespace: io.cloudslang.testing
 flow:
   name: url_encode
   inputs:
