@@ -82,7 +82,7 @@ flow:
           - json_result: '${return_result}'
         navigate:
           - SUCCESS: get_status_id
-          - FAILURE: on_failure
+          - FAILURE: get_status_id
     - get_status_id:
         worker_group: "${get_sp('io.cloudslang.proxmox.worker_group')}"
         do:
