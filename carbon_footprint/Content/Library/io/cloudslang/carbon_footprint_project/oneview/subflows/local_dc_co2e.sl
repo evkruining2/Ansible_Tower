@@ -236,4 +236,3 @@ extensions:
         d6a78080-cfa1-c39e-0c31-318fe0db4606:
           x: 613
           'y': 60
-

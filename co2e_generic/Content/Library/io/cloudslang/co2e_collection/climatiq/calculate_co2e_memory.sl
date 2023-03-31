@@ -4,12 +4,12 @@
 #! @input memory: amount of memory
 #!!#
 ########################################################################################################################
-namespace: io.cloudslang.carbon_footprint_project.climatiq
+namespace: io.cloudslang.co2e_collection.climatiq
 flow:
   name: calculate_co2e_memory
   inputs:
-    - climatiq_url: "${get_sp('io.cloudslang.carbon_footprint_project.climatiq_url')}"
-    - climatiq_token: "${get_sp('io.cloudslang.carbon_footprint_project.climatiq_token')}"
+    - climatiq_url: "${get_sp('io.cloudslang.co2e_collection.climatiq_url')}"
+    - climatiq_token: "${get_sp('io.cloudslang.co2e_collection.climatiq_token')}"
     - provider: aws
     - region: eu_west_1
     - memory: '24'
@@ -23,7 +23,7 @@ flow:
   workflow:
     - climatiq_io_get_memory:
         worker_group:
-          value: "${get_sp('io.cloudslang.carbon_footprint_project.worker_group')}"
+          value: "${get_sp('io.cloudslang.co2e_collection.worker_group')}"
           override: true
         do:
           io.cloudslang.base.http.http_client_post:
@@ -34,6 +34,7 @@ flow:
             - x_509_hostname_verifier: '${hostname_verifier}'
             - headers: "${'Authorization: Bearer '+climatiq_token}"
             - body: "${'{'+\\\n'\"data\": '+memory+','+\\\n'\"region\": \"'+region+'\",'+\\\n'\"data_unit\": \"'+data_unit+'\",'+\\\n'\"duration\": 24,'+\\\n'\"duration_unit\": \"h\"'+\\\n'}'}"
+            - worker_group: "${get_sp('io.cloudslang.co2e_collection.worker_group')}"
         publish:
           - json_result: '${return_result}'
         navigate:

@@ -1,6 +1,23 @@
+########################################################################################################################
+#!!
+#! @input climatiq_url: Climatiq API URL
+#! @input climatiq_token: Climatiq token to get access to the API
+#! @input provider_uuid: Energy provider uuid according to Climatiq for the off-cloud data center
+#!!#
+########################################################################################################################
 namespace: io.cloudslang.carbon_footprint_project
 flow:
   name: master_flow_co2e_dcoe
+  inputs:
+    - climatiq_url:
+        default: "${get_sp('io.cloudslang.carbon_footprint_project.climatiq_url')}"
+        required: false
+    - climatiq_token:
+        default: "${get_sp('io.cloudslang.carbon_footprint_project.climatiq_token')}"
+        required: false
+    - provider_uuid:
+        default: "${get_sp('io.cloudslang.carbon_footprint_project.provider_uuid')}"
+        required: false
   workflow:
     - create_timestamp_flow:
         worker_group:
@@ -70,4 +87,3 @@ extensions:
         a7328fff-080d-5415-2f87-e0a2893444be:
           x: 615
           'y': 319
-

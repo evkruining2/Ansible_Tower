@@ -1,9 +1,9 @@
-namespace: io.cloudslang.carbon_footprint_project.climatiq
+namespace: io.cloudslang.co2e_collection.climatiq
 flow:
   name: aws_vm_instance
   inputs:
-    - climatiq_url: "${get_sp('io.cloudslang.carbon_footprint_project.climatiq_url')}"
-    - climatiq_token: "${get_sp('io.cloudslang.carbon_footprint_project.climatiq_token')}"
+    - climatiq_url: 'https://beta3.api.climatiq.io/compute/aws/instance'
+    - climatiq_token: Y3Q5BATS8TM2ARKBB18Y8MN95HX1
     - region: eu_west_1
     - instance: c3.8xlarge
   workflow:

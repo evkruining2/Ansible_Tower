@@ -1,22 +1,17 @@
-namespace: io.cloudslang.carbon_footprint_project.azure
+namespace: io.cloudslang.co2e_collection.Azure
 flow:
-  name: get_vm_details
+  name: collect_co2e_for_azure_subscription
   inputs:
     - azure_url: 'https://management.azure.com/subscriptions'
-    - subscription_id: "${get_sp('io.cloudslang.carbon_footprint_project.azure_subscription_id')}"
+    - subscription_id: "${get_sp('io.cloudslang.co2e_collection.azure_subscription_id')}"
     - api_version: '2022-11-01'
-    - ucmdbids
-    - timestamp
-    - trust_all_roots:
-        default: 'true'
-        required: false
-    - x_509_hostname_verifier:
-        default: allow_all
-        required: false
   workflow:
-    - get_azure_token:
+    - get_token:
         do:
-          io.cloudslang.carbon_footprint_project.azure.get_token: []
+          io.cloudslang.co2e_collection.Azure.subflows.get_token:
+            - worker_group: "${get_sp('io.cloudslang.co2e_collection.worker_group')}"
+            - trust_all_roots: "${get_sp('io.cloudslang.co2e_collection.trust_all_roots')}"
+            - x_509_hostname_verifier: "${get_sp('io.cloudslang.co2e_collection.x_509_hostname_verifier')}"
         publish:
           - azure_token
           - list: "${'servername,vmid,location,vmsize,cpus,memory,ip_address,fqdn,total_co2e,cmdb_id,cmdb_global_id'+'\\n\\r'}"
@@ -37,8 +32,14 @@ flow:
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${azure_url+'/'+subscription_id+'/providers/Microsoft.Compute/virtualMachines?api-version='+api_version}"
-            - trust_all_roots: '${trust_all_roots}'
-            - x_509_hostname_verifier: '${x_509_hostname_verifier}'
+            - proxy_host: "${get_sp('io.cloudslang.co2e_collection.proxy_host')}"
+            - proxy_port: "${get_sp('io.cloudslang.co2e_collection.proxy_port')}"
+            - proxy_username: "${get_sp('io.cloudslang.co2e_collection.proxy_username')}"
+            - proxy_password:
+                value: "${get_sp('io.cloudslang.co2e_collection.proxy_password')}"
+                sensitive: true
+            - trust_all_roots: "${get_sp('io.cloudslang.co2e_collection.trust_all_roots')}"
+            - x_509_hostname_verifier: "${get_sp('io.cloudslang.co2e_collection.x_509_hostname_verifier')}"
             - headers: "${'Authorization: Bearer '+azure_token}"
             - content_type: application/json
         publish:
@@ -54,7 +55,7 @@ flow:
         publish:
           - server: '${result_string}'
         navigate:
-          - HAS_MORE: get_vmsize
+          - HAS_MORE: get_vm_id
           - NO_MORE: SUCCESS
           - FAILURE: on_failure
     - get_vmsize:
@@ -87,16 +88,6 @@ flow:
         navigate:
           - SUCCESS: query_vm_details
           - FAILURE: on_failure
-    - query_vm_details:
-        do:
-          io.cloudslang.carbon_footprint_project.azure.query_vm_details:
-            - image_name: '${vmsize}'
-        publish:
-          - cpus
-          - memory
-        navigate:
-          - FAILURE: on_failure
-          - SUCCESS: get_network
     - get_network:
         do:
           io.cloudslang.base.json.json_path_query:
@@ -111,10 +102,17 @@ flow:
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${'https://management.azure.com/'+network_id+'?api-version='+api_version}"
-            - trust_all_roots: '${trust_all_roots}'
-            - x_509_hostname_verifier: '${x_509_hostname_verifier}'
+            - proxy_host: "${get_sp('io.cloudslang.co2e_collection.proxy_host')}"
+            - proxy_port: "${get_sp('io.cloudslang.co2e_collection.proxy_port')}"
+            - proxy_username: "${get_sp('io.cloudslang.co2e_collection.proxy_username')}"
+            - proxy_password:
+                value: "${get_sp('io.cloudslang.co2e_collection.proxy_password')}"
+                sensitive: true
+            - trust_all_roots: "${get_sp('io.cloudslang.co2e_collection.trust_all_roots')}"
+            - x_509_hostname_verifier: "${get_sp('io.cloudslang.co2e_collection.x_509_hostname_verifier')}"
             - headers: "${'Authorization: Bearer '+azure_token}"
             - content_type: application/json
+            - worker_group: "${get_sp('io.cloudslang.co2e_collection.worker_group')}"
         publish:
           - json_result: '${return_result}'
         navigate:
@@ -134,10 +132,17 @@ flow:
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${'https://management.azure.com/'+pub_network_id+'?api-version='+api_version}"
-            - trust_all_roots: '${trust_all_roots}'
-            - x_509_hostname_verifier: '${x_509_hostname_verifier}'
+            - proxy_host: "${get_sp('io.cloudslang.co2e_collection.proxy_host')}"
+            - proxy_port: "${get_sp('io.cloudslang.co2e_collection.proxy_port')}"
+            - proxy_username: "${get_sp('io.cloudslang.co2e_collection.proxy_username')}"
+            - proxy_password:
+                value: "${get_sp('io.cloudslang.co2e_collection.proxy_password')}"
+                sensitive: true
+            - trust_all_roots: "${get_sp('io.cloudslang.co2e_collection.trust_all_roots')}"
+            - x_509_hostname_verifier: "${get_sp('io.cloudslang.co2e_collection.x_509_hostname_verifier')}"
             - headers: "${'Authorization: Bearer '+azure_token}"
             - content_type: application/json
+            - worker_group: "${get_sp('io.cloudslang.co2e_collection.worker_group')}"
         publish:
           - json_result: '${return_result}'
         navigate:
@@ -151,9 +156,9 @@ flow:
         publish:
           - ip_address: "${return_result.strip('[').strip(']').strip('\"')}"
         navigate:
-          - SUCCESS: get_ip_1
+          - SUCCESS: get_fqdn
           - FAILURE: on_failure
-    - get_ip_1:
+    - get_fqdn:
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
@@ -163,26 +168,6 @@ flow:
         navigate:
           - SUCCESS: translate_azure_regions
           - FAILURE: on_failure
-    - translate_azure_regions:
-        do:
-          io.cloudslang.carbon_footprint_project.climatiq.translate_azure_regions:
-            - az_region: '${location}'
-        publish:
-          - region
-        navigate:
-          - FAILURE: on_failure
-          - SUCCESS: azure_vm_instance
-    - azure_vm_instance:
-        do:
-          io.cloudslang.carbon_footprint_project.climatiq.azure_vm_instance:
-            - region: '${region}'
-            - cpu_count: '${cpus}'
-            - memory: '${memory}'
-        publish:
-          - total_co2e
-        navigate:
-          - FAILURE: on_failure
-          - SUCCESS: get_ucmdbid
     - set_ip_and_fqdn_to_null:
         do:
           io.cloudslang.base.utils.do_nothing:
@@ -193,53 +178,63 @@ flow:
         navigate:
           - SUCCESS: translate_azure_regions
           - FAILURE: on_failure
-    - odl_load_data:
+    - translate_azure_regions:
         do:
-          io.cloudslang.carbon_footprint_project.optic_data_lake.odl_load_data:
-            - timestamp: '${timestamp}'
-            - scope2_co2e: '0'
-            - scope3_co2e: '${total_co2e}'
-            - powerusage: '0'
-            - cmdb_id: '${ucmdbid}'
-            - cmdb_global_id: '${global_id}'
-            - node_fqdn: '${fqdn}'
-            - node_ip_address: '${ip_address}'
-            - cloudvendor: Azure
-            - cloudregion: '${location}'
+          io.cloudslang.co2e_collection.climatiq.translate_azure_regions:
+            - az_region: '${location}'
         publish:
-          - odl_result
+          - region
+        navigate:
+          - FAILURE: on_failure
+          - SUCCESS: climatiq_azure_vm_instance
+    - climatiq_azure_vm_instance:
+        do:
+          io.cloudslang.co2e_collection.climatiq.azure_vm_instance:
+            - region: '${region}'
+            - cpu_count: '${cpus}'
+            - memory: '${memory}'
+        publish:
+          - total_co2e
+        navigate:
+          - FAILURE: on_failure
+          - SUCCESS: add_vm_details_to_list
+    - add_vm_details_to_list:
+        do:
+          io.cloudslang.base.strings.append:
+            - origin_string: '${list}'
+            - text: "${server+','+vmid+','+location+','+vmsize+','+cpus+','+memory+','+ip_address+','+fqdn+','+total_co2e+'\\n\\r'}"
+        publish:
+          - list: '${new_string}'
         navigate:
           - SUCCESS: list_iterator
-          - FAILURE: on_failure
-    - get_ucmdbid:
+    - get_vm_id:
         do:
           io.cloudslang.base.json.json_path_query:
-            - json_object: '${ucmdbids}'
-            - json_path: "${'$.cis[?(@.properties.cloud_vm_display_name== \"'+server+'\")].ucmdbId'}"
+            - json_object: '${master_json_result}'
+            - json_path: "${'$..value[?(@.name == \"'+server+'\")].id'}"
         publish:
-          - ucmdbid: "${return_result.strip('[').strip(']').strip('\"')}"
+          - id: "${return_result.strip('[').strip(']').strip('\"')}"
         navigate:
-          - SUCCESS: get_global_id
+          - SUCCESS: check_if_vm_is_running
           - FAILURE: on_failure
-    - get_global_id:
+    - check_if_vm_is_running:
         do:
-          io.cloudslang.base.json.json_path_query:
-            - json_object: '${ucmdbids}'
-            - json_path: "${'$.cis[?(@.properties.cloud_vm_display_name== \"'+server+'\")].globalId'}"
+          io.cloudslang.co2e_collection.Azure.subflows.check_if_vm_is_running:
+            - server_id: '${id}'
+            - azure_token: '${azure_token}'
+        navigate:
+          - FAILURE: list_iterator
+          - SUCCESS: get_vmsize
+    - query_vm_details:
+        do:
+          io.cloudslang.co2e_collection.Azure.subflows.query_vm_details:
+            - image_name: '${vmsize}'
         publish:
-          - global_id: "${return_result.strip('[').strip(']').strip('\"')}"
-        navigate:
-          - SUCCESS: update_ci
-          - FAILURE: on_failure
-    - update_ci:
-        do:
-          io.cloudslang.carbon_footprint_project.ucmdb.update_ci:
-            - ucmdb_id: '${ucmdbid}'
-            - scope3: '${total_co2e}'
-            - region: '${location}'
+          - cpus
+          - memory
         navigate:
           - FAILURE: on_failure
-          - SUCCESS: odl_load_data
+          - SUCCESS: get_network
   outputs:
     - azure_server_list: '${list}'
   results:
@@ -248,75 +243,72 @@ flow:
 extensions:
   graph:
     steps:
-      get_azure_token:
-        x: 80
-        'y': 40
       get_list_of_servers:
-        x: 400
-        'y': 40
+        x: 360
+        'y': 80
       get_vmsize:
-        x: 240
-        'y': 213
+        x: 360
+        'y': 240
       get_public_network:
-        x: 240
-        'y': 373
-      get_ip_1:
-        x: 412
-        'y': 547
+        x: 40
+        'y': 400
       azure_get_vms:
-        x: 240
-        'y': 40
+        x: 200
+        'y': 80
       set_ip_and_fqdn_to_null:
-        x: 338
-        'y': 687
+        x: 440
+        'y': 720
       get_network:
-        x: 409
-        'y': 374
+        x: 200
+        'y': 400
+      check_if_vm_is_running:
+        x: 200
+        'y': 240
       get_pub_ip_and_fqdn:
-        x: 68
-        'y': 553
-      azure_vm_instance:
-        x: 760
+        x: 200
         'y': 560
       get_public_interface_id:
-        x: 72
-        'y': 372
-      get_global_id:
-        x: 738
-        'y': 383
-      get_ucmdbid:
-        x: 905
-        'y': 386
+        x: 40
+        'y': 560
       list_iterator:
-        x: 600
-        'y': 40
+        x: 520
+        'y': 80
         navigate:
           a47cdb3f-74e6-05b8-aac1-5f880a0009b7:
             targetId: c01cab71-dfd0-f554-9dbb-6cda97d840d6
             port: NO_MORE
       get_ip:
-        x: 246
-        'y': 544
+        x: 360
+        'y': 560
+      get_token:
+        x: 40
+        'y': 80
       query_vm_details:
-        x: 571
-        'y': 379
+        x: 360
+        'y': 400
+      climatiq_azure_vm_instance:
+        x: 680
+        'y': 400
+      get_vm_id:
+        x: 40
+        'y': 240
       get_vmid:
-        x: 567
-        'y': 219
-      odl_load_data:
-        x: 733
-        'y': 225
-      update_ci:
-        x: 900
-        'y': 228
+        x: 520
+        'y': 400
+      add_vm_details_to_list:
+        x: 680
+        'y': 240
       translate_azure_regions:
-        x: 600
+        x: 680
+        'y': 560
+      get_fqdn:
+        x: 520
         'y': 560
       get_location:
-        x: 400
-        'y': 216
+        x: 520
+        'y': 240
     results:
       SUCCESS:
         c01cab71-dfd0-f554-9dbb-6cda97d840d6:
-          x: 803
-          'y': 43
+          x: 680
+          'y': 80

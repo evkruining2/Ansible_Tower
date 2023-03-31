@@ -1,39 +1,38 @@
 ########################################################################################################################
 #!!
 #! @input provider: aws or azure
-#! @input memory: amount of memory
+#! @input cpu_count: amount of cpu's
 #!!#
 ########################################################################################################################
-namespace: io.cloudslang.carbon_footprint_project.climatiq
+namespace: io.cloudslang.co2e_collection.climatiq
 flow:
-  name: calculate_co2e_memory
+  name: calculate_co2e_cpu
   inputs:
-    - climatiq_url: "${get_sp('io.cloudslang.carbon_footprint_project.climatiq_url')}"
-    - climatiq_token: "${get_sp('io.cloudslang.carbon_footprint_project.climatiq_token')}"
+    - climatiq_url: "${get_sp('io.cloudslang.co2e_collection.climatiq_url')}"
+    - climatiq_token: "${get_sp('io.cloudslang.co2e_collection.climatiq_token')}"
     - provider: aws
     - region: eu_west_1
-    - memory: '24'
-    - data_unit: GB
-    - trust_all_roots:
-        default: 'true'
-        required: false
-    - hostname_verifier:
-        default: allow_all
-        required: false
+    - cpu_count: '24'
+    - cpu_load: '0.8'
   workflow:
-    - climatiq_io_get_memory:
+    - climatiq_io_get_cpu:
         worker_group:
-          value: "${get_sp('io.cloudslang.carbon_footprint_project.worker_group')}"
+          value: "${get_sp('io.cloudslang.co2e_collection.worker_group')}"
           override: true
         do:
           io.cloudslang.base.http.http_client_post:
-            - url: "${climatiq_url+'/compute/'+provider+'/memory'}"
-            - proxy_host: "${get_sp('io.cloudslang.carbon_footprint_project.proxy_host')}"
-            - proxy_port: "${get_sp('io.cloudslang.carbon_footprint_project.proxy_port')}"
-            - trust_all_roots: '${trust_all_roots}'
-            - x_509_hostname_verifier: '${hostname_verifier}'
+            - url: "${climatiq_url+'/compute/'+provider+'/cpu'}"
+            - proxy_host: "${get_sp('io.cloudslang.co2e_collection.proxy_host')}"
+            - proxy_port: "${get_sp('io.cloudslang.co2e_collection.proxy_port')}"
+            - proxy_username: "${get_sp('io.cloudslang.co2e_collection.proxy_username')}"
+            - proxy_password:
+                value: "${get_sp('io.cloudslang.co2e_collection.proxy_password')}"
+                sensitive: true
+            - trust_all_roots: "${get_sp('io.cloudslang.co2e_collection.trust_all_roots')}"
+            - x_509_hostname_verifier: "${get_sp('io.cloudslang.co2e_collection.x_509_hostname_verifier')}"
             - headers: "${'Authorization: Bearer '+climatiq_token}"
-            - body: "${'{'+\\\n'\"data\": '+memory+','+\\\n'\"region\": \"'+region+'\",'+\\\n'\"data_unit\": \"'+data_unit+'\",'+\\\n'\"duration\": 24,'+\\\n'\"duration_unit\": \"h\"'+\\\n'}'}"
+            - body: "${'{'+\\\n'\"cpu_count\": '+cpu_count+','+\\\n'\"region\": \"'+region+'\",'+\\\n'\"cpu_load\": '+cpu_load+','+\\\n'\"duration\": 24,'+\\\n'\"duration_unit\": \"h\"'+\\\n'}'}"
+            - worker_group: "${get_sp('io.cloudslang.co2e_collection.worker_group')}"
         publish:
           - json_result: '${return_result}'
         navigate:
@@ -57,7 +56,7 @@ flow:
 extensions:
   graph:
     steps:
-      climatiq_io_get_memory:
+      climatiq_io_get_cpu:
         x: 80
         'y': 80
       json_path_extract_co2e:

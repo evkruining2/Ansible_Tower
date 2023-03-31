@@ -1,15 +1,19 @@
 ########################################################################################################################
 #!!
 #! @description: This flow will query Climatq.io for the emission factors from a given location/provider, using a unique UUID. To lookup the appropriate UUID, go to the data explorer here: https://www.climatiq.io/explorer
+#!
+#! @input climatiq_url: Climatiq API URL
+#! @input climatiq_token: Climatiq token to get access to the API
+#! @input provider_uuid: Energy provider uuid according to Climatiq for the off-cloud data center
 #!!#
 ########################################################################################################################
 namespace: io.cloudslang.carbon_footprint_project.climatiq
 flow:
   name: get_emission_factors
   inputs:
-    - climatiq_url: 'https://beta3.api.climatiq.io'
-    - climatiq_token: Y3Q5BATS8TM2ARKBB18Y8MN95HX1
-    - provider_uuid: 0bd33651-72bd-4b1d-ad84-8cacaf574b5e
+    - climatiq_url: "${get_sp('io.cloudslang.carbon_footprint_project.climatiq_url')}"
+    - climatiq_token: "${get_sp('io.cloudslang.carbon_footprint_project.climatiq_token')}"
+    - provider_uuid: "${get_sp('io.cloudslang.carbon_footprint_project.provider_uuid')}"
   workflow:
     - get_climatiq_io_provider_emission_factor:
         worker_group:
