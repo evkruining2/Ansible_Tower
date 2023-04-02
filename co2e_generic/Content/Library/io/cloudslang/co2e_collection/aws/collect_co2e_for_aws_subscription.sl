@@ -1,208 +1,60 @@
+########################################################################################################################
+#!!
+#! @input skipstatus: Skip instance when status is set to this value
+#!!#
+########################################################################################################################
 namespace: io.cloudslang.co2e_collection.aws
 flow:
   name: collect_co2e_for_aws_subscription
   inputs:
-    - timestamp
-    - ucmdb_json
+    - aws_accesskey: "${get_sp('io.cloudslang.co2e_collection.aws_accesskey')}"
+    - aws_secretkey: "${get_sp('io.cloudslang.co2e_collection.aws_secretkey')}"
+    - skipstatus: none
   workflow:
-    - json_path_query:
+    - aws_get_all_instances_in_all_regions:
         do:
-          io.cloudslang.base.json.json_path_query:
-            - json_object: '${ucmdb_json}'
-            - json_path: $.cis
+          io.cloudslang.co2e_collection.aws.subflows.aws_regions:
+            - identity: '${aws_accesskey}'
+            - credential:
+                value: '${aws_secretkey}'
+                sensitive: true
+            - skipstatus: '${skipstatus}'
         publish:
-          - return_result
-        navigate:
-          - SUCCESS: array_iterator
-          - FAILURE: on_failure
-    - array_iterator:
-        do:
-          io.cloudslang.base.json.array_iterator:
-            - array: '${return_result}'
-        publish:
-          - json_iterator: '${result_string}'
-        navigate:
-          - HAS_MORE: get_region
-          - NO_MORE: SUCCESS
-          - FAILURE: on_failure
-    - get_ucmdbid:
-        do:
-          io.cloudslang.base.json.json_path_query:
-            - json_object: '${json_iterator}'
-            - json_path: $.ucmdbId
-        publish:
-          - ucmdbid: "${return_result.strip('\"')}"
-        navigate:
-          - SUCCESS: get_global_id
-          - FAILURE: on_failure
-    - get_global_id:
-        do:
-          io.cloudslang.base.json.json_path_query:
-            - json_object: '${json_iterator}'
-            - json_path: $.globalId
-        publish:
-          - globalid: "${return_result.strip('\"')}"
-        navigate:
-          - SUCCESS: get_primary_dns_name
-          - FAILURE: on_failure
-    - get_primary_dns_name:
-        do:
-          io.cloudslang.base.json.json_path_query:
-            - json_object: '${json_iterator}'
-            - json_path: $.properties.primary_dns_name
-        publish:
-          - dns: "${return_result.strip('\"')}"
-        navigate:
-          - SUCCESS: clean_up_ip_address
-          - FAILURE: on_failure
-    - get_display_label:
-        do:
-          io.cloudslang.base.json.json_path_query:
-            - json_object: '${json_iterator}'
-            - json_path: $.properties.display_label
-        publish:
-          - label: "${return_result.strip('\"')}"
-        navigate:
-          - SUCCESS: get_ucmdbid
-          - FAILURE: on_failure
-    - get_region:
-        do:
-          io.cloudslang.base.json.json_path_query:
-            - json_object: '${json_iterator}'
-            - json_path: $.properties.region
-        publish:
-          - region: "${return_result.strip('\"')}"
-        navigate:
-          - SUCCESS: get_node_model
-          - FAILURE: array_iterator
-    - get_node_model:
-        do:
-          io.cloudslang.base.json.json_path_query:
-            - json_object: '${json_iterator}'
-            - json_path: $.properties.node_model
-        publish:
-          - model: "${return_result.strip('\"')}"
-        navigate:
-          - SUCCESS: get_display_label
-          - FAILURE: array_iterator
-    - aws_vm_instance:
-        do:
-          io.cloudslang.carbon_footprint_project.climatiq.aws_vm_instance:
-            - region: '${region}'
-            - instance: '${model}'
-        publish:
-          - total_co2e
+          - all_ec2_instances
         navigate:
           - FAILURE: on_failure
-          - SUCCESS: update_ci
-    - odl_load_data:
+          - SUCCESS: aws_get_co2e_for_all_instances
+    - aws_get_co2e_for_all_instances:
         do:
-          io.cloudslang.carbon_footprint_project.optic_data_lake.odl_load_data:
-            - timestamp: '${timestamp}'
-            - scope2_co2e: '0'
-            - scope3_co2e: '${total_co2e}'
-            - powerusage: '0'
-            - cmdb_id: '${ucmdbid}'
-            - cmdb_global_id: '${globalid}'
-            - node_fqdn: '${dns}'
-            - node_ip_address: '${ip_address}'
-            - cloudvendor: AWS
-            - cloudregion: '${region}'
-        navigate:
-          - SUCCESS: array_iterator
-          - FAILURE: on_failure
-    - clean_up_ip_address:
-        do:
-          io.cloudslang.base.strings.remove:
-            - origin_string: '${dns}'
-            - text: ip-
+          io.cloudslang.co2e_collection.aws.subflows.get_co2e:
+            - aws_instanes: '${all_ec2_instances}'
         publish:
-          - ip_address: "${cs_replace(new_string.split('.')[0],\"-\",\".\",)}"
-        navigate:
-          - SUCCESS: clean_up_ip_address_2
-    - clean_up_ip_address_2:
-        do:
-          io.cloudslang.base.strings.remove:
-            - origin_string: '${ip_address}'
-            - text: ec2.
-        publish:
-          - ip_address: '${new_string}'
-        navigate:
-          - SUCCESS: translate_aws_regions
-    - update_ci:
-        do:
-          io.cloudslang.carbon_footprint_project.ucmdb.update_ci:
-            - ucmdb_id: '${ucmdbid}'
-            - scope2: '0'
-            - scope3: '${total_co2e}'
-            - power_usage: '0'
-            - region: '${region}'
+          - total_co2e: '${co2e}'
+          - all_aws_instances: '${instances}'
         navigate:
           - FAILURE: on_failure
-          - SUCCESS: odl_load_data
-    - translate_aws_regions:
-        do:
-          io.cloudslang.carbon_footprint_project.climatiq.translate_aws_regions:
-            - aws_region: '${region}'
-        publish:
-          - region
-        navigate:
-          - FAILURE: on_failure
-          - SUCCESS: aws_vm_instance
+          - SUCCESS: SUCCESS
+  outputs:
+    - total_co2e: '${total_co2e}'
+    - all_aws_instances: '${all_aws_instances}'
   results:
-    - FAILURE
     - SUCCESS
+    - FAILURE
 extensions:
   graph:
     steps:
-      json_path_query:
-        x: 40
+      aws_get_all_instances_in_all_regions:
+        x: 120
         'y': 80
-      get_primary_dns_name:
-        x: 200
-        'y': 600
-      clean_up_ip_address:
-        x: 200
-        'y': 440
-      translate_aws_regions:
-        x: 367
-        'y': 610
-      get_display_label:
-        x: 40
-        'y': 280
-      get_global_id:
-        x: 40
-        'y': 600
-      get_ucmdbid:
-        x: 40
-        'y': 440
-      array_iterator:
-        x: 280
+      aws_get_co2e_for_all_instances:
+        x: 320
         'y': 80
         navigate:
-          58ec90b4-f0d3-3682-c9c6-e42818d0f35a:
+          dc432169-a862-c603-b80e-14b442baf890:
             targetId: 2e9ad66a-d39c-f331-5655-f51850c74aca
-            port: NO_MORE
-      get_node_model:
-        x: 200
-        'y': 280
-      odl_load_data:
-        x: 560
-        'y': 280
-      aws_vm_instance:
-        x: 560
-        'y': 440
-      update_ci:
-        x: 733
-        'y': 308
-      clean_up_ip_address_2:
-        x: 365
-        'y': 449
-      get_region:
-        x: 400
-        'y': 280
+            port: SUCCESS
     results:
       SUCCESS:
         2e9ad66a-d39c-f331-5655-f51850c74aca:
-          x: 600
+          x: 520
           'y': 80

@@ -15,3 +15,5 @@ properties:
   - climatiq_url: 'https://beta3.api.climatiq.io'
   - climatiq_token: Y3Q5BATS8TM2ARKBB18Y8MN95HX1
   - azure_url: 'https://management.azure.com'
+  - aws_accesskey: AKIARHRVZWALGMFI6VF7
+  - aws_secretkey: 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
