@@ -3,6 +3,14 @@
 #! @input identity: The Amazon Access Key ID
 #! @input credential: The Amazon Secret Access Key that corresponds to the Amazon Access Key ID
 #! @input skipstatus: Skip instance when status is set to this value
+#! @input proxy_host: Optional - Proxy server used to access the provider services
+#! @input proxy_port: Optional - Proxy server port used to access the provider services
+#!                    Default: '8080'
+#! @input proxy_username: Optional - proxy server user name.
+#!                        Default: ''
+#! @input proxy_password: Optional - proxy server password associated with the proxy_username
+#!                        input value.
+#!                        Default: ''
 #!!#
 ########################################################################################################################
 namespace: io.cloudslang.co2e_collection.aws.subflows
@@ -14,13 +22,36 @@ flow:
         default: "${get_sp('io.cloudslang.co2e_collection.aws_secretkey')}"
         sensitive: true
     - skipstatus: none
+    - proxy_host:
+        default: "${get_sp('io.cloudslang.co2e_collection.proxy_host')}"
+        required: false
+    - proxy_port:
+        default: "${get_sp('io.cloudslang.co2e_collection.proxy_port')}"
+        required: false
+    - proxy_username:
+        default: "${get_sp('io.cloudslang.co2e_collection.proxy_username')}"
+        required: false
+    - proxy_password:
+        default: "${get_sp('io.cloudslang.co2e_collection.proxy_password')}"
+        required: false
+        sensitive: true
+    - worker_group:
+        default: "${get_sp('io.cloudslang.co2e_collection.worker_group')}"
+        required: false
   workflow:
     - describe_regions:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.amazon.aws.ec2.regions.describe_regions:
             - identity: '${identity}'
             - credential:
                 value: '${credential}'
+                sensitive: true
+            - proxy_host: '${proxy_host}'
+            - proxy_port: '${proxy_port}'
+            - proxy_username: '${proxy_username}'
+            - proxy_password:
+                value: '${proxy_password}'
                 sensitive: true
             - key_filters_string: endpoint
         publish:
@@ -29,6 +60,7 @@ flow:
           - SUCCESS: convert_xml_to_json
           - FAILURE: on_failure
     - convert_xml_to_json:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.xml.convert_xml_to_json:
             - xml: '${xml_result}'
@@ -37,9 +69,10 @@ flow:
         publish:
           - json_result: '${return_result}'
         navigate:
-          - SUCCESS: json_path_query
+          - SUCCESS: get_all_aws_regions_from_json
           - FAILURE: on_failure
-    - json_path_query:
+    - get_all_aws_regions_from_json:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
@@ -47,19 +80,21 @@ flow:
         publish:
           - json_array: '${return_result}'
         navigate:
-          - SUCCESS: array_iterator
+          - SUCCESS: iterate_through_aws_regions
           - FAILURE: on_failure
-    - array_iterator:
+    - iterate_through_aws_regions:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.json.array_iterator:
             - array: '${json_array}'
         publish:
           - result_string
         navigate:
-          - HAS_MORE: json_path_query_1
-          - NO_MORE: do_nothing
+          - HAS_MORE: get_aws_region_endpoint
+          - NO_MORE: finalize_aws_instances_list
           - FAILURE: on_failure
-    - json_path_query_1:
+    - get_aws_region_endpoint:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${result_string}'
@@ -67,9 +102,10 @@ flow:
         publish:
           - region_endpoint: "${return_result.strip('\"')}"
         navigate:
-          - SUCCESS: json_path_query_1_1
+          - SUCCESS: get_aws_region_name
           - FAILURE: on_failure
-    - json_path_query_1_1:
+    - get_aws_region_name:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${result_string}'
@@ -80,19 +116,30 @@ flow:
           - SUCCESS: get_instances_for_region
           - FAILURE: on_failure
     - get_instances_for_region:
+        worker_group:
+          value: '${worker_group}'
+          override: true
         do:
           io.cloudslang.co2e_collection.aws.subflows.get_instances_for_region:
             - aws_region: '${aws_region}'
             - aws_accesskey: '${identity}'
             - aws_secretkey: '${credential}'
             - skipstatus: '${skipstatus}'
+            - proxy_host: '${proxy_host}'
+            - proxy_port: '${proxy_port}'
+            - proxy_username: '${proxy_username}'
+            - proxy_password:
+                value: '${proxy_password}'
+                sensitive: true
+            - worker_group: '${worker_group}'
         publish:
           - list_of_aws_instaces
         navigate:
-          - SUCCESS: append
+          - SUCCESS: contruct_aws_instances_list
           - FAILURE: on_failure
-          - SUCCESS_NO_INSTANCES: array_iterator
-    - append:
+          - SUCCESS_NO_INSTANCES: iterate_through_aws_regions
+    - contruct_aws_instances_list:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.strings.append:
             - origin_string: "${get('all_ec2_instances', '\\n\\r')}"
@@ -100,8 +147,9 @@ flow:
         publish:
           - all_ec2_instances: '${new_string}'
         navigate:
-          - SUCCESS: array_iterator
-    - do_nothing:
+          - SUCCESS: iterate_through_aws_regions
+    - finalize_aws_instances_list:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.utils.do_nothing:
             - input0: "${all_ec2_instances.strip(',')}"
@@ -119,36 +167,36 @@ flow:
 extensions:
   graph:
     steps:
-      json_path_query:
-        x: 80
-        'y': 200
-      json_path_query_1_1:
-        x: 240
-        'y': 360
-      describe_regions:
-        x: 80
-        'y': 40
-      get_instances_for_region:
-        x: 440
-        'y': 360
-      array_iterator:
-        x: 240
-        'y': 200
-      json_path_query_1:
-        x: 80
-        'y': 360
-      convert_xml_to_json:
-        x: 240
-        'y': 40
-      do_nothing:
+      finalize_aws_instances_list:
         x: 440
         'y': 40
         navigate:
           2ce90385-cc42-5743-25f4-ac998dc3616f:
             targetId: 0028d599-9929-7cfe-c659-8ee50cd44bec
             port: SUCCESS
-      append:
+      describe_regions:
+        x: 80
+        'y': 40
+      get_aws_region_name:
+        x: 240
+        'y': 360
+      get_instances_for_region:
         x: 440
+        'y': 360
+      get_all_aws_regions_from_json:
+        x: 80
+        'y': 200
+      get_aws_region_endpoint:
+        x: 80
+        'y': 360
+      convert_xml_to_json:
+        x: 240
+        'y': 40
+      contruct_aws_instances_list:
+        x: 440
+        'y': 200
+      iterate_through_aws_regions:
+        x: 240
         'y': 200
     results:
       SUCCESS:

@@ -3,8 +3,12 @@ flow:
   name: query_vm_details
   inputs:
     - image_name
+    - worker_group:
+        default: "${get_sp('io.cloudslang.co2e_collection.worker_group')}"
+        required: false
   workflow:
     - get_azure_vm_sizes:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.utils.do_nothing: []
         publish:
@@ -3379,6 +3383,7 @@ flow:
           - SUCCESS: get_cpu_cores
           - FAILURE: on_failure
     - get_cpu_cores:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
@@ -3389,6 +3394,7 @@ flow:
           - SUCCESS: get_memory
           - FAILURE: on_failure
     - get_memory:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'

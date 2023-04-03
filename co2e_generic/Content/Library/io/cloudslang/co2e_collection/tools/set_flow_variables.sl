@@ -1,3 +1,9 @@
+########################################################################################################################
+#!!
+#! @description: This operation takes a JSON array as input and creates flow variables from the configured key values
+#!               
+#!!#
+########################################################################################################################
 namespace: io.cloudslang.co2e_collection.tools
 operation:
   name: set_flow_variables

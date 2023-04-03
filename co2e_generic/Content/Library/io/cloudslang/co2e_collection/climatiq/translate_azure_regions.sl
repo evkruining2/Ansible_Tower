@@ -1,10 +1,21 @@
+########################################################################################################################
+#!!
+#! @description: Mapping Azure location names into Climatiq.io accepted location names for Azure (adding "-" in the names)
+#!
+#! @input worker_group: Optional - RAS worker group to use. Default: RAS_Operator_Path
+#!!#
+########################################################################################################################
 namespace: io.cloudslang.co2e_collection.climatiq
 flow:
   name: translate_azure_regions
   inputs:
     - az_region
+    - worker_group:
+        default: "${get_sp('io.cloudslang.co2e_collection.worker_group')}"
+        required: false
   workflow:
     - get_azure_regions:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.utils.do_nothing: []
         publish:
@@ -76,6 +87,7 @@ flow:
           - SUCCESS: map_climatiq_region
           - FAILURE: on_failure
     - map_climatiq_region:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'

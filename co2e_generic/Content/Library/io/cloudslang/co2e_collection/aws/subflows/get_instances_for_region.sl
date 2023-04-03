@@ -1,6 +1,14 @@
 ########################################################################################################################
 #!!
 #! @input skipstatus: Skip instance when status is set to this value
+#! @input proxy_host: Optional - Proxy server used to access the provider services
+#! @input proxy_port: Optional - Proxy server port used to access the provider services
+#!                    Default: '8080'
+#! @input proxy_username: Optional - proxy server user name.
+#!                        Default: ''
+#! @input proxy_password: Optional - proxy server password associated with the proxy_username
+#!                        input value.
+#!                        Default: ''
 #!
 #! @result SUCCESS_NO_INSTANCES: No instances found for region; continue processing
 #!!#
@@ -15,8 +23,25 @@ flow:
     - skipstatus:
         default: none
         required: false
+    - proxy_host:
+        default: "${get_sp('io.cloudslang.co2e_collection.proxy_host')}"
+        required: false
+    - proxy_port:
+        default: "${get_sp('io.cloudslang.co2e_collection.proxy_port')}"
+        required: false
+    - proxy_username:
+        default: "${get_sp('io.cloudslang.co2e_collection.proxy_username')}"
+        required: false
+    - proxy_password:
+        default: "${get_sp('io.cloudslang.co2e_collection.proxy_password')}"
+        required: false
+        sensitive: true
+    - worker_group:
+        default: "${get_sp('io.cloudslang.co2e_collection.worker_group')}"
+        required: false
   workflow:
     - set_list_header:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.utils.do_nothing: []
         publish:
@@ -25,6 +50,7 @@ flow:
           - SUCCESS: describe_instances
           - FAILURE: on_failure
     - describe_instances:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.amazon.aws.ec2.instances.describe_instances:
             - endpoint: "${'https://ec2.'+aws_region+'.amazonaws.com'}"
@@ -32,12 +58,19 @@ flow:
             - credential:
                 value: '${aws_secretkey}'
                 sensitive: true
+            - proxy_host: '${proxy_host}'
+            - proxy_port: '${proxy_port}'
+            - proxy_username: '${proxy_username}'
+            - proxy_password:
+                value: '${proxy_password}'
+                sensitive: true
         publish:
           - return_result
         navigate:
           - SUCCESS: convert_xml_to_json
           - FAILURE: on_failure
     - convert_xml_to_json:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.xml.convert_xml_to_json:
             - xml: '${return_result}'
@@ -47,6 +80,7 @@ flow:
           - SUCCESS: strip_json
           - FAILURE: on_failure
     - strip_json:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${master_json_result}'
@@ -54,9 +88,10 @@ flow:
         publish:
           - json_result: '${return_result}'
         navigate:
-          - SUCCESS: json_path_query_1
+          - SUCCESS: get_reservation_ids
           - FAILURE: SUCCESS_NO_INSTANCES
     - get_details_per_instance:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.lists.list_iterator:
             - list: '${reservation_ids}'
@@ -68,6 +103,7 @@ flow:
           - NO_MORE: SUCCESS
           - FAILURE: on_failure
     - get_instance_details:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${master_json_result}'
@@ -75,9 +111,10 @@ flow:
         publish:
           - instance_json: '${return_result}'
         navigate:
-          - SUCCESS: json_path_query
+          - SUCCESS: get_instance_id
           - FAILURE: on_failure
     - get_instance_state:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${master_json_result}'
@@ -88,6 +125,7 @@ flow:
           - SUCCESS: string_equals
           - FAILURE: on_failure
     - string_equals:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.strings.string_equals:
             - first_string: '${instance_state}'
@@ -95,7 +133,8 @@ flow:
         navigate:
           - SUCCESS: get_details_per_instance
           - FAILURE: get_instance_details
-    - json_path_query:
+    - get_instance_id:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${instance_json}'
@@ -103,9 +142,10 @@ flow:
         publish:
           - instance_id: "${return_result.strip('[').strip(']').strip('\"')}"
         navigate:
-          - SUCCESS: json_path_query_2
+          - SUCCESS: get_instance_type
           - FAILURE: on_failure
-    - json_path_query_1:
+    - get_reservation_ids:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
@@ -115,7 +155,8 @@ flow:
         navigate:
           - SUCCESS: get_details_per_instance
           - FAILURE: on_failure
-    - json_path_query_2:
+    - get_instance_type:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${instance_json}'
@@ -123,9 +164,10 @@ flow:
         publish:
           - instance_type: "${return_result.strip('[').strip(']').strip('\"')}"
         navigate:
-          - SUCCESS: json_path_query_2_1
+          - SUCCESS: get_instance_name
           - FAILURE: on_failure
-    - json_path_query_2_1:
+    - get_instance_name:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${instance_json}'
@@ -133,9 +175,10 @@ flow:
         publish:
           - instance_name: "${return_result.strip('[').strip(']').strip('\"')}"
         navigate:
-          - SUCCESS: append
+          - SUCCESS: build_json_of_instance_details
           - FAILURE: on_failure
-    - append:
+    - build_json_of_instance_details:
+        worker_group: '${worker_group}'
         do:
           io.cloudslang.base.strings.append:
             - origin_string: '${list}'
@@ -156,15 +199,12 @@ extensions:
       get_instance_details:
         x: 440
         'y': 80
-      json_path_query:
-        x: 600
-        'y': 80
-      json_path_query_2_1:
-        x: 600
-        'y': 240
       describe_instances:
         x: 80
         'y': 200
+      get_instance_name:
+        x: 600
+        'y': 240
       string_equals:
         x: 240
         'y': 80
@@ -181,18 +221,21 @@ extensions:
       set_list_header:
         x: 80
         'y': 40
-      json_path_query_1:
-        x: 240
-        'y': 440
-      json_path_query_2:
-        x: 440
-        'y': 240
       convert_xml_to_json:
         x: 80
         'y': 360
-      append:
+      build_json_of_instance_details:
         x: 600
         'y': 440
+      get_instance_type:
+        x: 440
+        'y': 240
+      get_reservation_ids:
+        x: 240
+        'y': 440
+      get_instance_id:
+        x: 600
+        'y': 80
       get_details_per_instance:
         x: 440
         'y': 480
