@@ -15,7 +15,7 @@
 ########################################################################################################################
 namespace: random_users
 flow:
-  name: Generate_random_users_to_CSV_file
+  name: generate_random_users_to_csv_file
   inputs:
     - number_of_users: '5'
     - nationality:
