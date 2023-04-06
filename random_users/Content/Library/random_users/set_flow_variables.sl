@@ -5,7 +5,7 @@
 ########################################################################################################################
 namespace: random_users
 operation:
-  name: Set_Flow_Variables
+  name: set_flow_variables
   inputs:
     - json_list
     - index
