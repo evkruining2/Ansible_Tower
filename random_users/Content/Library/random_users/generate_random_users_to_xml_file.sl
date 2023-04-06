@@ -15,7 +15,7 @@
 ########################################################################################################################
 namespace: random_users
 flow:
-  name: Generate_random_users_to_XML_file
+  name: generate_random_users_to_xml_file
   inputs:
     - number_of_users: '5'
     - nationality:
