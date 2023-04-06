@@ -56,12 +56,12 @@ flow:
         publish:
           - index: '${result_string}'
         navigate:
-          - HAS_MORE: Set_Flow_Variables
+          - HAS_MORE: set_flow_variables_1
           - NO_MORE: SUCCESS
           - FAILURE: on_failure
-    - Set_Flow_Variables:
+    - set_flow_variables_1:
         do:
-          Randomusers.Set_Flow_Variables:
+          random_users.set_flow_variables:
             - json_list: '${json_result}'
             - index: '${index}'
         publish:
@@ -79,6 +79,12 @@ extensions:
       request_randomusers:
         x: 87
         'y': 74
+      Do_all_kinds_of_stuff:
+        x: 476
+        'y': 428
+      Create_list_of_indices:
+        x: 287
+        'y': 77
       cycle_through_randomusers_arrays:
         x: 474
         'y': 82
@@ -86,15 +92,9 @@ extensions:
           19beb09e-51d9-278c-a0c5-053457f7343c:
             targetId: 17c290db-cae9-a690-7bba-72d6c17aa2c0
             port: NO_MORE
-      Do_all_kinds_of_stuff:
-        x: 476
-        'y': 428
-      Create_list_of_indices:
-        x: 287
-        'y': 77
-      Set_Flow_Variables:
-        x: 287
-        'y': 263
+      set_flow_variables_1:
+        x: 160
+        'y': 280
     results:
       SUCCESS:
         17c290db-cae9-a690-7bba-72d6c17aa2c0:
