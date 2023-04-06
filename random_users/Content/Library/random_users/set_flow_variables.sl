@@ -3,7 +3,7 @@
 #! @input index: the index number of the array to use
 #!!#
 ########################################################################################################################
-namespace: Randomusers
+namespace: random_users
 operation:
   name: Set_Flow_Variables
   inputs:
