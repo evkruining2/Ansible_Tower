@@ -3,7 +3,7 @@
 #! @input identity: The Amazon Access Key ID
 #! @input credential: The Amazon Secret Access Key that corresponds to the Amazon Access Key ID
 #! @input my_aws_regions: Optional - comma-separated list of aws regions to search for instances. If left empty, the flow will search through all aws regions. Example: eu-west-1,us-east-2,us-west-1
-#! @input skipstatus: Optional - Skip instance when status is set to this value
+#! @input skipstatus: Skip instance when status is set to this value
 #! @input proxy_host: Optional - Proxy server used to access the provider services
 #! @input proxy_port: Optional - Proxy server port used to access the provider services
 #!                    Default: '8080'
@@ -14,9 +14,9 @@
 #!                        Default: ''
 #!!#
 ########################################################################################################################
-namespace: io.cloudslang.co2e_collection.aws.subflows
+namespace: io.cloudslang.tests
 flow:
-  name: aws_regions
+  name: aws_regions_test
   inputs:
     - identity: "${get_sp('io.cloudslang.co2e_collection.aws_accesskey')}"
     - credential:
@@ -24,8 +24,7 @@ flow:
         sensitive: true
     - my_aws_regions:
         required: false
-    - skipstatus:
-        required: false
+    - skipstatus: none
     - proxy_host:
         default: "${get_sp('io.cloudslang.co2e_collection.proxy_host')}"
         required: false
@@ -84,7 +83,7 @@ flow:
         publish:
           - json_array: '${return_result}'
         navigate:
-          - SUCCESS: check_my_aws_regions_is_defined
+          - SUCCESS: is_null
           - FAILURE: on_failure
     - iterate_through_aws_regions:
         worker_group: '${worker_group}'
@@ -162,25 +161,25 @@ flow:
         navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
-    - check_my_aws_regions_is_defined:
+    - is_null:
         worker_group: '${worker_group}'
         do:
           io.cloudslang.base.utils.is_null:
             - variable: '${my_aws_regions}'
         navigate:
           - IS_NULL: iterate_through_aws_regions
-          - IS_NOT_NULL: iterate_through_my_aws_regions
-    - iterate_through_my_aws_regions:
+          - IS_NOT_NULL: list_iterator
+    - list_iterator:
         do:
           io.cloudslang.base.lists.list_iterator:
             - list: '${my_aws_regions}'
         publish:
           - my_region: '${result_string}'
         navigate:
-          - HAS_MORE: get_my_aws_region_endpoint
+          - HAS_MORE: json_path_query
           - NO_MORE: finalize_aws_instances_list
           - FAILURE: on_failure
-    - get_my_aws_region_endpoint:
+    - json_path_query:
         worker_group: '${worker_group}'
         do:
           io.cloudslang.base.json.json_path_query:
@@ -189,9 +188,9 @@ flow:
         publish:
           - region_endpoint: "${return_result.strip('[').strip(']').strip('\"')}"
         navigate:
-          - SUCCESS: get_instances_for_my_aws_region
+          - SUCCESS: get_instances_for_region_1
           - FAILURE: on_failure
-    - get_instances_for_my_aws_region:
+    - get_instances_for_region_1:
         worker_group:
           value: '${worker_group}'
           override: true
@@ -211,10 +210,10 @@ flow:
         publish:
           - list_of_aws_instaces
         navigate:
-          - SUCCESS: contruct_aws_instances_list_for_my_aws_region
+          - SUCCESS: contruct_aws_instances_list_1
           - FAILURE: on_failure
-          - SUCCESS_NO_INSTANCES: iterate_through_my_aws_regions
-    - contruct_aws_instances_list_for_my_aws_region:
+          - SUCCESS_NO_INSTANCES: list_iterator
+    - contruct_aws_instances_list_1:
         worker_group: '${worker_group}'
         do:
           io.cloudslang.base.strings.append:
@@ -223,7 +222,7 @@ flow:
         publish:
           - all_ec2_instances: '${new_string}'
         navigate:
-          - SUCCESS: iterate_through_my_aws_regions
+          - SUCCESS: list_iterator
   outputs:
     - aws_regions: '${aws_regions}'
     - all_ec2_instances: '${all_ec2_instances}'
@@ -234,53 +233,53 @@ extensions:
   graph:
     steps:
       finalize_aws_instances_list:
-        x: 440
-        'y': 360
+        x: 480
+        'y': 320
         navigate:
           2ce90385-cc42-5743-25f4-ac998dc3616f:
             targetId: 0028d599-9929-7cfe-c659-8ee50cd44bec
             port: SUCCESS
-      iterate_through_my_aws_regions:
-        x: 240
-        'y': 360
-      get_instances_for_my_aws_region:
-        x: 40
-        'y': 560
+      json_path_query:
+        x: 80
+        'y': 280
+      get_instances_for_region_1:
+        x: 80
+        'y': 480
       describe_regions:
         x: 80
         'y': 40
       get_aws_region_name:
-        x: 1040
-        'y': 360
-      contruct_aws_instances_list_for_my_aws_region:
+        x: 920
+        'y': 480
+      contruct_aws_instances_list_1:
         x: 240
-        'y': 560
-      check_my_aws_regions_is_defined:
-        x: 440
-        'y': 200
+        'y': 480
+      list_iterator:
+        x: 240
+        'y': 280
       get_instances_for_region:
-        x: 840
-        'y': 560
-      get_my_aws_region_endpoint:
-        x: 40
-        'y': 360
+        x: 760
+        'y': 480
       get_all_aws_regions_from_json:
-        x: 440
+        x: 400
         'y': 40
       get_aws_region_endpoint:
-        x: 840
-        'y': 360
+        x: 920
+        'y': 280
       convert_xml_to_json:
         x: 240
         'y': 40
       contruct_aws_instances_list:
         x: 640
-        'y': 560
+        'y': 480
+      is_null:
+        x: 520
+        'y': 160
       iterate_through_aws_regions:
-        x: 640
-        'y': 360
+        x: 760
+        'y': 280
     results:
       SUCCESS:
         0028d599-9929-7cfe-c659-8ee50cd44bec:
-          x: 440
-          'y': 560
+          x: 480
+          'y': 520

@@ -4,7 +4,8 @@
 #!
 #! @input aws_accesskey: AWS Access Key
 #! @input aws_secretkey: AWS Access Secret Key
-#! @input skipstatus: Skip instance when status is set to this value. Example: stopped
+#! @input my_aws_regions: Optional - comma-separated list of aws regions to search for instances. If left empty, the flow will search through all aws regions. Example: eu-west-1,us-east-2,us-west-1
+#! @input skipstatus: Optional - Skip instance when status is set to this value. Example: stopped
 #! @input proxy_host: Optional - Proxy server used to access the provider services
 #! @input proxy_port: Optional - Proxy server port used to access the provider services
 #!                    Default: '8080'
@@ -31,7 +32,10 @@ flow:
   inputs:
     - aws_accesskey: "${get_sp('io.cloudslang.co2e_collection.aws_accesskey')}"
     - aws_secretkey: "${get_sp('io.cloudslang.co2e_collection.aws_secretkey')}"
-    - skipstatus: none
+    - my_aws_regions:
+        required: false
+    - skipstatus:
+        required: false
     - proxy_host:
         default: "${get_sp('io.cloudslang.co2e_collection.proxy_host')}"
         required: false
@@ -65,6 +69,7 @@ flow:
             - credential:
                 value: '${aws_secretkey}'
                 sensitive: true
+            - my_aws_regions: '${my_aws_regions}'
             - skipstatus: '${skipstatus}'
             - proxy_host: '${proxy_host}'
             - proxy_port: '${proxy_port}'

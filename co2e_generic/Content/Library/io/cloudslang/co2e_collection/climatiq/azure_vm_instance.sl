@@ -8,6 +8,7 @@
 #! @input region: Region of the cloud provider to use. Example: useast1
 #! @input cpu_count: Number of CPUs to calculate the CO2e for
 #! @input memory: Amount of memory (MB) to calculate the CO2e for
+#! @input storage_amount: Amount of storage (GB)
 #! @input trust_all_roots: Optional - Specifies whether to enable weak security over SSL/TSL. A certificate is trusted even if no trusted certification authority issued it. Default: 'false'
 #! @input x_509_hostname_verifier: Optional - Specifies the way the server hostname must match a domain name in the subject's
 #!                                 Common Name (CN) or subjectAltName field of the X.509 certificate.
@@ -35,6 +36,7 @@ flow:
     - region
     - cpu_count
     - memory
+    - storage_amount
     - trust_all_roots:
         default: "${get_sp('io.cloudslang.co2e_collection.trust_all_roots')}"
         required: false
@@ -104,7 +106,7 @@ flow:
         publish:
           - total_co2e: '${result}'
         navigate:
-          - SUCCESS: SUCCESS
+          - SUCCESS: calculate_co2e_storage
           - FAILURE: on_failure
     - calculate_co2e_memory_1:
         worker_group:
@@ -133,6 +135,35 @@ flow:
         navigate:
           - FAILURE: on_failure
           - SUCCESS: add_numbers_1
+    - calculate_co2e_storage:
+        worker_group:
+          value: '${worker_group}'
+          override: true
+        do:
+          io.cloudslang.co2e_collection.climatiq.calculate_co2e_storage:
+            - climatiq_url: '${climatiq_url}'
+            - climatiq_token: '${climatiq_token}'
+            - provider: '${provider}'
+            - region: '${region}'
+            - storage_amount: '${storage_amount}'
+            - trust_all_roots: '${trust_all_roots}'
+            - hostname_verifier: '${x_509_hostname_verifier}'
+        publish:
+          - co2e
+        navigate:
+          - FAILURE: on_failure
+          - SUCCESS: add_numbers_1_1
+    - add_numbers_1_1:
+        worker_group: '${worker_group}'
+        do:
+          io.cloudslang.base.math.add_numbers:
+            - value1: '${total_co2e}'
+            - value2: '${co2e}'
+        publish:
+          - total_co2e: '${result}'
+        navigate:
+          - SUCCESS: SUCCESS
+          - FAILURE: on_failure
   outputs:
     - total_co2e: '${total_co2e}'
   results:
@@ -145,20 +176,26 @@ extensions:
         x: 120
         'y': 80
       add_numbers:
-        x: 240
+        x: 120
         'y': 280
       add_numbers_1:
+        x: 320
+        'y': 280
+      calculate_co2e_memory_1:
+        x: 320
+        'y': 80
+      calculate_co2e_storage:
+        x: 520
+        'y': 80
+      add_numbers_1_1:
         x: 520
         'y': 280
         navigate:
-          f6166e2d-d29b-4bd8-02ee-cb0a447f37e9:
+          8d85ce71-b8de-b4c7-7635-cc09e592e69e:
             targetId: 86ef6df4-a299-8026-ab07-c27c49b8adb4
             port: SUCCESS
-      calculate_co2e_memory_1:
-        x: 360
-        'y': 80
     results:
       SUCCESS:
         86ef6df4-a299-8026-ab07-c27c49b8adb4:
-          x: 680
-          'y': 80
+          x: 720
+          'y': 160

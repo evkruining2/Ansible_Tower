@@ -1,10 +1,30 @@
+########################################################################################################################
+#!!
+#! @description: For future release
+#!
+#! @input json_token: Content of the Google Cloud service account JSON.
+#! @input scopes: Scopes that you might need to request to access Google Compute APIs, depending on the level of access
+#!                you need. One or more scopes may be specified delimited by the scopes_delimiter.
+#!                Example: 'https://www.googleapis.com/auth/compute.readonly'
+#!                Note: It is recommended to use the minimum necessary scope in order to perform the requests.
+#!                For a full list of scopes see https://developers.google.com/identity/protocols/googlescopes#computev1
+#!!#
+########################################################################################################################
 namespace: io.cloudslang.co2e_collection.gcp
 flow:
   name: collect_co2e_for_gcp_project
+  inputs:
+    - json_token:
+        sensitive: true
+    - scopes
   workflow:
     - get_access_token:
         do:
-          io.cloudslang.google.authentication.get_access_token: []
+          io.cloudslang.google.authentication.get_access_token:
+            - json_token:
+                value: '${json_token}'
+                sensitive: true
+            - scopes: '${scopes}'
         navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure

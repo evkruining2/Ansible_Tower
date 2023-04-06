@@ -10,6 +10,8 @@
 #! @input client_secret: Azure Client Secret
 #! @input scope: Azure scope for authentication token
 #! @input grant_type: Azure grant type for authentication token
+#! @input climatiq_url: Climatiq.io API URL. Example: https://beta3.api.climatiq.io
+#! @input climatiq_token: Climatiq.io API access token
 #! @input worker_group: Optional - RAS worker group to use. Default: RAS_Operator_Path
 #! @input trust_all_roots: Optional - Specifies whether to enable weak security over SSL/TSL. A certificate is trusted even if no trusted certification authority issued it. Default: 'false'
 #! @input x_509_hostname_verifier: Optional - Specifies the way the server hostname must match a domain name in the subject's Common Name (CN) or subjectAltName field of the X.509 certificate. Set this to "allow_all" to skip any checking. For the value "browser_compatible" the hostname verifier works the same way as Curl and Firefox. The hostname must match either the first CN, or any of the subject-alts. A wildcard can occur in the CN, and in any of the subject-alts. The only difference between "browser_compatible" and "strict" is that a wildcard (such as "*.foo.com") with "browser_compatible" matches all subdomains, including "a.b.foo.com". Default: 'strict'
@@ -37,6 +39,10 @@ flow:
         sensitive: true
     - scope: 'https://management.azure.com/.default'
     - grant_type: client_credentials
+    - climatiq_url: "${get_sp('io.cloudslang.co2e_collection.climatiq_url')}"
+    - climatiq_token:
+        default: "${get_sp('io.cloudslang.co2e_collection.climatiq_token')}"
+        sensitive: true
     - worker_group:
         default: "${get_sp('io.cloudslang.co2e_collection.worker_group')}"
         required: false
@@ -82,7 +88,7 @@ flow:
                 sensitive: true
         publish:
           - azure_token
-          - list: "${'servername,vmid,location,vmsize,cpus,memory,ip_address,fqdn,total_co2e'+'\\n\\r'}"
+          - list: "${'servername,vmid,location,vmsize,cpus,memory,disk_sizes,ip_address,fqdn,total_co2e'+'\\n\\r'}"
         navigate:
           - FAILURE: on_failure
           - SUCCESS: azure_get_vms
@@ -272,16 +278,21 @@ flow:
           - region
         navigate:
           - FAILURE: on_failure
-          - SUCCESS: climatiq_azure_vm_instance
+          - SUCCESS: get_disks
     - climatiq_azure_vm_instance:
         worker_group:
           value: '${worker_group}'
           override: true
         do:
           io.cloudslang.co2e_collection.climatiq.azure_vm_instance:
+            - climatiq_url: '${climatiq_url}'
+            - climatiq_token:
+                value: '${climatiq_token}'
+                sensitive: true
             - region: '${region}'
             - cpu_count: '${cpus}'
             - memory: '${memory}'
+            - storage_amount: '${disk_sizes}'
             - trust_all_roots: '${trust_all_roots}'
             - x_509_hostname_verifier: '${x_509_hostname_verifier}'
             - hostname_verifier: '${x_509_hostname_verifier}'
@@ -302,7 +313,7 @@ flow:
         do:
           io.cloudslang.base.strings.append:
             - origin_string: '${list}'
-            - text: "${server+','+vmid+','+location+','+vmsize+','+cpus+','+memory+','+ip_address+','+fqdn+','+total_co2e+'\\n\\r'}"
+            - text: "${server+','+vmid+','+location+','+vmsize+','+cpus+','+memory+','+disk_sizes+','+ip_address+','+fqdn+','+total_co2e+'\\n\\r'}"
         publish:
           - list: '${new_string}'
         navigate:
@@ -365,6 +376,29 @@ flow:
         navigate:
           - SUCCESS: add_vm_details_to_list
           - FAILURE: on_failure
+    - get_disks:
+        worker_group: '${worker_group}'
+        do:
+          io.cloudslang.base.json.json_path_query:
+            - json_object: '${master_json_result}'
+            - json_path: "${'$..value[?(@.name == \"'+server+'\")]..diskSizeGB'}"
+        publish:
+          - disks: "${return_result.strip('[').strip(']').strip('\"')}"
+        navigate:
+          - SUCCESS: get_azure_disk_size
+          - FAILURE: on_failure
+    - get_azure_disk_size:
+        worker_group:
+          value: '${worker_group}'
+          override: true
+        do:
+          io.cloudslang.co2e_collection.Azure.subflows.get_azure_disk_size:
+            - disks: '${disks}'
+        publish:
+          - disk_sizes
+        navigate:
+          - FAILURE: on_failure
+          - SUCCESS: climatiq_azure_vm_instance
   outputs:
     - all_azure_instances: '${list}'
     - total_co2e: '${co2e}'
@@ -398,8 +432,14 @@ extensions:
       check_if_vm_is_running:
         x: 200
         'y': 240
+      get_azure_disk_size:
+        x: 680
+        'y': 400
       get_pub_ip_and_fqdn:
         x: 200
+        'y': 560
+      get_disks:
+        x: 840
         'y': 560
       get_public_interface_id:
         x: 40
@@ -411,22 +451,18 @@ extensions:
           a47cdb3f-74e6-05b8-aac1-5f880a0009b7:
             targetId: c01cab71-dfd0-f554-9dbb-6cda97d840d6
             port: NO_MORE
-            vertices:
-              - x: 680
-                'y': 40
-              - x: 800
-                'y': 40
+            vertices: []
       get_ip:
         x: 360
         'y': 560
       add_co2e_value_to_total:
-        x: 680
+        x: 840
         'y': 240
       query_vm_details:
         x: 360
         'y': 400
       climatiq_azure_vm_instance:
-        x: 680
+        x: 840
         'y': 400
       get_vm_id:
         x: 40
@@ -436,7 +472,7 @@ extensions:
         'y': 400
       add_vm_details_to_list:
         x: 680
-        'y': 80
+        'y': 240
       translate_azure_regions:
         x: 680
         'y': 560
@@ -449,5 +485,5 @@ extensions:
     results:
       SUCCESS:
         c01cab71-dfd0-f554-9dbb-6cda97d840d6:
-          x: 880
+          x: 680
           'y': 80

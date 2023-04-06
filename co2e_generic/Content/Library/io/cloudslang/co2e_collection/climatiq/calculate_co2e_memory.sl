@@ -32,7 +32,7 @@ flow:
         sensitive: true
     - provider: aws
     - region: eu_west_1
-    - memory: '24'
+    - memory: '8'
     - data_unit: GB
     - worker_group:
         default: "${get_sp('io.cloudslang.co2e_collection.worker_group')}"

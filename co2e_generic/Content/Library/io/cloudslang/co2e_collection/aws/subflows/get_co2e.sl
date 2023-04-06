@@ -63,7 +63,7 @@ flow:
           - instances_list: "${return_result.strip('[').strip(']').strip('\"')}"
           - index: '0'
         navigate:
-          - SUCCESS: iterate_through_instances
+          - SUCCESS: check_for_instances
           - FAILURE: on_failure
     - set_flow_variables:
         worker_group: '${worker_group}'
@@ -159,6 +159,23 @@ flow:
         navigate:
           - SUCCESS: iterate_through_instances
           - FAILURE: on_failure
+    - check_for_instances:
+        do:
+          io.cloudslang.base.strings.length:
+            - origin_string: '${instances_list}'
+        publish:
+          - length
+        navigate:
+          - SUCCESS: instances_greater_than_zero
+    - instances_greater_than_zero:
+        do:
+          io.cloudslang.base.math.compare_numbers:
+            - value1: '${length}'
+            - value2: '0'
+        navigate:
+          - GREATER_THAN: iterate_through_instances
+          - EQUALS: SUCCESS
+          - LESS_THAN: SUCCESS
   outputs:
     - co2e: '${co2e}'
     - instances: '${server_list}'
@@ -168,36 +185,49 @@ flow:
 extensions:
   graph:
     steps:
-      convert_json_array_to_instances_list:
-        x: 80
-        'y': 80
+      instances_greater_than_zero:
+        x: 480
+        'y': 40
+        navigate:
+          c0031753-4c0f-43cd-c010-67d44d420911:
+            targetId: 10b29c3d-071c-f03d-5b8a-f900f9a6531b
+            port: EQUALS
+          d65c4299-1600-63f3-b668-be04e20aae1b:
+            targetId: 10b29c3d-071c-f03d-5b8a-f900f9a6531b
+            port: LESS_THAN
       set_flow_variables:
         x: 80
-        'y': 280
-      aws_vm_instance:
-        x: 280
-        'y': 480
-      add_co2e_value_to_total:
-        x: 480
-        'y': 480
-      build_instance_list:
-        x: 480
-        'y': 280
+        'y': 400
       translate_aws_regions:
         x: 80
-        'y': 480
-      iterate_through_instances:
+        'y': 560
+      add_co2e_value_to_total:
+        x: 480
+        'y': 560
+      check_for_instances:
         x: 280
-        'y': 80
-        navigate:
-          108e9e67-0a0c-3b23-b5a6-3648852ad463:
-            targetId: 10b29c3d-071c-f03d-5b8a-f900f9a6531b
-            port: NO_MORE
+        'y': 40
+      convert_json_array_to_instances_list:
+        x: 80
+        'y': 40
       increase_index_number:
         x: 280
-        'y': 280
+        'y': 400
+      build_instance_list:
+        x: 480
+        'y': 400
+      aws_vm_instance:
+        x: 280
+        'y': 560
+      iterate_through_instances:
+        x: 280
+        'y': 240
+        navigate:
+          d39e287a-06da-3e65-b064-302be4c17701:
+            targetId: 10b29c3d-071c-f03d-5b8a-f900f9a6531b
+            port: NO_MORE
     results:
       SUCCESS:
         10b29c3d-071c-f03d-5b8a-f900f9a6531b:
           x: 480
-          'y': 80
+          'y': 240
