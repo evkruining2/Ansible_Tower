@@ -171,13 +171,14 @@ flow:
           - region
         navigate:
           - FAILURE: on_failure
-          - SUCCESS: azure_vm_instance
+          - SUCCESS: get_disks
     - azure_vm_instance:
         do:
           io.cloudslang.carbon_footprint_project.climatiq.azure_vm_instance:
             - region: '${region}'
             - cpu_count: '${cpus}'
             - memory: '${memory}'
+            - storage_amount: '${disk_sizes}'
         publish:
           - total_co2e
         navigate:
@@ -240,6 +241,26 @@ flow:
         navigate:
           - FAILURE: on_failure
           - SUCCESS: odl_load_data
+    - get_disks:
+        worker_group: '${worker_group}'
+        do:
+          io.cloudslang.base.json.json_path_query:
+            - json_object: '${master_json_result}'
+            - json_path: "${'$..value[?(@.name == \"'+server+'\")]..diskSizeGB'}"
+        publish:
+          - disks: "${return_result.strip('[').strip(']').strip('\"')}"
+        navigate:
+          - SUCCESS: get_azure_disk_size
+          - FAILURE: on_failure
+    - get_azure_disk_size:
+        do:
+          io.cloudslang.carbon_footprint_project.azure.get_azure_disk_size:
+            - disks: '${disks}'
+        publish:
+          - disk_sizes
+        navigate:
+          - FAILURE: on_failure
+          - SUCCESS: azure_vm_instance
   outputs:
     - azure_server_list: '${list}'
   results:
@@ -249,72 +270,78 @@ extensions:
   graph:
     steps:
       get_azure_token:
-        x: 80
+        x: 40
         'y': 40
       get_list_of_servers:
-        x: 400
+        x: 360
         'y': 40
       get_vmsize:
-        x: 240
-        'y': 213
+        x: 200
+        'y': 200
       get_public_network:
-        x: 240
-        'y': 373
+        x: 200
+        'y': 360
       get_ip_1:
-        x: 412
-        'y': 547
+        x: 360
+        'y': 520
       azure_get_vms:
-        x: 240
+        x: 200
         'y': 40
       set_ip_and_fqdn_to_null:
-        x: 338
-        'y': 687
+        x: 360
+        'y': 680
       get_network:
-        x: 409
-        'y': 374
+        x: 360
+        'y': 360
+      get_azure_disk_size:
+        x: 840
+        'y': 520
       get_pub_ip_and_fqdn:
-        x: 68
-        'y': 553
+        x: 40
+        'y': 520
+      get_disks:
+        x: 680
+        'y': 520
       azure_vm_instance:
-        x: 760
-        'y': 560
+        x: 1000
+        'y': 520
       get_public_interface_id:
-        x: 72
-        'y': 372
+        x: 40
+        'y': 360
       get_global_id:
-        x: 738
-        'y': 383
+        x: 840
+        'y': 360
       get_ucmdbid:
-        x: 905
-        'y': 386
+        x: 1000
+        'y': 360
       list_iterator:
-        x: 600
+        x: 520
         'y': 40
         navigate:
           a47cdb3f-74e6-05b8-aac1-5f880a0009b7:
             targetId: c01cab71-dfd0-f554-9dbb-6cda97d840d6
             port: NO_MORE
       get_ip:
-        x: 246
-        'y': 544
+        x: 200
+        'y': 520
       query_vm_details:
-        x: 571
-        'y': 379
+        x: 520
+        'y': 360
       get_vmid:
-        x: 567
-        'y': 219
+        x: 520
+        'y': 200
       odl_load_data:
-        x: 733
-        'y': 225
+        x: 680
+        'y': 200
       update_ci:
-        x: 900
-        'y': 228
+        x: 680
+        'y': 360
       translate_azure_regions:
-        x: 600
-        'y': 560
+        x: 520
+        'y': 520
       get_location:
-        x: 400
-        'y': 216
+        x: 360
+        'y': 200
     results:
       SUCCESS:
         c01cab71-dfd0-f554-9dbb-6cda97d840d6:

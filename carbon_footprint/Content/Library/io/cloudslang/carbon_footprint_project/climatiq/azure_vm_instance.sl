@@ -1,3 +1,10 @@
+########################################################################################################################
+#!!
+#! @input storage_amount: amount of storage
+#! @input storage_type: Type of storage used
+#! @input data_unit: unit of measurement
+#!!#
+########################################################################################################################
 namespace: io.cloudslang.carbon_footprint_project.climatiq
 flow:
   name: azure_vm_instance
@@ -6,6 +13,13 @@ flow:
     - region
     - cpu_count
     - memory
+    - storage_amount
+    - storage_type:
+        default: ssd
+        required: false
+    - data_unit:
+        default: GB
+        required: false
   workflow:
     - calculate_co2e_cpu:
         do:
@@ -49,6 +63,31 @@ flow:
         publish:
           - total_co2e: '${result}'
         navigate:
+          - SUCCESS: calculate_co2e_storage
+          - FAILURE: on_failure
+    - calculate_co2e_storage:
+        do:
+          io.cloudslang.carbon_footprint_project.climatiq.calculate_co2e_storage:
+            - climatiq_url: "${get_sp('io.cloudslang.carbon_footprint_project.climatiq_url')}"
+            - climatiq_token: "${get_sp('io.cloudslang.carbon_footprint_project.climatiq_token')}"
+            - provider: '${provider}'
+            - region: '${region}'
+            - storage_amount: '${storage_amount}'
+            - data_unit: '${data_unit}'
+            - storage_type: '${storage_type}'
+        publish:
+          - co2e
+        navigate:
+          - FAILURE: on_failure
+          - SUCCESS: add_numbers_1_1
+    - add_numbers_1_1:
+        do:
+          io.cloudslang.base.math.add_numbers:
+            - value1: '${total_co2e}'
+            - value2: '${co2e}'
+        publish:
+          - total_co2e: '${result}'
+        navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
   outputs:
@@ -63,16 +102,22 @@ extensions:
         x: 120
         'y': 80
       calculate_co2e_memory:
-        x: 360
+        x: 320
         'y': 80
       add_numbers:
-        x: 240
+        x: 120
         'y': 280
       add_numbers_1:
+        x: 320
+        'y': 280
+      calculate_co2e_storage:
+        x: 520
+        'y': 80
+      add_numbers_1_1:
         x: 520
         'y': 280
         navigate:
-          f6166e2d-d29b-4bd8-02ee-cb0a447f37e9:
+          9239f539-ab39-78cf-0878-cbc260b0ff11:
             targetId: 86ef6df4-a299-8026-ab07-c27c49b8adb4
             port: SUCCESS
     results:
