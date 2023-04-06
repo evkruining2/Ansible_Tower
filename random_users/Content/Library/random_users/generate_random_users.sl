@@ -15,7 +15,7 @@
 ########################################################################################################################
 namespace: random_users
 flow:
-  name: Generate_random_users
+  name: generate_random_users
   inputs:
     - number_of_users: '5'
     - nationality:
