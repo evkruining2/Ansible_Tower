@@ -1,7 +1,7 @@
 ########################################################################################################################
 #!!
 #! @description: This flow will delete an Organization object in your Ansible Tower system
-#!               
+#!
 #! @input AnsibleTowerURL: Ansible Tower API URL to connect to (example: https://192.168.10.10/api/v2)
 #! @input AnsibleUsername: Username to connect to Ansible Tower
 #! @input AnsiblePassword: Password used to connect to Ansible Tower
@@ -14,15 +14,18 @@ namespace: io.cloudslang.redhat.ansible_tower.jobs
 flow:
   name: delete_organization
   inputs:
-    - AnsibleTowerURL
+    - AnsibleTowerURL: "${get_sp('io.cloudslang.redhat.ansible.ansible_url')}"
     - AnsibleUsername
     - AnsiblePassword:
         sensitive: true
-    - TrustAllRoots: 'false'
-    - HostnameVerify: 'strict'
+    - TrustAllRoots: "${get_sp('io.cloudslang.redhat.ansible.trust_all_roots')}"
+    - HostnameVerify: "${get_sp('io.cloudslang.redhat.ansible.x509_hostname_verifier')}"
     - OrgID
   workflow:
     - Delete_Organization:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_delete:
             - url: "${get('AnsibleTowerURL')+'/organizations/'+OrgID+'/'}"

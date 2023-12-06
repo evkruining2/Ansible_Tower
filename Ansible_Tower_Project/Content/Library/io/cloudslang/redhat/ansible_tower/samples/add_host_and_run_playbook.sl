@@ -22,12 +22,12 @@ namespace: io.cloudslang.redhat.ansible_tower.samples
 flow:
   name: add_host_and_run_playbook
   inputs:
-    - AnsibleTowerURL
+    - AnsibleTowerURL: "${get_sp('io.cloudslang.redhat.ansible.ansible_url')}"
     - AnsibleUsername
     - AnsiblePassword:
         sensitive: true
-    - TrustAllRoots: 'false'
-    - HostnameVerify: 'strict'
+    - TrustAllRoots: "${get_sp('io.cloudslang.redhat.ansible.trust_all_roots')}"
+    - HostnameVerify: "${get_sp('io.cloudslang.redhat.ansible.x509_hostname_verifier')}"
     - OrgID
     - InventoryName
     - HostName
@@ -43,6 +43,9 @@ flow:
         required: false
   workflow:
     - Create_Inventory:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.redhat.ansible_tower.inventories.create_inventory:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
@@ -58,6 +61,9 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: Create_Job_Template
     - Create_Job_Template:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.redhat.ansible_tower.job_templates.create_job_template:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
@@ -76,6 +82,9 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: Attach_Credentials_to_Job_Template
     - Create_Host:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.redhat.ansible_tower.hosts.create_host:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
@@ -92,6 +101,9 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: Run_Job_with_Template
     - Run_Job_with_Template:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.redhat.ansible_tower.jobs.run_job_with_template:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
@@ -106,6 +118,9 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: Wait_for_final_job_result
     - Wait_for_final_job_result:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.redhat.ansible_tower.jobs.wait_for_final_job_result:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
@@ -120,6 +135,9 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: SUCCESS
     - Attach_Credentials_to_Job_Template:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.redhat.ansible_tower.job_templates.attach_credentials_to_job_template:
             - AnsibleTowerURL: '${AnsibleTowerURL}'

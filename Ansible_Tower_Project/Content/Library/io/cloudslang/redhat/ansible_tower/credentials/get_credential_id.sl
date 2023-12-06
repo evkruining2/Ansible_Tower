@@ -1,7 +1,7 @@
 ########################################################################################################################
 #!!
 #! @description: This flow will lookup the given Credential name and return its id.
-#!               
+#!
 #! @input AnsibleTowerURL: Ansible Tower API URL to connect to (example: https://192.168.10.10/api/v2)
 #! @input AnsibleUsername: Username to connect to Ansible Tower
 #! @input AnsiblePassword: Password used to connect to Ansible Tower
@@ -16,14 +16,14 @@ namespace: io.cloudslang.redhat.ansible_tower.credentials
 flow:
   name: get_credential_id
   inputs:
-    - AnsibleTowerURL
+    - AnsibleTowerURL: "${get_sp('io.cloudslang.redhat.ansible.ansible_url')}"
     - AnsibleUsername
     - AnsiblePassword:
         sensitive: true
     - TrustAllRoots:
-        default: 'false'
+        default: "${get_sp('io.cloudslang.redhat.ansible.trust_all_roots')}"
     - HostnameVerify:
-        default: 'strict'
+        default: "${get_sp('io.cloudslang.redhat.ansible.x509_hostname_verifier')}"
     - CredentialName: Demo Credential
   workflow:
     - Convert_whitespaces:
@@ -37,6 +37,9 @@ flow:
         navigate:
           - SUCCESS: Connect_to_Ansible_Tower
     - Connect_to_Ansible_Tower:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${get('AnsibleTowerURL')+'/credentials?name='+CredentialName}"

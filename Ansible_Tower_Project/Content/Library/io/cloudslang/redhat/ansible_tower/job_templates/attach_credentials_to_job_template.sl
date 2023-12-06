@@ -9,23 +9,25 @@
 #! @input HostnameVerify: Specifies the way the server hostname must match a domain name in the subject's Common Name (CN) or subjectAltName field of the X.509 certificate. Set this to "allow_all" to skip any checking. For the value "browser_compatible" the hostname verifier works the same way as Curl and Firefox. The hostname must match either the first CN, or any of the subject-alts. A wildcard can occur in the CN, and in any of the subject-alts. The only difference between "browser_compatible" and "strict" is that a wildcard (such as "*.foo.com") with "browser_compatible" matches all subdomains, including "a.b.foo.com". Default: 'strict'
 #! @input TemplateID: Enter the Job Template ID (integer)
 #! @input CredentialID: Enter the Credential ID (integer)
-#!
 #!!#
 ########################################################################################################################
 namespace: io.cloudslang.redhat.ansible_tower.job_templates
 flow:
   name: attach_credentials_to_job_template
   inputs:
-    - AnsibleTowerURL
+    - AnsibleTowerURL: "${get_sp('io.cloudslang.redhat.ansible.ansible_url')}"
     - AnsibleUsername
     - AnsiblePassword:
         sensitive: true
-    - TrustAllRoots: 'false'
-    - HostnameVerify: 'strict'
+    - TrustAllRoots: "${get_sp('io.cloudslang.redhat.ansible.trust_all_roots')}"
+    - HostnameVerify: "${get_sp('io.cloudslang.redhat.ansible.x509_hostname_verifier')}"
     - TemplateID
     - CredentialID
   workflow:
     - Attach_CredentialID_to_Job_TemplateID:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_post:
             - url: "${get('AnsibleTowerURL')+'/job_templates/'+TemplateID+'/credentials/'}"

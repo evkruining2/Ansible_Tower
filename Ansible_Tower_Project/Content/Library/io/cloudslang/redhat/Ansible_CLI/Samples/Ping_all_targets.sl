@@ -19,6 +19,9 @@ flow:
     - module: ping
   workflow:
     - Ansible_CLI:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           Ansible_CLI.Ansible_CLI:
             - ansible_host: '${host}'

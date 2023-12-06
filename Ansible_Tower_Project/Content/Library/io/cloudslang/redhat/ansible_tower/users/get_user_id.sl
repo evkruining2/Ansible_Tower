@@ -16,15 +16,18 @@ namespace: io.cloudslang.redhat.ansible_tower.users
 flow:
   name: get_user_id
   inputs:
-    - AnsibleTowerURL
+    - AnsibleTowerURL: "${get_sp('io.cloudslang.redhat.ansible.ansible_url')}"
     - AnsibleUsername
     - AnsiblePassword:
         sensitive: true
-    - TrustAllRoots: 'false'
-    - HostnameVerify: strict
+    - TrustAllRoots: "${get_sp('io.cloudslang.redhat.ansible.trust_all_roots')}"
+    - HostnameVerify: "${get_sp('io.cloudslang.redhat.ansible.x509_hostname_verifier')}"
     - UserName: DemoUser
   workflow:
     - Connect_to_Ansible_Tower:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${get('AnsibleTowerURL')+'/users?username='+UserName}"
@@ -78,8 +81,8 @@ extensions:
   graph:
     steps:
       Connect_to_Ansible_Tower:
-        x: 68
-        'y': 90
+        x: 80
+        'y': 80
       Filter_ID_from_JSON:
         x: 679
         'y': 98

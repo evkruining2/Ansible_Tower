@@ -15,14 +15,17 @@ namespace: io.cloudslang.redhat.ansible_tower.projects
 flow:
   name: list_projects
   inputs:
-    - AnsibleTowerURL
+    - AnsibleTowerURL: "${get_sp('io.cloudslang.redhat.ansible.ansible_url')}"
     - AnsibleUsername
     - AnsiblePassword:
         sensitive: true
-    - TrustAllRoots: 'false'
-    - HostnameVerify: strict
+    - TrustAllRoots: "${get_sp('io.cloudslang.redhat.ansible.trust_all_roots')}"
+    - HostnameVerify: "${get_sp('io.cloudslang.redhat.ansible.x509_hostname_verifier')}"
   workflow:
     - Get_all_Projects:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${get('AnsibleTowerURL')+'/projects/'}"
@@ -60,6 +63,9 @@ flow:
           - NO_MORE: SUCCESS
           - FAILURE: on_failure
     - Get_ProjectName_from_ID:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${get('AnsibleTowerURL')+'/projects/'+list_item}"

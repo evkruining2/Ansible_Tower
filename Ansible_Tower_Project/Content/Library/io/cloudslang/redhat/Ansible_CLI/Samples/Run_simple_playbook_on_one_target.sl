@@ -27,6 +27,9 @@ flow:
         required: false
   workflow:
     - Ansible_Playbook_CLI:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           Ansible_CLI.Ansible_Playbook_CLI:
             - ansible_host: '${host}'

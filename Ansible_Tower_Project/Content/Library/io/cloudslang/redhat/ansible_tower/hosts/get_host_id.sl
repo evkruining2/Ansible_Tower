@@ -16,13 +16,13 @@ namespace: io.cloudslang.redhat.ansible_tower.hosts
 flow:
   name: get_host_id
   inputs:
-    - AnsibleTowerURL
+    - AnsibleTowerURL: "${get_sp('io.cloudslang.redhat.ansible.ansible_url')}"
     - AnsibleUsername
     - AnsiblePassword:
         sensitive: true
-    - TrustAllRoots: 'false'
-    - HostnameVerify: 'strict'
-    - HostName: localhost
+    - TrustAllRoots: "${get_sp('io.cloudslang.redhat.ansible.trust_all_roots')}"
+    - HostnameVerify: "${get_sp('io.cloudslang.redhat.ansible.x509_hostname_verifier')}"
+    - HostName: oo.example.com
   workflow:
     - Convert_whitespaces:
         do:
@@ -35,6 +35,9 @@ flow:
         navigate:
           - SUCCESS: Connect_to_Ansible_Tower
     - Connect_to_Ansible_Tower:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${get('AnsibleTowerURL')+'/hosts?name='+HostName}"

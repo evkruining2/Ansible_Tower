@@ -7,9 +7,9 @@
 #! @input AnsiblePassword: Password used to connect to Ansible Tower
 #! @input TrustAllRoots: Specifies whether to enable weak security over SSL/TSL. A certificate is trusted even if no trusted certification authority issued it. Default: 'false'
 #! @input HostnameVerify: Specifies the way the server hostname must match a domain name in the subject's Common Name (CN) or subjectAltName field of the X.509 certificate. Set this to "allow_all" to skip any checking. For the value "browser_compatible" the hostname verifier works the same way as Curl and Firefox. The hostname must match either the first CN, or any of the subject-alts. A wildcard can occur in the CN, and in any of the subject-alts. The only difference between "browser_compatible" and "strict" is that a wildcard (such as "*.foo.com") with "browser_compatible" matches all subdomains, including "a.b.foo.com". Default: 'strict'
+#! @input CredentialName: The name (string) of the Ansible Tower Credential component that you want to create (example: "Demo Credential").
 #! @input CredentialType: The type (integer) of the new Credential (example: "1" for "Machine", "2" for "scm" etc). To get a list of credential_types, access https://your.ansibleserver.org/api/v2/credential_types
 #! @input CredentialDescription: The description of this new Credential (optional)
-#! @input CredentialName: The name (string) of the Ansible Tower Credential component that you want to create (example: "Demo Credential").
 #! @input OrgID: The Organization id (integer) for the Organization to create the new Credential into
 #!
 #! @output CredentialID: The id (integer) of the newly created Credential
@@ -19,14 +19,14 @@ namespace: io.cloudslang.redhat.ansible_tower.credentials
 flow:
   name: create_credential
   inputs:
-    - AnsibleTowerURL
+    - AnsibleTowerURL: "${get_sp('io.cloudslang.redhat.ansible.ansible_url')}"
     - AnsibleUsername
     - AnsiblePassword:
         sensitive: true
     - TrustAllRoots:
-        default: 'false'
+        default: "${get_sp('io.cloudslang.redhat.ansible.trust_all_roots')}"
     - HostnameVerify:
-        default: 'strict'
+        default: "${get_sp('io.cloudslang.redhat.ansible.x509_hostname_verifier')}"
     - CredentialName
     - CredentialType
     - CredentialDescription:
@@ -35,6 +35,9 @@ flow:
     - OrgID
   workflow:
     - Create_new_Credential:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_post:
             - url: "${get('AnsibleTowerURL')+'/credentials/'}"

@@ -39,6 +39,7 @@ flow:
         required: false
   workflow:
     - contruct_ssh_command:
+        worker_group: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
         do:
           io.cloudslang.base.strings.append:
             - origin_string: 'ansible '
@@ -48,6 +49,7 @@ flow:
         navigate:
           - SUCCESS: check_subset_var
     - ssh_command:
+        worker_group: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
         do:
           io.cloudslang.base.ssh.ssh_command:
             - host: '${ansible_host}'
@@ -191,8 +193,8 @@ extensions:
         x: 960
         'y': 76
       check_subset_var:
-        x: 118
-        'y': 242
+        x: 120
+        'y': 240
       append_subset:
         x: 207
         'y': 72

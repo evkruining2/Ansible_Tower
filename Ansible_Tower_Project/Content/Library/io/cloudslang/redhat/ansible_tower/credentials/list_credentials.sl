@@ -1,7 +1,7 @@
 ########################################################################################################################
 #!!
 #! @description: This flow will display a list of all Credentials in your Ansible Tower instance.
-#!               
+#!
 #! @input AnsibleTowerURL: Ansible Tower API URL to connect to (example: https://192.168.10.10/api/v2)
 #! @input AnsibleUsername: Username to connect to Ansible Tower
 #! @input AnsiblePassword: Password used to connect to Ansible Tower
@@ -15,14 +15,17 @@ namespace: io.cloudslang.redhat.ansible_tower.credentials
 flow:
   name: list_credentials
   inputs:
-    - AnsibleTowerURL
+    - AnsibleTowerURL: "${get_sp('io.cloudslang.redhat.ansible.ansible_url')}"
     - AnsibleUsername
     - AnsiblePassword:
         sensitive: true
-    - TrustAllRoots: 'false'
-    - HostnameVerify: 'strict'
+    - TrustAllRoots: "${get_sp('io.cloudslang.redhat.ansible.trust_all_roots')}"
+    - HostnameVerify: "${get_sp('io.cloudslang.redhat.ansible.x509_hostname_verifier')}"
   workflow:
     - Get_all_Credentials:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${get('AnsibleTowerURL')+'/credentials/'}"
@@ -60,6 +63,9 @@ flow:
           - NO_MORE: SUCCESS
           - FAILURE: on_failure
     - Get_CredentialName_from_ID:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${get('AnsibleTowerURL')+'/credentials/'+list_item}"

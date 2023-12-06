@@ -26,6 +26,7 @@ flow:
         sensitive: true
   workflow:
     - ssh_command:
+        worker_group: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
         do:
           io.cloudslang.base.ssh.ssh_command:
             - host: '${awx_cli_host}'

@@ -44,6 +44,7 @@ flow:
         navigate:
           - SUCCESS: check_subset_var
     - ssh_command:
+        worker_group: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
         do:
           io.cloudslang.base.ssh.ssh_command:
             - host: '${ansible_host}'

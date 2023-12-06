@@ -31,6 +31,9 @@ flow:
     - template
   workflow:
     - awx_get_token:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           AWX_CLI.awx_get_token:
             - awx_cli_host: '${awx_cli_host}'
@@ -49,6 +52,7 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: launch_job_template
     - launch_job_template:
+        worker_group: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
         do:
           io.cloudslang.base.ssh.ssh_command:
             - host: '${awx_cli_host}'
@@ -66,6 +70,7 @@ flow:
           - SUCCESS: get_job_status
           - FAILURE: on_failure
     - get_job_status:
+        worker_group: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
         do:
           io.cloudslang.base.ssh.ssh_command:
             - host: '${awx_cli_host}'
@@ -93,6 +98,7 @@ flow:
           - SUCCESS: get_stdout
           - FAILURE: Is_status_failed
     - get_stdout:
+        worker_group: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
         do:
           io.cloudslang.base.ssh.ssh_command:
             - host: '${awx_cli_host}'
@@ -190,11 +196,11 @@ extensions:
         x: 597
         'y': 273
     results:
-      SUCCESS:
-        ca0f2697-593d-a271-a16c-fb27d8c51410:
-          x: 392
-          'y': 641
       FAILURE:
         6e5cd0b4-70b4-5820-df00-195b84731f06:
           x: 597
           'y': 624
+      SUCCESS:
+        ca0f2697-593d-a271-a16c-fb27d8c51410:
+          x: 392
+          'y': 641

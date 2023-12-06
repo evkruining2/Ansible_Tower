@@ -28,6 +28,9 @@ flow:
     - credential
   workflow:
     - awx_get_token:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           AWX_CLI.awx_get_token:
             - awx_cli_host: '${awx_cli_host}'
@@ -46,6 +49,7 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: ping_targets
     - ping_targets:
+        worker_group: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
         do:
           io.cloudslang.base.ssh.ssh_command:
             - host: '${awx_cli_host}'

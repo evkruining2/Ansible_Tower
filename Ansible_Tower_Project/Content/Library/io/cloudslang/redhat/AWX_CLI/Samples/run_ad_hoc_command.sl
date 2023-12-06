@@ -40,6 +40,9 @@ flow:
         required: false
   workflow:
     - awx_get_token:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           AWX_CLI.awx_get_token:
             - awx_cli_host: '${awx_cli_host}'
@@ -75,6 +78,7 @@ flow:
           - IS_NULL: check_module_args
           - IS_NOT_NULL: append_subset
     - append_subset:
+        worker_group: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
         do:
           io.cloudslang.base.strings.append:
             - origin_string: '${ssh_command}'
@@ -91,6 +95,7 @@ flow:
           - IS_NULL: run_ad_hoc_command
           - IS_NOT_NULL: append_module_args
     - append_module_args:
+        worker_group: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
         do:
           io.cloudslang.base.strings.append:
             - origin_string: '${ssh_command}'
@@ -100,6 +105,7 @@ flow:
         navigate:
           - SUCCESS: run_ad_hoc_command
     - run_ad_hoc_command:
+        worker_group: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
         do:
           io.cloudslang.base.ssh.ssh_command:
             - host: '${awx_cli_host}'
@@ -119,6 +125,7 @@ flow:
           - SUCCESS: get_job_status
           - FAILURE: on_failure
     - get_job_status:
+        worker_group: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
         do:
           io.cloudslang.base.ssh.ssh_command:
             - host: '${awx_cli_host}'
@@ -180,6 +187,7 @@ flow:
           - SUCCESS: get_job_status
           - FAILURE: on_failure
     - get_stdout:
+        worker_group: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
         do:
           io.cloudslang.base.ssh.ssh_command:
             - host: '${awx_cli_host}'

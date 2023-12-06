@@ -17,18 +17,21 @@ namespace: io.cloudslang.redhat.ansible_tower.samples
 flow:
   name: remove_host_job_template_and_inventory
   inputs:
-    - AnsibleTowerURL
+    - AnsibleTowerURL: "${get_sp('io.cloudslang.redhat.ansible.ansible_url')}"
     - AnsibleUsername
     - AnsiblePassword:
         sensitive: true
-    - TrustAllRoots: 'false'
-    - HostnameVerify: strict
+    - TrustAllRoots: "${get_sp('io.cloudslang.redhat.ansible.trust_all_roots')}"
+    - HostnameVerify: "${get_sp('io.cloudslang.redhat.ansible.x509_hostname_verifier')}"
     - JobID
     - InventoryID
     - TemplateID
     - HostID
   workflow:
     - Delete_Host:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.redhat.ansible_tower.hosts.delete_host:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
@@ -41,6 +44,9 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: Delete_Job_Template
     - Delete_Job_Template:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.redhat.ansible_tower.job_templates.delete_job_template:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
@@ -53,6 +59,9 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: Delete_Inventory
     - Delete_Inventory:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.redhat.ansible_tower.inventories.delete_inventory:
             - AnsibleTowerURL: '${AnsibleTowerURL}'
@@ -65,6 +74,9 @@ flow:
           - FAILURE: on_failure
           - SUCCESS: Remove_Job
     - Remove_Job:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.redhat.ansible_tower.jobs.remove_job:
             - AnsibleTowerURL: '${AnsibleTowerURL}'

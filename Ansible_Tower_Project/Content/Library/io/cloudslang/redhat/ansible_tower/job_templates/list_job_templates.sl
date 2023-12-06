@@ -1,7 +1,7 @@
 ########################################################################################################################
 #!!
 #! @description: This flow will display a list of all Job Templates in your Ansible Tower instance.
-#!               
+#!
 #! @input AnsibleTowerURL: Ansible Tower API URL to connect to (example: https://192.168.10.10/api/v2)
 #! @input AnsibleUsername: Username to connect to Ansible Tower
 #! @input AnsiblePassword: Password used to connect to Ansible Tower
@@ -15,14 +15,18 @@ namespace: io.cloudslang.redhat.ansible_tower.job_templates
 flow:
   name: list_job_templates
   inputs:
-    - AnsibleTowerURL
+    - AnsibleTowerURL: "${get_sp('io.cloudslang.redhat.ansible.ansible_url')}"
     - AnsibleUsername
     - AnsiblePassword:
         sensitive: true
-    - TrustAllRoots: 'false'
-    - HostnameVerify: 'strict'
+    - TrustAllRoots: "${get_sp('io.cloudslang.redhat.ansible.trust_all_roots')}"
+    - HostnameVerify: "${get_sp('io.cloudslang.redhat.ansible.x509_hostname_verifier')}"
+    - WorkerGroup: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
   workflow:
     - Get_all_Job_Templates:
+        worker_group:
+          value: '${WorkerGroup}'
+          override: true
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${get('AnsibleTowerURL')+'/job_templates/'}"
@@ -39,6 +43,7 @@ flow:
           - SUCCESS: Get_array_of_IDs
           - FAILURE: on_failure
     - Get_array_of_IDs:
+        worker_group: '${WorkerGroup}'
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_output}'
@@ -50,6 +55,7 @@ flow:
           - SUCCESS: Iterate_trough_IDs
           - FAILURE: on_failure
     - Iterate_trough_IDs:
+        worker_group: '${WorkerGroup}'
         do:
           io.cloudslang.base.lists.list_iterator:
             - list: '${output}'
@@ -60,6 +66,9 @@ flow:
           - NO_MORE: SUCCESS
           - FAILURE: on_failure
     - Get_Job_TemplateName_from_ID:
+        worker_group:
+          value: '${WorkerGroup}'
+          override: true
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${get('AnsibleTowerURL')+'/job_templates/'+list_item}"
@@ -76,6 +85,7 @@ flow:
           - SUCCESS: Filter_Job_TemplateName_from_JSON
           - FAILURE: on_failure
     - Filter_Job_TemplateName_from_JSON:
+        worker_group: '${WorkerGroup}'
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${template}'
@@ -86,6 +96,7 @@ flow:
           - SUCCESS: Add_items_to_list
           - FAILURE: on_failure
     - Add_items_to_list:
+        worker_group: '${WorkerGroup}'
         do:
           io.cloudslang.base.strings.append:
             - origin_string: '${new_string}'
@@ -119,8 +130,8 @@ extensions:
         x: 425
         'y': 286
       Filter_Job_TemplateName_from_JSON:
-        x: 422
-        'y': 472
+        x: 440
+        'y': 480
       Add_items_to_list:
         x: 639
         'y': 285

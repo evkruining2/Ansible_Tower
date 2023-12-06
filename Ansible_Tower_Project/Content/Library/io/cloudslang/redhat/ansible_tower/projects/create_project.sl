@@ -1,7 +1,7 @@
 ########################################################################################################################
 #!!
 #! @description: This flow will create a new Project object in your Ansible Tower system
-#!               
+#!
 #! @input AnsibleTowerURL: Ansible Tower API URL to connect to (example: https://192.168.10.10/api/v2)
 #! @input AnsibleUsername: Username to connect to Ansible Tower
 #! @input AnsiblePassword: Password used to connect to Ansible Tower
@@ -22,12 +22,12 @@ namespace: io.cloudslang.redhat.ansible_tower.projects
 flow:
   name: create_project
   inputs:
-    - AnsibleTowerURL
+    - AnsibleTowerURL: "${get_sp('io.cloudslang.redhat.ansible.ansible_url')}"
     - AnsibleUsername
     - AnsiblePassword:
         sensitive: true
-    - TrustAllRoots: 'false'
-    - HostnameVerify: 'strict'
+    - TrustAllRoots: "${get_sp('io.cloudslang.redhat.ansible.trust_all_roots')}"
+    - HostnameVerify: "${get_sp('io.cloudslang.redhat.ansible.x509_hostname_verifier')}"
     - ProjectName
     - description:
         required: true
@@ -65,6 +65,9 @@ flow:
           - SUCCESS: set_scm_type_variable_manual
           - FAILURE: Set_scm_type_variable
     - Create_new_Project:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_post:
             - url: "${get('AnsibleTowerURL')+'/projects/'}"

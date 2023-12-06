@@ -16,15 +16,18 @@ namespace: io.cloudslang.redhat.ansible_tower.jobs
 flow:
   name: run_job_with_template
   inputs:
-    - AnsibleTowerURL
+    - AnsibleTowerURL: "${get_sp('io.cloudslang.redhat.ansible.ansible_url')}"
     - AnsibleUsername
     - AnsiblePassword:
         sensitive: true
-    - TrustAllRoots: 'false'
-    - HostnameVerify: 'strict'
+    - TrustAllRoots: "${get_sp('io.cloudslang.redhat.ansible.trust_all_roots')}"
+    - HostnameVerify: "${get_sp('io.cloudslang.redhat.ansible.x509_hostname_verifier')}"
     - TemplateID
   workflow:
     - Launch_Job_Template:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_post:
             - url: "${get('AnsibleTowerURL')+'/job_templates/'+TemplateID+'/launch/'}"

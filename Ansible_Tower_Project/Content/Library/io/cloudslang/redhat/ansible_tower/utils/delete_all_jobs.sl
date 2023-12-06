@@ -7,14 +7,17 @@ namespace: io.cloudslang.redhat.ansible_tower.utils
 flow:
   name: delete_all_jobs
   inputs:
-    - AnsibleTowerURL
+    - AnsibleTowerURL: "${get_sp('io.cloudslang.redhat.ansible.ansible_url')}"
     - AnsibleUsername
     - AnsiblePassword:
         sensitive: true
-    - TrustAllRoots: 'false'
-    - HostnameVerify: strict
+    - TrustAllRoots: "${get_sp('io.cloudslang.redhat.ansible.trust_all_roots')}"
+    - HostnameVerify: "${get_sp('io.cloudslang.redhat.ansible.x509_hostname_verifier')}"
   workflow:
     - Get_all_Jobs:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${get('AnsibleTowerURL')+'/jobs/'}"
@@ -31,6 +34,9 @@ flow:
           - SUCCESS: Get_array_of_IDs
           - FAILURE: on_failure
     - http_client_delete:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_delete:
             - url: "${get('AnsibleTowerURL')+'/jobs/'+list_item+'/'}"
@@ -66,6 +72,9 @@ flow:
           - NO_MORE: Get_all_Project_updates
           - FAILURE: on_failure
     - Get_all_Project_updates:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_get:
             - url: "${get('AnsibleTowerURL')+'/project_updates/'}"
@@ -103,6 +112,9 @@ flow:
           - NO_MORE: SUCCESS
           - FAILURE: on_failure
     - http_client_delete_1:
+        worker_group:
+          value: "${get_sp('io.cloudslang.redhat.ansible.worker_group')}"
+          override: true
         do:
           io.cloudslang.base.http.http_client_delete:
             - url: "${get('AnsibleTowerURL')+'/project_updates/'+list_item+'/'}"
