@@ -1,6 +1,0 @@
-- name: Autoremove unneeded packages installed as dependencies
-  hosts: all
-  tasks:
-  - name: Autoremove unneeded packages installed as dependencies
-    ansible.builtin.dnf:
-      autoremove: yes

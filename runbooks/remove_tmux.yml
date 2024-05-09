@@ -1,5 +1,0 @@
-- name: Remove tmux
-  hosts: all
-  tasks:
-  - name: Remove tmux
-    package: name=tmux state=absent
