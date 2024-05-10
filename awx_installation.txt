@@ -1,0 +1,90 @@
+# Install AWX on CentOS 9 command sequence
+
+systemctl disable firewalld --now
+cat /etc/selinux/config
+setenforce 0
+### Disable selinux if needed in /etc/selinix/config ###
+
+curl -sfL https://get.k3s.io | sudo bash -
+chmod 644 /etc/rancher/k3s/k3s.yaml
+systemctl status k3s.service
+kubectl get nodes
+kubectl version --short
+yum -y install git make
+git clone https://github.com/ansible/awx-operator.git
+export NAMESPACE=awx
+kubectl create ns ${NAMESPACE}
+kubectl config set-context --current --namespace=$NAMESPACE 
+cd awx-operator/
+yum -y install jq
+### --------- for CentOS 7 install jq this way: --------- ###
+### yum install epel-release -y
+### yum install jq -y
+### jq --version
+
+RELEASE_TAG=`curl -s https://api.github.com/repos/ansible/awx-operator/releases/latest | grep tag_name | cut -d '"' -f 4`
+echo $RELEASE_TAG
+git checkout $RELEASE_TAG
+export NAMESPACE=awx
+make deploy
+kubectl get pods -n awx
+vi public-static-pvc.yaml
+
+### -------- cut below --------- ###
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: public-static-data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 5Gi
+### -------- cut above --------- ###
+ 
+kubectl apply -f public-static-pvc.yaml -n awx
+kubectl get pvc -n awx
+vi awx-instance-deployment.yml
+
+### -------- cut below --------- ###
+---
+apiVersion: awx.ansible.com/v1beta1
+kind: AWX
+metadata:
+  name: awx
+spec:
+  service_type: nodeport
+  projects_persistence: true
+  projects_storage_access_mode: ReadWriteOnce
+  web_extra_volume_mounts: |
+    - name: static-data
+      mountPath: /var/lib/projects
+  extra_volumes: |
+    - name: static-data
+      persistentVolumeClaim:
+        claimName: public-static-data-pvc 
+### -------- cut above --------- ###
+
+kubectl apply -f awx-instance-deployment.yml -n awx
+watch kubectl get pods -l "app.kubernetes.io/managed-by=awx-operator" -n awx
+### wait a few minutes until AWX service are all running ###
+
+kubectl logs -f deployments/awx-operator-controller-manager -c awx-manager
+### see the AWX installer do its magic ####
+
+kubectl  get pvc
+# kubectl logs awx-postgres-15-0
+# ls -lh /var/lib/rancher/k3s/storage/ | grep awx-postgres-15-0
+kubectl get pods -n awx
+kubectl get deploy
+kubectl get service -n awx
+### get the external port that AWX UI is listening on (e.g. 80:31867) ###
+
+kubectl -n awx get secret awx-admin-password -o jsonpath="{.data.password}" | base64 --decode
+kubectl -n awx get secret awx-admin-password -o go-template='{{range $k,$v := .data}}{{printf "%s: " $k}}{{if not $v}}{{$v}}{{else}}{{$v | base64decode}}{{end}}{{"\n"}}{{end}}'
+### retrieve the admin password for the UI. Login to http://ipaddres:31867 with "admin" and that retrieved password ###
+
+### You're done with the AWX installation! ###
