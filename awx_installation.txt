@@ -17,6 +17,7 @@ kubectl create ns ${NAMESPACE}
 kubectl config set-context --current --namespace=$NAMESPACE 
 cd awx-operator/
 yum -y install jq
+
 ### --------- for CentOS 7 install jq this way: --------- ###
 ### yum install epel-release -y
 ### yum install jq -y
