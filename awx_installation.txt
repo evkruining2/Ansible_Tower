@@ -9,7 +9,7 @@ curl -sfL https://get.k3s.io | sudo bash -
 chmod 644 /etc/rancher/k3s/k3s.yaml
 systemctl status k3s.service
 kubectl get nodes
-kubectl version --short
+kubectl version
 yum -y install git make
 git clone https://github.com/ansible/awx-operator.git
 export NAMESPACE=awx
