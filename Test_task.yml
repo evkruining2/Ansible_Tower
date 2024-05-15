@@ -6,6 +6,6 @@
     file:
       path: /root/test.conf
       state: touch
-      owner: cent
-      group: cent
+      owner: root
+      group: root
       mode: 0600
