@@ -4,7 +4,7 @@
   - name: Test Task
     # use file module to set the file state
     file:
-      path: /home/cent/test.conf
+      path: /root/test.conf
       state: touch
       owner: cent
       group: cent
