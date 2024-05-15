@@ -1,0 +1,11 @@
+- name: Test Task
+  hosts: all
+  tasks:
+  - name: Test Task
+    # use file module to set the file state
+    file:
+      path: /home/cent/test.conf
+      state: touch
+      owner: cent
+      group: cent
+      mode: 0600
