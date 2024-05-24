@@ -8,7 +8,7 @@
 
     - name: Get OO CSRF Token for authentication
       uri:
-        url: https://oo.example.com:8443/oo/rest/v2/executions
+        url: https://oo3.museumhof.net:8443/oo/rest/v2/executions
         user: oo
         password: oo
         method: GET
@@ -21,7 +21,7 @@
 
     - name: Run a flow
       uri:
-        url: https://oo.example.com:8443/oo/rest/v2/executions
+        url: https://oo3.museumhof.net:8443/oo/rest/v2/executions
         user: oo
         password: oo
         method: POST
