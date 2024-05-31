@@ -276,8 +276,8 @@ extensions:
         x: 435
         'y': 221
       create_body:
-        x: 246
-        'y': 225
+        x: 240
+        'y': 240
       json_path_query:
         x: 87
         'y': 539
@@ -288,15 +288,15 @@ extensions:
         x: 628
         'y': 545
       start_vm:
-        x: 802
-        'y': 374
+        x: 800
+        'y': 360
         navigate:
           58e42e22-42e8-d4d0-15b3-0b22fd14cb78:
             targetId: f1d69487-d72c-7b03-00dc-8170e90d7482
             port: SUCCESS
       get_ticket:
-        x: 79
-        'y': 71
+        x: 80
+        'y': 80
       is_exitstatus_ok:
         x: 803
         'y': 539
@@ -314,7 +314,7 @@ extensions:
         'y': 225
       get_status:
         x: 440
-        'y': 378
+        'y': 360
       contains:
         x: 251
         'y': 543

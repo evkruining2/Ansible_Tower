@@ -2,7 +2,7 @@ namespace: pve_test_flows
 flow:
   name: list_storage
   inputs:
-    - node: pve2
+    - node: pve
   workflow:
     - list_available_storage:
         do:

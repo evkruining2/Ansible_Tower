@@ -58,10 +58,10 @@ properties:
       value: 6002e264-31f7-43d3-a51e-9ed1ba9ca689
       sensitive: false
   - azure_client_id:
-      value: d25804a6-0404-488c-a0f9-40c1c4aea511
+      value: 365b64e7-7b0a-41fc-893f-69438f93e943
       sensitive: false
   - azure_client_secret:
-      value: '********'
+      value: 8e48Q~M3AqtHfjfLsSwUeHeLXtrlHxYZr~D_Pafj
       sensitive: true
   - azure_subscription_id:
       value: 4d08f192-8c63-49fa-a461-5cdd32ce42dc

@@ -103,11 +103,11 @@ flow:
 extensions:
   graph:
     steps:
-      request_Azure_token:
-        x: 280
-        'y': 80
       url_encode_scope_value:
         x: 80
+        'y': 80
+      request_Azure_token:
+        x: 280
         'y': 80
       filter_token_from_json_result:
         x: 480
