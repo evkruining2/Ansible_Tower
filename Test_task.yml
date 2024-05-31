@@ -1,0 +1,11 @@
+- name: Test Task
+  hosts: all
+  tasks:
+  - name: Test Task
+    # use file module to set the file state
+    file:
+      path: /tmp/test.conf
+      state: touch
+      owner: nobody
+      group: nobody
+      mode: 0600

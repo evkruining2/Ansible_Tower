@@ -1,0 +1,5 @@
+- name: Remove Apache
+  hosts: all
+  tasks:
+  - name: Remove Apache
+    package: name=httpd state=absent

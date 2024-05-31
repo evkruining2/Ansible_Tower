@@ -1,0 +1,5 @@
+- name: Install tmux
+  hosts: all
+  tasks:
+  - name: Install tmux
+    package: name=tmux state=latest
