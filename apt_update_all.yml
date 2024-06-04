@@ -49,6 +49,10 @@
 
     - name: Install PHP and components
       apt:
-        name: php php-json php-mysql php-xml
+        pkg:
+          - php
+          - php-json
+          - php-mysql
+          - php-xml
         state: latest
         update_cache: yes
