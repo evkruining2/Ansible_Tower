@@ -1,4 +1,4 @@
-- name: Install apache server   # name of the playbook
+- name: Install apache server on RH family servers  # name of the playbook
   hosts: all    # target group defined in the inventory file 
   become: yes
   tasks:
