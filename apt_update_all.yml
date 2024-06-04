@@ -34,3 +34,21 @@
         name: apache2
         state: started
         enabled: yes
+
+    - name: Install Mariadb-server
+      apt:
+        name: mariadb-server
+        state: latest
+        update_cache: yes
+
+    - name: start and enable autostart of Mariadb-server
+      systemd:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - name: Install PHP and components
+      apt:
+        name: php php-json php-mysql php-xml
+        state: latest
+        update_cache: yes
