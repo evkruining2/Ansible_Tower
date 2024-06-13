@@ -61,8 +61,8 @@ properties:
       value: 365b64e7-7b0a-41fc-893f-69438f93e943
       sensitive: false
   - azure_client_secret:
-      value: 8e48Q~M3AqtHfjfLsSwUeHeLXtrlHxYZr~D_Pafj
-      sensitive: true
+      value: empty due to git security scanning
+      sensitive: false
   - azure_subscription_id:
       value: 4d08f192-8c63-49fa-a461-5cdd32ce42dc
       sensitive: false
@@ -76,8 +76,8 @@ properties:
       value: 'https://management.azure.com'
       sensitive: false
   - aws_accesskey:
-      value: AKIARHRVZWALGMFI6VF7
+      value: empty due to git security scanning
       sensitive: false
   - aws_secretkey:
-      value: '********'
-      sensitive: true
+      value: empty due to git security scanning
+      sensitive: false
