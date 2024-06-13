@@ -20,7 +20,7 @@ properties:
   - fw_password:
       value: opsware
       sensitive: true
-  - aws_key_id: ''
+  - aws_key_id: empty due to git security scanning
   - aws_key:
-      value: ''
-      sensitive: true
+      value: empty due to git security scanning
+      sensitive: false
