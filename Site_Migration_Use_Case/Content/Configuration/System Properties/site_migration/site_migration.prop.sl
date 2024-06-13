@@ -20,7 +20,7 @@ properties:
   - fw_password:
       value: opsware
       sensitive: true
-  - aws_key_id: AKIARHRVZWALMN5CVBVX
+  - aws_key_id: ''
   - aws_key:
-      value: WHJLypuLMSLG2YJ5vpG+wxDZwn52/cd+ta81DXSH
+      value: ''
       sensitive: true
