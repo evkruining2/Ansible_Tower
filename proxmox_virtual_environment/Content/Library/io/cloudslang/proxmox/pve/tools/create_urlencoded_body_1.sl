@@ -42,8 +42,12 @@ operation:
         required: false
     - param_net3:
         required: false
+    - param_ssh_public_keys:
+        required: false
+    - param_features:
+        required: false
   python_action:
-    script: "inputs = locals()                                           # all local variables\r\nprefix = 'param_'                                           # serialize just variables starting with this prefix\r\nrequest = ''                                                # string accumulator\r\nfor key, value in inputs.items():                           # iterate all parameters\r\n    if key.startswith(prefix) and value is not None:        # if parameter given\r\n        key = key[len(prefix):]                             # skip prefix\r\n        request += \"&\" + str(key) + '=' + str(value)\r\nrequest = request[1:]                                       #skip the very first delimiter\r\n                                                            #code by Petr Panuska"
+    script: "inputs = locals()                                           # all local variables\r\nprefix = 'param_'                                           # serialize just variables starting with this prefix\r\nrequest = ''                                                # string accumulator\r\nfor key, value in inputs.items():                           # iterate all parameters\r\n    if key.startswith(prefix) and value is not None:        # if parameter given\r\n        key = key[len(prefix):]                             # skip prefix\r\n        key = key.replace(\"_\",\"-\")\r\n        request += \"&\" + str(key) + '=' + str(value)\r\nrequest = request[1:]                                       #skip the very first delimiter\r\n                                                            #code by Petr Panuska"
   outputs:
     - request: '${request}'
   results:
