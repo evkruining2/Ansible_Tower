@@ -4,7 +4,9 @@ flow:
   inputs:
     - pveURL: 'https://pve.museumhof.net:8006'
     - pveUsername: root@pam
-    - pvePassword: opsware
+    - pvePassword:
+        default: opsware
+        sensitive: true
     - TrustAllRoots: 'true'
     - HostnameVerify: allow_all
   workflow:

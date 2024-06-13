@@ -1,6 +1,10 @@
 ########################################################################################################################
 #!!
 #! @description: This flow will create a new LXC container on the specified PVE node, using a selected template. To get a list of PVE nodes and a list of available templates run the "get_nodes" and "list_templates" flows respectfully.
+#!               
+#!               Features and ssh-public-keys values need to be URL encoded (use https://www.urlencoder.org/ to URL encode your payload for these property values)
+#!               
+#!               Refer to the PVE API here for more information: https://pve.proxmox.com/pve-docs/api-viewer/#/nodes/{node}/lxc
 #!
 #! @input pveURL: URL of the PVE environment. Example: http://pve.example.com:8006
 #! @input pveUsername: PVE username with appropriate access. Example: root@pam
@@ -19,6 +23,8 @@
 #! @input net1: Network setting for the second NIC. Example: name=eth1,bridge=vmbr0,ip=dhcp,tag=1,firewall=0 (optional)
 #! @input net2: Network setting for the third NIC (optional)
 #! @input net3: Network setting for the fourth NIC (optional)
+#! @input ssh_public_keys: Setup public SSH keys (one key per line, OpenSSH format) - Input must be URL Encoded
+#! @input features: Allow containers access to advanced features. - Input must be URL encoded
 #!
 #! @output JobStatus: Status of the PBE cloning job
 #! @output TaskStatus: Task status of the LXC creation ("stopped" means the task has finished)
@@ -54,6 +60,10 @@ flow:
     - net2:
         required: false
     - net3:
+        required: false
+    - ssh_public_keys:
+        required: false
+    - features:
         required: false
   workflow:
     - get_ticket:
@@ -192,6 +202,8 @@ flow:
             - param_net1: '${net1}'
             - param_net2: '${net2}'
             - param_net3: '${net3}'
+            - param_ssh_public_keys: '${ssh_public_keys}'
+            - param_features: '${features}'
         publish:
           - body: '${request}'
         navigate:
