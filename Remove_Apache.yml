@@ -1,4 +1,4 @@
-- name: Remove Apache
+- name: Remove Apache for RH family of servers
   hosts: all
   tasks:
   - name: Remove Apache

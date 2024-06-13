@@ -1,0 +1,58 @@
+- name: Upgrade all packages
+  hosts: all
+  become: true
+  become_user: root
+  tasks:
+    - name: Update apt repo and cache on all Debian/Ubuntu boxes
+      apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+
+    - name: Upgrade all packages on servers
+      apt: upgrade=dist force_apt_get=yes
+
+    - name: Check if a reboot is needed on all servers
+      register: reboot_required_file
+      stat: path=/var/run/reboot-required get_md5=no
+
+    - name: Reboot the box if kernel updated
+      reboot:
+        msg: "Reboot initiated by Ansible for kernel updates"
+        connect_timeout: 2
+        reboot_timeout: 3
+        pre_reboot_delay: 0
+        post_reboot_delay: 60
+        test_command: uptime
+      when: reboot_required_file.stat.exists
+
+    - name: Install apache server
+      apt:
+        name: apache2
+        state: latest
+        update_cache: yes
+
+    - name: start and enable autostart of apache server
+      systemd:
+        name: apache2
+        state: started
+        enabled: yes
+
+    - name: Install Mariadb-server
+      apt:
+        name: mariadb-server
+        state: latest
+        update_cache: yes
+
+    - name: start and enable autostart of Mariadb-server
+      systemd:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - name: Install PHP and components
+      apt:
+        pkg:
+          - php
+          - php-json
+          - php-mysql
+          - php-xml
+        state: latest
+        update_cache: yes
