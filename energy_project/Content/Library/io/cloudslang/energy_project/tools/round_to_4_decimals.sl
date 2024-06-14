@@ -4,7 +4,6 @@ operation:
   inputs:
     - input
   python_action:
-    use_jython: false
     script: 'output = round(input,4)'
   outputs:
     - output
