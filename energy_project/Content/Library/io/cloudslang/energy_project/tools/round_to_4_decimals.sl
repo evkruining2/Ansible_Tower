@@ -4,7 +4,7 @@ operation:
   inputs:
     - input
   python_action:
-    script: 'output = round(input,4)'
+    script: 'output = round(float(input),3)'
   outputs:
     - output
   results:

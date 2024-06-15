@@ -2,30 +2,73 @@ namespace: io.cloudslang.energy_project.easyenergy
 flow:
   name: round_numbers
   inputs:
-    - list: '0.1292885,0.12584,0.11374,0.10527,0.068486,0.0240669,0.0018634,1.089E-4,0.0,-7.26E-5,-0.0121968,-0.0350779,-0.0542927,-0.0791824,-0.0967879,-0.0679657,-0.0352957,-0.005445,-1.21E-5,0.0388289,0.0847,0.0820017,0.0765325,0.0492712'
+    - list
+    - lead: '*'
   workflow:
-    - round_to_4_decimals:
+    - list_iterator:
+        do:
+          io.cloudslang.base.lists.list_iterator:
+            - list: '${list}'
+        publish:
+          - result_string
+        navigate:
+          - HAS_MORE: round_to_3_decimals
+          - NO_MORE: do_nothing
+          - FAILURE: on_failure
+    - round_to_3_decimals:
         do:
           io.cloudslang.energy_project.tools.round_to_4_decimals:
-            - input: '1.3434343'
+            - input: '${result_string}'
+        publish:
+          - output
+        navigate:
+          - SUCCESS: add_element
+    - add_element:
+        do:
+          io.cloudslang.base.lists.add_element:
+            - list: '${lead}'
+            - element: '${output}'
+            - delimiter: ','
+        publish:
+          - lead: '${return_result}'
+        navigate:
+          - SUCCESS: list_iterator
+          - FAILURE: on_failure
+    - do_nothing:
+        do:
+          io.cloudslang.base.utils.do_nothing:
+            - lead: '${lead}'
+        publish:
+          - tariff_list: '${cs_substring(lead,2)}'
         navigate:
           - SUCCESS: SUCCESS
+          - FAILURE: on_failure
   outputs:
     - tariff_list
   results:
     - SUCCESS
+    - FAILURE
 extensions:
   graph:
     steps:
-      round_to_4_decimals:
-        x: 200
-        'y': 200
+      list_iterator:
+        x: 80
+        'y': 80
+      do_nothing:
+        x: 280
+        'y': 280
         navigate:
-          502822a0-98d7-f671-3556-901e5aff9431:
+          00fe20ff-56b3-ec19-7f10-17402c989450:
             targetId: a7601524-c572-ffe6-45a2-83e9e6534e53
             port: SUCCESS
+      add_element:
+        x: 80
+        'y': 480
+      round_to_3_decimals:
+        x: 80
+        'y': 280
     results:
       SUCCESS:
         a7601524-c572-ffe6-45a2-83e9e6534e53:
-          x: 440
-          'y': 240
+          x: 480
+          'y': 280
