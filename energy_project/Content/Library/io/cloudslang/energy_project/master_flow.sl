@@ -7,6 +7,7 @@ flow:
           io.cloudslang.energy_project.easyenergy.get_tariff_for_tomorrow: []
         publish:
           - tariff_list
+          - lowest_tariff
         navigate:
           - FAILURE: on_failure
           - SUCCESS: check_if_we_have_a_list
@@ -65,6 +66,7 @@ flow:
           io.cloudslang.energy_project.email_and_html_reports.email_tariff_information:
             - tariff_list: '${tariff_list}'
             - date: '${date}'
+            - lowest_tariff: '${lowest_tariff}'
         navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
@@ -74,36 +76,36 @@ flow:
 extensions:
   graph:
     steps:
+      get_tariff_for_tomorrow:
+        x: 80
+        'y': 80
       human_readable_date:
         x: 280
         'y': 80
       check_if_we_have_a_list:
         x: 80
         'y': 280
-      create_html_chart:
-        x: 480
-        'y': 80
-      get_tariff_for_tomorrow:
-        x: 80
-        'y': 80
-      proceed_if_list_length_is_24:
-        x: 280
-        'y': 280
       check_list_length:
         x: 80
         'y': 480
-      email_tariff_information:
-        x: 680
-        'y': 80
-        navigate:
-          b65fcce5-7a34-a67a-0721-254513541966:
-            targetId: b0d752b2-3b75-ebc7-ca84-85efa6b536a6
-            port: SUCCESS
+      proceed_if_list_length_is_24:
+        x: 280
+        'y': 280
       no_list_present:
         x: 280
         'y': 480
         navigate:
           e2d91caf-3cbe-b5f6-80a9-5b21a6610840:
+            targetId: b0d752b2-3b75-ebc7-ca84-85efa6b536a6
+            port: SUCCESS
+      create_html_chart:
+        x: 480
+        'y': 80
+      email_tariff_information:
+        x: 680
+        'y': 80
+        navigate:
+          b65fcce5-7a34-a67a-0721-254513541966:
             targetId: b0d752b2-3b75-ebc7-ca84-85efa6b536a6
             port: SUCCESS
     results:
