@@ -5,38 +5,40 @@ flow:
     - users: 'Erwin,Rilana'
     - tariff_list
     - date
+    - lowest_tariff
   workflow:
     - set_flow_variables:
         do:
           io.cloudslang.energy_project.tools.set_flow_variables:
             - list: '${tariff_list}'
+            - lowest_tariff: '${lowest_tariff}'
         publish:
-          - h0
-          - h1
-          - h2
-          - h3
-          - h4
-          - h5
-          - h6
-          - h7
-          - h8
-          - h9
-          - h10
-          - h11
-          - h12
-          - h13
-          - h14
-          - h15
-          - h16
-          - h17
-          - h18
-          - h19
-          - h20
-          - h21
-          - h22
-          - h23
+          - h0: "${cs_replace(h0,lowest_tariff,'<b>'+h0+'</b>')}"
+          - h1: "${cs_replace(h1,lowest_tariff,'<b>'+h1+'</b>')}"
+          - h2: "${cs_replace(h2,lowest_tariff,'<b>'+h2+'</b>')}"
+          - h3: "${cs_replace(h3,lowest_tariff,'<b>'+h3+'</b>')}"
+          - h4: "${cs_replace(h4,lowest_tariff,'<b>'+h4+'</b>')}"
+          - h5: "${cs_replace(h5,lowest_tariff,'<b>'+h5+'</b>')}"
+          - h6: "${cs_replace(h6,lowest_tariff,'<b>'+h6+'</b>')}"
+          - h7: "${cs_replace(h7,lowest_tariff,'<b>'+h7+'</b>')}"
+          - h8: "${cs_replace(h8,lowest_tariff,'<b>'+h8+'</b>')}"
+          - h9: "${cs_replace(h9,lowest_tariff,'<b>'+h9+'</b>')}"
+          - h10: "${cs_replace(h10,lowest_tariff,'<b>'+h10+'</b>')}"
+          - h11: "${cs_replace(h11,lowest_tariff,'<b>'+h11+'</b>')}"
+          - h12: "${cs_replace(h12,lowest_tariff,'<b>'+h12+'</b>')}"
+          - h13: "${cs_replace(h13,lowest_tariff,'<b>'+h13+'</b>')}"
+          - h14: "${cs_replace(h14,lowest_tariff,'<b>'+h14+'</b>')}"
+          - h15: "${cs_replace(h15,lowest_tariff,'<b>'+h15+'</b>')}"
+          - h16: "${cs_replace(h16,lowest_tariff,'<b>'+h16+'</b>')}"
+          - h17: "${cs_replace(h17,lowest_tariff,'<b>'+h17+'</b>')}"
+          - h18: "${cs_replace(h18,lowest_tariff,'<b>'+h18+'</b>')}"
+          - h19: "${cs_replace(h19,lowest_tariff,'<b>'+h19+'</b>')}"
+          - h20: "${cs_replace(h20,lowest_tariff,'<b>'+h20+'</b>')}"
+          - h21: "${cs_replace(h21,lowest_tariff,'<b>'+h21+'</b>')}"
+          - h22: "${cs_replace(h22,lowest_tariff,'<b>'+h22+'</b>')}"
+          - h23: "${cs_replace(h23,lowest_tariff,'<b>'+h23+'</b>')}"
         navigate:
-          - SUCCESS: send_mail
+          - SUCCESS: get_cheapest_hour
     - send_mail:
         loop:
           for: user in users
@@ -58,7 +60,7 @@ flow:
                     </head>
                     <body>
                       <table width="100%" cellspacing="2" cellpadding="2" border="0"
-                        bgcolor="#ff9200">
+                        bgcolor="#ff6600">
                         <tbody>
                           <tr>
                             <td valign="top"><br>
@@ -197,13 +199,15 @@ flow:
                       <a href="https://opsware.nl/easyenergy/index.html">Klik hier voor de
                         grafiek</a><br>
                       <br>
+                      Het meest voordelige tarief voor morgen is om '''+hour+''':00 uur want dan is het tarief <b>€'''+lowest_tariff+'''</b> per Kwh!<br>
+                      <br>
                       Met vriendelijke groeten,<br>
                       Uw easyEneryBot - powered by Operations Orchestration<br>
                       <br>
                       <table width="100%" cellspacing="2" cellpadding="2" border="0">
                         <tbody>
                           <tr>
-                            <td valign="top" bgcolor="#ff9200"><br>
+                            <td valign="top" bgcolor="#ff6600"><br>
                             </td>
                           </tr>
                         </tbody>
@@ -219,6 +223,15 @@ flow:
         navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
+    - get_cheapest_hour:
+        do:
+          io.cloudslang.base.lists.find_all:
+            - list: '${tariff_list}'
+            - element: '${lowest_tariff}'
+        publish:
+          - hour: '${indices}'
+        navigate:
+          - SUCCESS: send_mail
   results:
     - SUCCESS
     - FAILURE
@@ -235,6 +248,9 @@ extensions:
           1a39a656-3146-5530-4852-3fc8fcaefed1:
             targetId: f4ee02f9-c25f-3833-a02e-8d30fd92c165
             port: SUCCESS
+      get_cheapest_hour:
+        x: 120
+        'y': 400
     results:
       SUCCESS:
         f4ee02f9-c25f-3833-a02e-8d30fd92c165:

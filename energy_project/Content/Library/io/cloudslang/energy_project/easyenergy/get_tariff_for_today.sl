@@ -35,10 +35,30 @@ flow:
         publish:
           - tariff_list: "${return_result.strip('[').strip(']')}"
         navigate:
+          - SUCCESS: round_numbers
+          - FAILURE: on_failure
+    - round_numbers:
+        do:
+          io.cloudslang.energy_project.easyenergy.round_numbers:
+            - list: '${tariff_list}'
+        publish:
+          - tariff_list
+        navigate:
+          - SUCCESS: sort_list
+          - FAILURE: on_failure
+    - sort_list:
+        do:
+          io.cloudslang.base.lists.sort_list:
+            - list: '${tariff_list}'
+            - delimiter: ','
+        publish:
+          - lowest_tariff: '${return_result.split(",")[0]}'
+        navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
   outputs:
     - tariff_list: '${tariff_list}'
+    - lowest_tariff: '${lowest_tariff}'
   results:
     - FAILURE
     - SUCCESS
@@ -47,15 +67,21 @@ extensions:
     steps:
       create_iso_timestamp:
         x: 120
-        'y': 80
+        'y': 40
       http_client_get:
         x: 120
         'y': 280
       json_path_query:
+        x: 120
+        'y': 440
+      round_numbers:
         x: 320
-        'y': 160
+        'y': 440
+      sort_list:
+        x: 320
+        'y': 280
         navigate:
-          9c826c19-3fe8-edf2-8422-566ce8de45f1:
+          af8f581b-c2c3-0e68-94ae-f95ed0e28d9e:
             targetId: c2ceccf0-9c7d-0d45-3730-5b3bf301e570
             port: SUCCESS
     results:

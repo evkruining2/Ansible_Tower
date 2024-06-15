@@ -22,7 +22,7 @@ flow:
         do:
           io.cloudslang.base.ssh.ssh_command:
             - host: '${host}'
-            - command: "${'''sed -i \"s/label: .*/label: 'easyEnergy stroom tarieven voor '''+date+'''',/g\" /var/www/virtual/opsware.nl/easyenergy/index.html'''}"
+            - command: "${'''sed -i \"s/easyEnergy stroom tarieven voor.*/easyEnergy stroom tarieven voor '''+date+'''/g\" /var/www/virtual/opsware.nl/easyenergy/index.html'''}"
             - username: '${username}'
             - password:
                 value: '${password}'
