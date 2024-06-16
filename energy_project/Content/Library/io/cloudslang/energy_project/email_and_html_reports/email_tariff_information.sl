@@ -2,10 +2,10 @@ namespace: io.cloudslang.energy_project.email_and_html_reports
 flow:
   name: email_tariff_information
   inputs:
-    - users: 'Erwin,Rilana'
-    - tariff_list
-    - date
-    - lowest_tariff
+    - users: Erwin
+    - tariff_list: '0.03,0.012,0.006,0.004,0.003,0.003,0.004,0.001,-0.0,-0.002,-0.012,-0.016,-0.024,-0.036,-0.043,-0.035,-0.012,-0.002,0.063,0.112,0.134,0.142,0.143,0.111'
+    - date: 17 juni 2024
+    - lowest_tariff: '0.042'
   workflow:
     - set_flow_variables:
         do:
@@ -200,6 +200,7 @@ flow:
                         grafiek</a><br>
                       <br>
                       Het meest voordelige tarief voor morgen is om '''+hour+''':00 uur want dan is het tarief <b>€'''+lowest_tariff+'''</b> per Kwh!<br>
+                      De gemiddelde prijs per Kwh is morgen €'''+average+'''<br>
                       <br>
                       Met vriendelijke groeten,<br>
                       Uw easyEneryBot - powered by Operations Orchestration<br>
@@ -231,7 +232,16 @@ flow:
         publish:
           - hour: '${indices}'
         navigate:
+          - SUCCESS: calculate_average
+    - calculate_average:
+        do:
+          io.cloudslang.energy_project.tools.calculate_average:
+            - list: '${tariff_list}'
+        publish:
+          - average
+        navigate:
           - SUCCESS: send_mail
+          - FAILURE: on_failure
   results:
     - SUCCESS
     - FAILURE
@@ -251,6 +261,9 @@ extensions:
       get_cheapest_hour:
         x: 120
         'y': 400
+      calculate_average:
+        x: 320
+        'y': 360
     results:
       SUCCESS:
         f4ee02f9-c25f-3833-a02e-8d30fd92c165:
