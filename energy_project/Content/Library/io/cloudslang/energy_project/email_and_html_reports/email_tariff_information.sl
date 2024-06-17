@@ -2,10 +2,10 @@ namespace: io.cloudslang.energy_project.email_and_html_reports
 flow:
   name: email_tariff_information
   inputs:
-    - users: Erwin
-    - tariff_list: '0.03,0.012,0.006,0.004,0.003,0.003,0.004,0.001,-0.0,-0.002,-0.012,-0.016,-0.024,-0.036,-0.043,-0.035,-0.012,-0.002,0.063,0.112,0.134,0.142,0.143,0.111'
-    - date: 17 juni 2024
-    - lowest_tariff: '0.042'
+    - users: 'Erwin,Rilana'
+    - tariff_list
+    - date
+    - lowest_tariff
   workflow:
     - set_flow_variables:
         do:
@@ -242,6 +242,8 @@ flow:
         navigate:
           - SUCCESS: send_mail
           - FAILURE: on_failure
+  outputs:
+    - cheapest_hour: '${hour}'
   results:
     - SUCCESS
     - FAILURE
