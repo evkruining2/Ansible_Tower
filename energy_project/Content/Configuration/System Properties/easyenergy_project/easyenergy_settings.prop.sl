@@ -14,3 +14,8 @@ properties:
       value: opsware
       sensitive: true
   - oo_user: erwin
+  - p1_host: pi4
+  - p1_user: p1mon
+  - p1_password:
+      value: opsware
+      sensitive: true

@@ -15,14 +15,6 @@ flow:
           - HAS_MORE: round_to_3_decimals
           - NO_MORE: do_nothing
           - FAILURE: on_failure
-    - round_to_3_decimals:
-        do:
-          io.cloudslang.energy_project.tools.round_to_4_decimals:
-            - input: '${result_string}'
-        publish:
-          - output
-        navigate:
-          - SUCCESS: add_element
     - add_element:
         do:
           io.cloudslang.base.lists.add_element:
@@ -43,6 +35,14 @@ flow:
         navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
+    - round_to_3_decimals:
+        do:
+          io.cloudslang.energy_project.tools.round_to_3_decimals:
+            - input: '${result_string}'
+        publish:
+          - output
+        navigate:
+          - SUCCESS: add_element
   outputs:
     - tariff_list
   results:
@@ -56,19 +56,19 @@ extensions:
         'y': 80
       do_nothing:
         x: 280
-        'y': 280
+        'y': 80
         navigate:
           00fe20ff-56b3-ec19-7f10-17402c989450:
             targetId: a7601524-c572-ffe6-45a2-83e9e6534e53
             port: SUCCESS
       add_element:
         x: 80
-        'y': 480
+        'y': 360
       round_to_3_decimals:
-        x: 80
-        'y': 280
+        x: 280
+        'y': 360
     results:
       SUCCESS:
         a7601524-c572-ffe6-45a2-83e9e6534e53:
-          x: 480
-          'y': 280
+          x: 440
+          'y': 240
