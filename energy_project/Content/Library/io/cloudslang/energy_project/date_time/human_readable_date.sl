@@ -1,6 +1,15 @@
+########################################################################################################################
+#!!
+#! @input offset: The number of seconds to offset the date/time with.
+#!                Valid value: 'number_of_seconds'
+#!                Example: '20'
+#!!#
+########################################################################################################################
 namespace: io.cloudslang.energy_project.date_time
 flow:
   name: human_readable_date
+  inputs:
+    - offset
   workflow:
     - get_time:
         do:
@@ -15,7 +24,7 @@ flow:
         do:
           io.cloudslang.base.datetime.offset_time_by:
             - date: '${output}'
-            - offset: '86400'
+            - offset: '${offset}'
             - locale_lang: NL
             - locale_country: NL
         publish:

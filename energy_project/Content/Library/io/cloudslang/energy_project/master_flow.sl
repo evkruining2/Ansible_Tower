@@ -13,7 +13,8 @@ flow:
           - SUCCESS: check_if_we_have_a_list
     - human_readable_date:
         do:
-          io.cloudslang.energy_project.date_time.human_readable_date: []
+          io.cloudslang.energy_project.date_time.human_readable_date:
+            - offset: '86400'
         publish:
           - date
         navigate:
