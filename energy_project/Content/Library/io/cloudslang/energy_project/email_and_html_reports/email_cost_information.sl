@@ -197,7 +197,7 @@ flow:
                       <a href="https://opsware.nl/easyenergy/cost.html">Klik hier voor de
                         grafiek</a><br>
                       <br>
-                      Het In totaal heb je gisteren <b>€'''+sum_cost+'''</b> uitgegeven aan stroom (exclusief kosten voor transport, opslag, energiebelasting, levering, etc).<br>
+                      In totaal heb je gisteren <b>€'''+sum_cost+'''</b> uitgegeven aan stroom (exclusief kosten voor transport, opslag, energiebelasting, levering, etc).<br>
                       De gemiddelde prijs per Kwh was gisteren €'''+average+'''.<br>
                       <br>
                       Met vriendelijke groeten,<br>
