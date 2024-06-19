@@ -2,21 +2,12 @@ namespace: io.cloudslang.energy_project.home_assistant
 flow:
   name: switch_on
   inputs:
-    - ha_url: "${get_sp('easyenergy_project.ha_api_url')}"
-    - ha_token: "${get_sp('easyenergy_project.ha_token')}"
-    - switch_id: switch.hombli_smart_socket_socket_1
+    - tasmota_url: 'http://tasmota1.museumhof.net/cm?cmnd=Power'
   workflow:
     - http_client_post:
         do:
           io.cloudslang.base.http.http_client_post:
-            - url: "${ha_url+'/services/switch/turn_on'}"
-            - headers: "${'Authorization: Bearer '+ha_token}"
-            - body: |-
-                ${'''
-                {
-                    "entity_id": "'''+switch_id+'''"
-                }
-                '''}
+            - url: "${tasmota_url+'%20On'}"
         publish: []
         navigate:
           - SUCCESS: SUCCESS
