@@ -3,21 +3,14 @@
 #! @input easy_energy_url: URL to which the call is made.
 #!!#
 ########################################################################################################################
-namespace: io.cloudslang.energy_project.easyenergy
+namespace: io.cloudslang.energy_project.test
 flow:
   name: get_tariff_for_tomorrow
   inputs:
     - easy_energy_url: 'https://mijn.easyenergy.com/nl/api/tariff/getapxtariffs'
+    - begin_date: '2024-06-21T00%3A00%3A00'
+    - end_date: '2024-06-22T00%3A00%3A00'
   workflow:
-    - create_iso_timestamp_for_tomorrow:
-        do:
-          io.cloudslang.energy_project.date_time.create_iso_timestamp_for_tomorrow: []
-        publish:
-          - begin_date
-          - end_date
-        navigate:
-          - SUCCESS: http_client_get
-          - FAILURE: on_failure
     - http_client_get:
         do:
           io.cloudslang.base.http.http_client_get:
@@ -72,9 +65,13 @@ flow:
 extensions:
   graph:
     steps:
-      create_iso_timestamp_for_tomorrow:
-        x: 80
-        'y': 80
+      get_lowest_tariff:
+        x: 416
+        'y': 112
+        navigate:
+          b826e965-0309-b216-b1b2-a79b11ac2bb9:
+            targetId: c2ceccf0-9c7d-0d45-3730-5b3bf301e570
+            port: SUCCESS
       http_client_get:
         x: 80
         'y': 320
@@ -84,19 +81,12 @@ extensions:
       round_numbers:
         x: 280
         'y': 200
-      get_lowest_tariff:
-        x: 416
-        'y': 112
-        navigate:
-          b826e965-0309-b216-b1b2-a79b11ac2bb9:
-            targetId: c2ceccf0-9c7d-0d45-3730-5b3bf301e570
-            port: SUCCESS
       is_list_empty:
-        x: 440
+        x: 480
         'y': 440
         navigate:
-          54d6db29-1a0d-606e-7843-fb5fa6fa33ec:
-            targetId: 53699720-6597-3b3a-85ae-0aa25380708b
+          42a74515-feeb-647e-c83b-d4197ee4bf22:
+            targetId: c8cb7e77-6ea4-e666-7850-8d892a3c27d9
             port: SUCCESS
     results:
       SUCCESS:
@@ -104,6 +94,6 @@ extensions:
           x: 680
           'y': 240
       FAILURE:
-        53699720-6597-3b3a-85ae-0aa25380708b:
+        c8cb7e77-6ea4-e666-7850-8d892a3c27d9:
           x: 680
           'y': 440

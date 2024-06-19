@@ -43,8 +43,15 @@ flow:
             - cost_list: '${cost_list}'
             - date: '${date}'
         navigate:
-          - SUCCESS: SUCCESS
+          - SUCCESS: put_cost_in_db
           - FAILURE: on_failure
+    - put_cost_in_db:
+        do:
+          io.cloudslang.energy_project.database.put_cost_in_db:
+            - date: '${p1_date}'
+        navigate:
+          - FAILURE: on_failure
+          - SUCCESS: SUCCESS
   results:
     - SUCCESS
     - FAILURE
@@ -58,20 +65,23 @@ extensions:
         x: 200
         'y': 280
       human_readable_date:
-        x: 320
+        x: 280
         'y': 80
       create_cost_chart:
-        x: 440
+        x: 400
         'y': 280
       email_cost_information:
-        x: 560
+        x: 480
         'y': 80
+      put_cost_in_db:
+        x: 600
+        'y': 280
         navigate:
-          48427cfe-e4d8-f81b-74fa-78f95f2380d6:
+          2f3a0c04-7404-06f8-eea6-5eee348a8f69:
             targetId: 0bcd0de2-7667-77a8-3309-9e3fa33f969e
             port: SUCCESS
     results:
       SUCCESS:
         0bcd0de2-7667-77a8-3309-9e3fa33f969e:
           x: 680
-          'y': 280
+          'y': 80
