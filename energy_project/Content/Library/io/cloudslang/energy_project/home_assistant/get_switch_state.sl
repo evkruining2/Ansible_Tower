@@ -1,16 +1,18 @@
+########################################################################################################################
+#!!
+#! @input tasmota_url: URL to which the call is made.
+#!!#
+########################################################################################################################
 namespace: io.cloudslang.energy_project.home_assistant
 flow:
   name: get_switch_state
   inputs:
-    - ha_url: "${get_sp('easyenergy_project.ha_api_url')}"
-    - switch_id: switch.hombli_smart_socket_socket_1
-    - ha_token: "${get_sp('easyenergy_project.ha_token')}"
+    - tasmota_url: 'http://tasmota1.museumhof.net/cm?cmnd=Power'
   workflow:
     - http_client_get:
         do:
           io.cloudslang.base.http.http_client_get:
-            - url: "${ha_url+'/states/'+switch_id}"
-            - headers: "${'Authorization: Bearer '+ha_token}"
+            - url: '${tasmota_url}'
         publish:
           - json_result: '${return_result}'
         navigate:
@@ -20,7 +22,7 @@ flow:
         do:
           io.cloudslang.base.json.json_path_query:
             - json_object: '${json_result}'
-            - json_path: $.state
+            - json_path: $.POWER
         publish:
           - power_state: "${return_result.strip('[').strip(']').strip('\"')}"
         navigate:
