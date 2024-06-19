@@ -16,6 +16,8 @@ flow:
           io.cloudslang.base.datetime.parse_date:
             - date: '${date}'
             - date_format: YYYY-MM-dd
+            - date_locale_lang: nl
+            - date_locale_country: nl
             - out_format: YYYY-MM-dd
         publish:
           - output

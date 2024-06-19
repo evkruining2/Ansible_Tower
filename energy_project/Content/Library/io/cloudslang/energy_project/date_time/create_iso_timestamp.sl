@@ -10,6 +10,9 @@ flow:
     - get_time:
         do:
           io.cloudslang.base.datetime.get_time:
+            - locale_lang: nl
+            - locale_country: nl
+            - timezone: CET
             - date_format: YYYY-MM-dd
         publish:
           - output
