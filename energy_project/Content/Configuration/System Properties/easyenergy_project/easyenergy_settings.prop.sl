@@ -15,3 +15,8 @@ properties:
   - p1_password:
       value: opsware
       sensitive: true
+  - postgresql_server: oo3.museumhof.net
+  - postgresql_user: postgres
+  - postgresql_password:
+      value: admin
+      sensitive: true
