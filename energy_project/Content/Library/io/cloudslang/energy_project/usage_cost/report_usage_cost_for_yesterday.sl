@@ -51,6 +51,12 @@ flow:
             - date: '${p1_date}'
         navigate:
           - FAILURE: on_failure
+          - SUCCESS: create_all_cost_chart_yesterday
+    - create_all_cost_chart_yesterday:
+        do:
+          io.cloudslang.energy_project.usage_cost.create_all_cost_chart_yesterday: []
+        navigate:
+          - FAILURE: on_failure
           - SUCCESS: SUCCESS
   results:
     - SUCCESS
@@ -76,12 +82,15 @@ extensions:
       put_cost_in_db:
         x: 600
         'y': 280
+      create_all_cost_chart_yesterday:
+        x: 680
+        'y': 80
         navigate:
-          2f3a0c04-7404-06f8-eea6-5eee348a8f69:
+          25e15724-24d2-6dde-09b9-73f517e7e6f7:
             targetId: 0bcd0de2-7667-77a8-3309-9e3fa33f969e
             port: SUCCESS
     results:
       SUCCESS:
         0bcd0de2-7667-77a8-3309-9e3fa33f969e:
-          x: 680
-          'y': 80
+          x: 800
+          'y': 280
