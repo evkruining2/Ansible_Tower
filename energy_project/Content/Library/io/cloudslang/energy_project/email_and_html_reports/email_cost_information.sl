@@ -194,7 +194,7 @@ flow:
                         </tbody>
                       </table>
                       <br>
-                      <a href="https://opsware.nl/easyenergy/cost.html">Klik hier voor de
+                      <a href="https://opsware.nl/easyenergy/c2.html">Klik hier voor de
                         grafiek</a><br>
                       <br>
                       In totaal heb je gisteren <b>€'''+sum_cost+'''</b> uitgegeven aan stroom (exclusief kosten voor transport, opslag, energiebelasting, levering, etc).<br>
