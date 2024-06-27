@@ -1,10 +1,10 @@
-namespace: io.cloudslang.energy_project
+namespace: io.cloudslang.energy_project.tools
 flow:
-  name: master_flow
+  name: backup_master_flow_for_today
   workflow:
-    - get_tariff_for_tomorrow:
+    - get_tariff_for_today:
         do:
-          io.cloudslang.energy_project.easyenergy.get_tariff_for_tomorrow: []
+          io.cloudslang.energy_project.easyenergy.get_tariff_for_today: []
         publish:
           - tariff_list
           - lowest_tariff
@@ -50,12 +50,9 @@ flow:
           - FAILURE: no_list_present
     - no_list_present:
         do:
-          io.cloudslang.base.utils.do_nothing:
-            - input_0: '13'
-        publish:
-          - cheapest_hour: '${input_0}'
+          io.cloudslang.base.utils.do_nothing: []
         navigate:
-          - SUCCESS: human_readable_date_1
+          - SUCCESS: SUCCESS
           - FAILURE: on_failure
     - create_html_chart:
         do:
@@ -83,67 +80,6 @@ flow:
         navigate:
           - SUCCESS: SUCCESS
           - FAILURE: on_failure
-    - send_mail:
-        do:
-          io.cloudslang.base.mail.send_mail:
-            - hostname: m2
-            - port: '25'
-            - from: easyEnergyBot@opsware.nl
-            - to: erwin@opsware.nl
-            - subject: "${'We hebben geen tarieven kunnen vinden voor '+date}"
-            - body: |-
-                ${'''
-                <!DOCTYPE html>
-                <html>
-                  <head>
-
-                    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-                    <title></title>
-                  </head>
-                  <body>
-                    <table width="100%" cellspacing="2" cellpadding="2" border="0"
-                      bgcolor="#ff6600">
-                      <tbody>
-                        <tr>
-                          <td valign="top"><br>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <br>
-                    Beste Erwin, we hebben helaas geen easyEnergy tarieven kunnen vinden voor morgen, '''+date+'''.<br>
-                    <br>
-                    We hebben de smart-plug(s) nu standaard geprogrammeerd voor 13:00 uur tot 14:00 uur. Hopelijk krijgen we morgen weer de juiste tarieven binnen.<br>
-                    <br>
-                    Met vriendelijke groeten,<br>
-                    Uw easyEneryBot - powered by Operations Orchestration<br>
-                    <br>
-                    <table width="100%" cellspacing="2" cellpadding="2" border="0">
-                      <tbody>
-                        <tr>
-                          <td valign="top" bgcolor="#ff6600"><br>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <br>
-                  </body>
-                </html>
-
-                '''}
-            - html_email: 'true'
-        navigate:
-          - SUCCESS: schedule_flow_run
-          - FAILURE: on_failure
-    - human_readable_date_1:
-        do:
-          io.cloudslang.energy_project.date_time.human_readable_date:
-            - offset: '86400'
-        publish:
-          - date
-        navigate:
-          - FAILURE: on_failure
-          - SUCCESS: send_mail
   results:
     - FAILURE
     - SUCCESS
@@ -166,12 +102,6 @@ extensions:
       create_html_chart:
         x: 480
         'y': 80
-      get_tariff_for_tomorrow:
-        x: 80
-        'y': 80
-      send_mail:
-        x: 480
-        'y': 280
       proceed_if_list_length_is_24:
         x: 280
         'y': 280
@@ -183,10 +113,14 @@ extensions:
         'y': 80
       no_list_present:
         x: 280
-        'y': 520
-      human_readable_date_1:
-        x: 480
-        'y': 520
+        'y': 480
+        navigate:
+          e2d91caf-3cbe-b5f6-80a9-5b21a6610840:
+            targetId: b0d752b2-3b75-ebc7-ca84-85efa6b536a6
+            port: SUCCESS
+      get_tariff_for_today:
+        x: 80
+        'y': 80
     results:
       SUCCESS:
         b0d752b2-3b75-ebc7-ca84-85efa6b536a6:
