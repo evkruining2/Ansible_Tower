@@ -1,6 +1,7 @@
 ########################################################################################################################
 #!!
 #! @input date: Format is YYYY-MM-dd
+#! @input energy_tax: Compensatie energiebelasting is verrekend (normaal 0.1327 per Kwh)
 #!!#
 ########################################################################################################################
 namespace: io.cloudslang.energy_project.usage_cost
@@ -11,7 +12,7 @@ flow:
     - fixed_cost_provider: '0.00683'
     - storage: '0.02177'
     - gvo_wind: '0.00508'
-    - energy_tax: '0.13'
+    - energy_tax: '0.001'
     - net_management: '0.05'
   workflow:
     - get_tariff_for_given_date:

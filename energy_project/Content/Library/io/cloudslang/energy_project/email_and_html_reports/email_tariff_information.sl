@@ -230,7 +230,7 @@ flow:
             - list: '${tariff_list}'
             - element: '${lowest_tariff}'
         publish:
-          - hour: '${indices}'
+          - hour: '${cs_extract_number(indices,1)}'
         navigate:
           - SUCCESS: calculate_average
     - calculate_average:
