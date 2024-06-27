@@ -150,9 +150,6 @@ flow:
 extensions:
   graph:
     steps:
-      schedule_power_on_flow:
-        x: 360
-        'y': 240
       get_current_date:
         x: 40
         'y': 40
@@ -168,8 +165,8 @@ extensions:
       get_oo_csrf_token:
         x: 520
         'y': 240
-      add_hour_to_epoch:
-        x: 200
+      schedule_power_on_flow:
+        x: 360
         'y': 240
       schedule_power_off_flow:
         x: 40
@@ -178,6 +175,9 @@ extensions:
           40ab1da0-f800-c94e-8e21-51d823dc260b:
             targetId: ac3e03c5-6268-e449-56a8-6f45982df783
             port: SUCCESS
+      add_hour_to_epoch:
+        x: 200
+        'y': 240
     results:
       SUCCESS:
         ac3e03c5-6268-e449-56a8-6f45982df783:

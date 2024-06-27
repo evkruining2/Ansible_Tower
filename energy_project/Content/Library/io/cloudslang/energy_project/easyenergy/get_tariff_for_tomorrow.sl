@@ -61,14 +61,14 @@ flow:
           io.cloudslang.base.strings.string_equals:
             - first_string: '${tariff_list}'
         navigate:
-          - SUCCESS: FAILURE
+          - SUCCESS: SUCCESS
           - FAILURE: round_numbers
   outputs:
     - tariff_list: '${tariff_list}'
     - lowest_tariff: '${lowest_tariff}'
   results:
-    - FAILURE
     - SUCCESS
+    - FAILURE
 extensions:
   graph:
     steps:
@@ -95,15 +95,11 @@ extensions:
         x: 440
         'y': 440
         navigate:
-          54d6db29-1a0d-606e-7843-fb5fa6fa33ec:
-            targetId: 53699720-6597-3b3a-85ae-0aa25380708b
+          1390f862-9d71-af7d-907f-354fb1c089f5:
+            targetId: c2ceccf0-9c7d-0d45-3730-5b3bf301e570
             port: SUCCESS
     results:
       SUCCESS:
         c2ceccf0-9c7d-0d45-3730-5b3bf301e570:
           x: 680
           'y': 240
-      FAILURE:
-        53699720-6597-3b3a-85ae-0aa25380708b:
-          x: 680
-          'y': 440

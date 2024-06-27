@@ -76,6 +76,7 @@ flow:
             - sum_net_management: '${sum_net_management}'
             - sum_fixed: '${sum_fixed}'
             - sum_total: '${total_cost}'
+            - p1_date: '${p1_date}'
         navigate:
           - FAILURE: on_failure
           - SUCCESS: SUCCESS
