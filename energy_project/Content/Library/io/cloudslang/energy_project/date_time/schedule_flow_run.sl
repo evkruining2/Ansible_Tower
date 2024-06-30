@@ -29,8 +29,9 @@ flow:
             - offset: '86400'
         publish:
           - day: '${cs_extract_number(output,1)}'
+          - output
         navigate:
-          - SUCCESS: convert_date_format
+          - SUCCESS: parse_date
           - FAILURE: on_failure
     - convert_date_format:
         do:
@@ -142,6 +143,16 @@ flow:
         navigate:
           - SUCCESS: schedule_power_off_flow
           - FAILURE: on_failure
+    - parse_date:
+        do:
+          io.cloudslang.base.datetime.parse_date:
+            - date: '${output}'
+            - out_format: YYYY-MM-dd
+        publish:
+          - month: '${cs_extract_number(output,2)}'
+        navigate:
+          - SUCCESS: convert_date_format
+          - FAILURE: on_failure
   outputs:
     - epoch: '${epoch}'
   results:
@@ -150,24 +161,6 @@ flow:
 extensions:
   graph:
     steps:
-      get_current_date:
-        x: 40
-        'y': 40
-      set_date_for_tomorrow:
-        x: 200
-        'y': 40
-      convert_date_format:
-        x: 360
-        'y': 40
-      generate_epoch_time:
-        x: 520
-        'y': 40
-      get_oo_csrf_token:
-        x: 520
-        'y': 240
-      schedule_power_on_flow:
-        x: 360
-        'y': 240
       schedule_power_off_flow:
         x: 40
         'y': 240
@@ -178,6 +171,27 @@ extensions:
       add_hour_to_epoch:
         x: 200
         'y': 240
+      schedule_power_on_flow:
+        x: 360
+        'y': 240
+      generate_epoch_time:
+        x: 680
+        'y': 40
+      set_date_for_tomorrow:
+        x: 200
+        'y': 40
+      get_oo_csrf_token:
+        x: 520
+        'y': 240
+      parse_date:
+        x: 360
+        'y': 40
+      convert_date_format:
+        x: 520
+        'y': 40
+      get_current_date:
+        x: 40
+        'y': 40
     results:
       SUCCESS:
         ac3e03c5-6268-e449-56a8-6f45982df783:
