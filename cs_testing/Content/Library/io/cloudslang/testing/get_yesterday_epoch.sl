@@ -1,4 +1,4 @@
-namespace: io.cloudslang.base.datetime
+namespace: io.cloudslang.testing
 
 operation:
   name: get_yesterday_epoch
