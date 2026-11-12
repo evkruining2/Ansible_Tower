@@ -1,4 +1,4 @@
-namespace: io.cloudslang.base.datetime
+namespace: io.cloudslang.testing
 
 flow:
   name: calculate_yesterday_epoch
